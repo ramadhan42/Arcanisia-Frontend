@@ -52,10 +52,7 @@ export default function RootLayout({
     // Memasukkan variabel CSS font ke dalam tag HTML[cite: 2]
     <html lang="en" className={`${gilland.variable} ${grazieMille.variable}`}>
       <body>
-        {/* 2. Tambahkan komponen Navbar di sini agar dirender di atas konten halaman */}
-        <Navbar />
         {children}
-        <Footer />
       </body>
     </html>
   );

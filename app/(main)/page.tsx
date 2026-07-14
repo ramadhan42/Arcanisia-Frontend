@@ -8,6 +8,7 @@ import FifthSection from "@/components/Beranda/FifthSection";
 import SixthSection from "@/components/Beranda/SixthSection";
 import EigthSection from "@/components/Beranda/EigthSection";
 import SeventhSection from "@/components/Beranda/SeventhSection";
+import MapIndonesiaPage from "@/components/Beranda/MapIndonesia";
 // import MissionSection from "@/components/Beranda/FifthSection";
 
 export default function Home() {

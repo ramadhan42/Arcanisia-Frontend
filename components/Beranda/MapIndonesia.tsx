@@ -52,26 +52,26 @@ export default function MapIndonesiaPage() {
           PULAU BESAR 
           * Sesuaikan path '/gambar/map/' dengan lokasi folder gambar Anda di public/
         */}
-        <div style={islandStyle("/gambar/map/sumatera.png", "10px", "-10px", "290px", "290px")} />
-        <div style={islandStyle("/gambar/map/kalimantan.png", "265px", "20px", "240px", "230px")} />
-        <div style={islandStyle("/gambar/map/jawa.png", "285px", "255px", "310px", "90px")} />
-        <div style={islandStyle("/gambar/map/sulawesi.png", "490px", "90px", "180px", "180px")} />
-        <div style={islandStyle("/gambar/map/papua.png", "700px", "125px", "250px", "218px")} />
+        <div style={islandStyle("/gambar/map/sumatera.svg", "10px", "-10px", "290px", "290px")} />
+        <div style={islandStyle("/gambar/map/kalimantan.svg", "310px", "20px", "240px", "230px")} />
+        <div style={islandStyle("/gambar/map/jawa.svg", "285px", "255px", "310px", "90px")} />
+        <div style={islandStyle("/gambar/map/sulawesi.svg", "540px", "90px", "180px", "180px")} />
+        <div style={islandStyle("/gambar/map/papua.svg", "725px", "125px", "250px", "218px")} />
 
         {/* 
           PULAU KECIL (Nias, Buton, Sumba, Komodo/Alor) 
         */}
-        {/* 1.png (Asumsi: Nias, di sebelah kiri Sumatera) */}
-        <div style={islandStyle("/gambar/map/1.png", "45px", "95px", "20px", "30px")} />
+        {/* 1.svg (Asumsi: Nias, di sebelah kiri Sumatera) */}
+        <div style={islandStyle("/gambar/map/1.svg", "45px", "95px", "20px", "30px")} />
 
-        {/* 2.png (Asumsi: Buton, di kaki kanan bawah Sulawesi) */}
-        <div style={islandStyle("/gambar/map/2.png", "630px", "230px", "25px", "35px")} />
+        {/* 2.svg (Asumsi: Buton, di kaki kanan bawah Sulawesi) */}
+        <div style={islandStyle("/gambar/map/2.svg", "630px", "230px", "25px", "35px")} />
 
-        {/* 6.png (Asumsi: Sumba, di bagian selatan tengah) */}
-        <div style={islandStyle("/gambar/map/sumba.png", "610px", "320px", "55px", "30px")} />
+        {/* 6.svg (Asumsi: Sumba, di bagian selatan tengah) */}
+        <div style={islandStyle("/gambar/map/sumba.svg", "610px", "320px", "55px", "30px")} />
 
-        {/* 8.png (Asumsi: Komodo, di sebelah timur Sumba/NTT) */}
-        <div style={islandStyle("/gambar/map/komodo.png", "635px", "285px", "45px", "25px")} />
+        {/* 8.svg (Asumsi: Komodo, di sebelah timur Sumba/NTT) */}
+        <div style={islandStyle("/gambar/map/komodo.svg", "635px", "285px", "45px", "25px")} />
       </div>
     </main>
   );
