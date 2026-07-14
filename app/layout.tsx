@@ -1,6 +1,7 @@
 import localFont from 'next/font/local';
 import './globals.css'; // 1. Pastikan path import ini sesuai dengan lokasi file Navbar.tsx Anda
 import Navbar from '@/components/Global/Navbar';
+import Footer from '@/components/Global/Footer';
 
 // 1. Konfigurasi Font Gilland[cite: 2]
 const gilland = localFont({
@@ -54,7 +55,7 @@ export default function RootLayout({
         {/* 2. Tambahkan komponen Navbar di sini agar dirender di atas konten halaman */}
         <Navbar />
         {children}
-        
+        <Footer />
       </body>
     </html>
   );

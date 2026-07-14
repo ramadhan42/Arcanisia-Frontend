@@ -3,10 +3,11 @@
 import HeroSection from "@/components/Beranda/HeroSection";
 import SecondSection from "@/components/Beranda/SecondSection";
 import AboutContentmargin from "@/components/Beranda/ThirdSection";
-import NextPage from "@/components/Beranda/FourthSection";
-import Image from "next/image";
 import FourthSection from "@/components/Beranda/FourthSection";
-import PetaIndonesiaPage from "@/components/PetaIndonesiaPage";
+import FifthSection from "@/components/Beranda/FifthSection";
+import SixthSection from "@/components/Beranda/SixthSection";
+import EigthSection from "@/components/Beranda/EigthSection";
+import SeventhSection from "@/components/Beranda/SeventhSection";
 // import MissionSection from "@/components/Beranda/FifthSection";
 
 export default function Home() {
@@ -18,13 +19,18 @@ export default function Home() {
 
       <AboutContentmargin />
 
-      {/* <PetaIndonesiaPage /> */}
-
       <FourthSection />
 
-      {/* <NextPage /> */}
+      <FifthSection />
 
-      {/* <MissionSection /> */}
+      <SixthSection />
+
+      <EigthSection />
+
+      <SeventhSection />
+
+      {/* <MapIndonesiaPage /> */}
+
     </div>
   );
 }
