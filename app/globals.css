@@ -24,3 +24,10 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.font-graziemille {
+  font-family: var(--font-graziemille), serif;
+}
+.font-gilland {
+  font-family: var(--font-gilland), sans-serif;
+}
