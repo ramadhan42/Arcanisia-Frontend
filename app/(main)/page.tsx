@@ -9,6 +9,7 @@ import SixthSection from "@/components/Beranda/SixthSection";
 import EigthSection from "@/components/Beranda/EigthSection";
 import SeventhSection from "@/components/Beranda/SeventhSection";
 import MapIndonesiaPage from "@/components/Beranda/MapIndonesia";
+import FAQPage from "@/components/Beranda/FaqPage";
 // import MissionSection from "@/components/Beranda/FifthSection";
 
 export default function Home() {
@@ -27,11 +28,12 @@ export default function Home() {
       <SixthSection />
 
       <SeventhSection />
-      
+
+      <FAQPage />
+
       <EigthSection />
 
       {/* <MapIndonesiaPage /> */}
-
     </div>
   );
 }
