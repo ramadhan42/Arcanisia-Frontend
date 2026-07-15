@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 // 1. Data Sementara (MOCK DATA)
 const productsData = [
@@ -63,51 +66,74 @@ const FourthSection = () => {
   const goldGradient = "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
 
   return (
-    <section className="flex flex-col items-center w-full py-20 bg-[#0a0a0a]">
+    <section className="flex flex-col items-center w-full py-20 bg-[#0a0a0a] overflow-hidden">
       
       {/* Teks "THE COLLECTION" */}
-      <p
+      <motion.p
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         className="text-[10px] text-[#F5EDD6] font-medium tracking-widest mb-3 uppercase"
         style={{ fontFamily: "'Grazie mille', serif" }}
       >
         THE COLLECTION
-      </p>
+      </motion.p>
 
       {/* Teks "Six Islands, Six Stories" */}
-      <h2
+      <motion.h2
+        initial={{ opacity: 0, x: -30, y: -30 }}
+        whileInView={{ opacity: 1, x: 0, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         className="text-[35px] font-normal text-transparent bg-clip-text text-center mb-6"
         style={{ backgroundImage: goldGradient, fontFamily: "'Gilland', sans-serif" }}
       >
         Six Islands, Six Stories
-      </h2>
+      </motion.h2>
 
       {/* Gambar Ornamen SVG */}
-      <div className="relative w-[213px] h-[17px] mb-6">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+        className="relative w-[213px] h-[17px] mb-6"
+      >
         <Image
           src="/gambar/seksi%204/ornamen.svg"
           alt="Ornament line"
           fill
           style={{ objectFit: 'contain' }}
         />
-      </div>
+      </motion.div>
 
       {/* Teks Deskripsi Panjang */}
-      <p
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
         className="text-[14px] text-[#C9B99A] text-center max-w-[650px] leading-relaxed mb-16 px-4"
         style={{ fontFamily: "'Grazie mille', serif", fontWeight: 'normal' }}
       >
         Each fragrance is an olfactory journey through the soul of the Indonesian archipelago — six islands, six stories, one nation breathed into being.
-      </p>
+      </motion.p>
 
       {/* Grid Produk - 3 Kolom per baris untuk Desktop */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto px-4">
         
         {/* Render Card secara Dinamis */}
-        {productsData.map((product) => (
-          <div 
+        {productsData.map((product, index) => (
+          <motion.div 
             key={product.id} 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            // Penambahan delay dinamis (0.2s * index) agar muncul bergantian
+            transition={{ duration: 0.8, delay: 0.2 * index, ease: "easeOut" }}
             className="w-full md:w-[325px] h-auto flex flex-col overflow-hidden rounded-sm border border-[#2a2a2a]"
-            style={{ backgroundColor: product.bgColor }} // Menggunakan warna dinamis dari data
+            style={{ backgroundColor: product.bgColor }} 
           >
             
             {/* Bagian Atas: Gambar Produk */}
@@ -178,12 +204,16 @@ const FourthSection = () => {
                 </button>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Tombol "VIEW COMPLETE COLLECTION" */}
-      <button
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false }}
+        transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
         className="w-[260px] h-[40px] flex items-center justify-center gap-3 text-[12px] text-[#124B46] rounded-sm hover:opacity-90 transition-opacity"
         style={{ background: goldGradient, fontWeight: 'bold' }}
       >
@@ -202,7 +232,7 @@ const FourthSection = () => {
           <path d="M5 12h14"></path>
           <path d="m12 5 7 7-7 7"></path>
         </svg>
-      </button>
+      </motion.button>
 
     </section>
   );

@@ -1,5 +1,8 @@
+"use client";
+
 import React from 'react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 // Data JSON Dinamis untuk 4 item di bawah
 const essenceData = [
@@ -66,9 +69,12 @@ const SixthSection = () => {
             minHeight: "360px",
           }}
         >
-          {/* Gambar Background Utama */}
-          <Image
-            src="/gambar/seksi%206/bg.png"
+          {/* Gambar Background Utama - Muncul dari bawah */}
+          <motion.div
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 1, ease: "easeOut" }}
             style={{
               width: "1302px",
               height: "868px",
@@ -76,15 +82,18 @@ const SixthSection = () => {
               margin: "0",
               top: "-451px",
               left: "0px",
-              objectFit: "cover",
               zIndex: "0",
               flexShrink: "0",
             }}
-            width={1302}
-            height={868}
-            sizes="100vw"
-            alt="Background"
-          />
+          >
+            <Image
+              src="/gambar/seksi%206/bg.png"
+              style={{ objectFit: "cover" }}
+              fill
+              sizes="100vw"
+              alt="Background"
+            />
+          </motion.div>
           
           {/* Overlay Gradient */}
           <div
@@ -122,12 +131,28 @@ const SixthSection = () => {
             }}
           >
             <div style={{ width: "632px", height: "146px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-              <div style={{ width: "631.7px", height: "39px", display: "flex", flexDirection: "column", alignItems: "center", padding: "24px 0px 0px", boxSizing: "border-box" }}>
+              
+              {/* Subtitle "THE ESSENCE" */}
+              <motion.div 
+                initial={{ opacity: 0, y: -20, x: -20 }}
+                whileInView={{ opacity: 1, y: 0, x: 0 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                style={{ width: "631.7px", height: "39px", display: "flex", flexDirection: "column", alignItems: "center", padding: "24px 0px 0px", boxSizing: "border-box" }}
+              >
                 <div style={{ position: "relative", letterSpacing: "5px", lineHeight: "15px" }}>
                   THE ESSENCE
                 </div>
-              </div>
-              <div style={{ width: "632px", height: "76px", display: "flex", flexDirection: "column", alignItems: "center", fontSize: "40px", fontFamily: "Gilland" }}>
+              </motion.div>
+
+              {/* Title Utama "Honesty of Nusantara" */}
+              <motion.div 
+                initial={{ opacity: 0, y: -30, x: -30 }}
+                whileInView={{ opacity: 1, y: 0, x: 0 }}
+                viewport={{ once: false }}
+                transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+                style={{ width: "632px", height: "76px", display: "flex", flexDirection: "column", alignItems: "center", fontSize: "40px", fontFamily: "Gilland" }}
+              >
                 <div
                   style={{
                     position: "relative",
@@ -140,18 +165,25 @@ const SixthSection = () => {
                 >
                   Honesty of Nusantara
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Gambar Ornamen */}
-            <Image
-              src="/gambar/seksi%206/ornamen.svg"
-              style={{ width: "213.2px", height: "15.3px", position: "relative" }}
-              width={213.2}
-              height={15.3}
-              sizes="100vw"
-              alt="Ornament"
-            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+            >
+              <Image
+                src="/gambar/seksi%206/ornamen.svg"
+                style={{ width: "213.2px", height: "15.3px", position: "relative" }}
+                width={213.2}
+                height={15.3}
+                sizes="100vw"
+                alt="Ornament"
+              />
+            </motion.div>
           </div>
         </div>
 
@@ -174,12 +206,16 @@ const SixthSection = () => {
             fontFamily: "Montserrat",
           }}
         >
-          {/* Container ini dirubah menjadi flex row dan space-between agar rapi secara otomatis */}
           <div style={{ width: "1043.3px", height: "282.6px", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
             
-            {essenceData.map((item) => (
-              <div
+            {essenceData.map((item, index) => (
+              <motion.div
                 key={item.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.2 }}
+                // Penambahan delay (0.2 * index) agar muncul bergantian
+                transition={{ duration: 0.8, delay: 0.2 * index, ease: "easeOut" }}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -230,7 +266,7 @@ const SixthSection = () => {
 
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
 
           </div>

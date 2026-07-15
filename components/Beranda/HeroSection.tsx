@@ -18,7 +18,7 @@ export default function HeroSection() {
       }}
     >
       {/* 1. Background kedua (Gambar Produk) - Muncul dari bawah */}
-      <motion.div 
+      <motion.div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         initial={{ opacity: 0, y: 80 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -46,7 +46,7 @@ export default function HeroSection() {
 
       {/* Konten Utama (Logo, Teks, Button) */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-md mx-auto mt-12">
-        
+
         {/* 2. Logo - Muncul di tengah (Fade in + sedikit efek membesar) */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -105,7 +105,7 @@ export default function HeroSection() {
         </motion.p>
 
         {/* 4. Tombol Gold - Fade In */}
-        <motion.div 
+        <motion.div
           className="w-max cursor-pointer hover:opacity-90 transition-opacity"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

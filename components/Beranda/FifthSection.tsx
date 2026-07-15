@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 // 1. Data Misi (MOCK DATA / JSON)
 const missionData = [
@@ -44,7 +47,7 @@ const FifthSection = () => {
         display: "flex",
         flexDirection: "column",
         backgroundColor: "#134b46",
-        background: "linear-gradient(180deg, rgba(0, 34, 31, 1), #012421)", // Background baru ditambahkan di sini
+        background: "linear-gradient(180deg, rgba(0, 34, 31, 1), #012421)", 
       }}
     >
       {/* --- BAGIAN ATAS --- */}
@@ -63,7 +66,6 @@ const FifthSection = () => {
           fontSize: "10px",
           color: "#f5edd6",
           fontFamily: "'Grazie mille'",
-          // PENYESUAIAN BACKGROUND: Overlay gradient redup ke hitam (#0a0a0a) dan posisi di atas (top)
           backgroundImage:
             "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421), url('/gambar/seksi%205/bg.png')",
           backgroundSize: "cover",
@@ -80,7 +82,12 @@ const FifthSection = () => {
             alignItems: "flex-start",
           }}
         >
-          <div
+          {/* Subtitle "OUR MISSION" */}
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: -20 }}
+            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             style={{
               width: "631.7px",
               height: "39px",
@@ -100,8 +107,14 @@ const FifthSection = () => {
             >
               OUR MISSION
             </div>
-          </div>
-          <div
+          </motion.div>
+
+          {/* Judul Utama "Guided by Purpose" */}
+          <motion.div
+            initial={{ opacity: 0, y: -30, x: -30 }}
+            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             style={{
               width: "632px",
               height: "76px",
@@ -125,18 +138,25 @@ const FifthSection = () => {
             >
               Guided by Purpose
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Gambar Ornamen */}
-        <Image
-          src="/gambar/seksi%204/ornamen.svg"
-          style={{ width: "213.2px", height: "15.3px", position: "relative" }}
-          width={213}
-          height={15}
-          sizes="100vw"
-          alt="Ornament"
-        />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+        >
+          <Image
+            src="/gambar/seksi%204/ornamen.svg"
+            style={{ width: "213.2px", height: "15.3px", position: "relative" }}
+            width={213}
+            height={15}
+            sizes="100vw"
+            alt="Ornament"
+          />
+        </motion.div>
       </div>
 
       {/* --- BAGIAN BAWAH --- */}
@@ -155,13 +175,18 @@ const FifthSection = () => {
           color: "#f5edd6",
           fontFamily: "Gilland",
           margin: "0 auto",
-          background: "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421)", // Background baru ditambahkan di sini
+          background: "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421)", 
         }}
       >
-        {/* Looping Data JSON Dinamis */}
+        {/* Looping Data JSON Dinamis dengan efek Staggered */}
         {missionData.map((item, index) => (
-          <div
+          <motion.div
             key={index}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            // Penambahan delay (0.2 * index) agar muncul bergantian
+            transition={{ duration: 0.8, delay: 0.2 * index, ease: "easeOut" }}
             style={{
               alignSelf: "stretch",
               borderBottom: "0.5px solid rgba(201, 168, 76, 0.1)",
@@ -289,7 +314,7 @@ const FifthSection = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

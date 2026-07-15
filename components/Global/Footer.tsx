@@ -1,5 +1,8 @@
+"use client";
+
 import type { NextPage } from 'next';
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 // Data Dinamis untuk Link Menu Footer
 const footerLinks = {
@@ -67,8 +70,14 @@ const Footer: NextPage = () => {
         {/* === BAGIAN ATAS (KOLOM-KOLOM) === */}
         <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "40px", width: "100%" }}>
           
-          {/* Kolom 1: Logo & Deskripsi */}
-          <div style={{ width: "464px", display: "flex", flexDirection: "column", alignItems: "flex-start", fontSize: "13px", color: "rgba(201, 185, 154, 0.6)" }}>
+          {/* Kolom 1: Logo & Deskripsi - Animasi masuk dari kiri */}
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            style={{ width: "464px", display: "flex", flexDirection: "column", alignItems: "flex-start", fontSize: "13px", color: "rgba(201, 185, 154, 0.6)" }}
+          >
             <Image 
               src="/gambar/footer/logo arca fix 1.svg" 
               style={{ width: "151.1px", height: "45.7px", position: "relative" }} 
@@ -81,7 +90,6 @@ const Footer: NextPage = () => {
               A luxury fragrance house born from the heart of the Indonesian archipelago. Six islands. Six stories. One nation breathed into being through scent.
             </div>
             <div style={{ padding: "24px 0px 0px" }}>
-              {/* Gambar kedua sesuai path di komentar Anda */}
               <Image 
                 src="/gambar/footer/ornamen.svg" 
                 style={{ width: "172px", height: "21.6px", position: "relative" }} 
@@ -91,10 +99,16 @@ const Footer: NextPage = () => {
                 alt="Arcanisia Ornament" 
               />
             </div>
-          </div>
+          </motion.div>
 
-          {/* Kolom 2: COLLECTION */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}>
+          {/* Kolom 2: COLLECTION - Animasi slide-up */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}
+          >
             <div style={{ letterSpacing: "3.15px", lineHeight: "13.5px", marginBottom: "24px" }}>
               COLLECTION
             </div>
@@ -105,10 +119,16 @@ const Footer: NextPage = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Kolom 3: COMPANY */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}>
+          {/* Kolom 3: COMPANY - Animasi slide-up */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}
+          >
             <div style={{ letterSpacing: "3.15px", lineHeight: "13.5px", marginBottom: "24px" }}>
               COMPANY
             </div>
@@ -119,10 +139,16 @@ const Footer: NextPage = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Kolom 4: SUPPORT */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}>
+          {/* Kolom 4: SUPPORT - Animasi slide-up */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+            style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}
+          >
             <div style={{ letterSpacing: "3.15px", lineHeight: "13.5px", marginBottom: "24px" }}>
               SUPPORT
             </div>
@@ -133,12 +159,18 @@ const Footer: NextPage = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
         </div>
 
         {/* === BAGIAN BAWAH (COPYRIGHT & LEGAL) === */}
-        <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: "64px 0px 0px", fontSize: "12px", color: "rgba(201, 185, 154, 0.3)" }}>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
+          style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: "64px 0px 0px", fontSize: "12px", color: "rgba(201, 185, 154, 0.3)" }}
+        >
           <div style={{ width: "100%", borderTop: "0.7px solid rgba(201, 168, 76, 0.1)", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", padding: "32px 0px 0px", gap: "20px" }}>
             
             {/* Copyright */}
@@ -156,7 +188,7 @@ const Footer: NextPage = () => {
             </div>
 
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

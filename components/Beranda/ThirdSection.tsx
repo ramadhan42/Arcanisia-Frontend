@@ -1,5 +1,9 @@
+"use client";
+
 import type { NextPage } from "next";
 import Image from "next/image";
+import { motion } from "framer-motion";
+
 const AboutContentmargin: NextPage = () => {
   return (
     <div
@@ -35,7 +39,12 @@ const AboutContentmargin: NextPage = () => {
             alignItems: "flex-start",
           }}
         >
-          <div
+          {/* Subtitle ABOUT ARCANISIA */}
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: -20 }}
+            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             style={{
               alignSelf: "stretch",
               display: "flex",
@@ -52,8 +61,14 @@ const AboutContentmargin: NextPage = () => {
             >
               ABOUT ARCANISIA
             </div>
-          </div>
-          <div
+          </motion.div>
+
+          {/* Main Title */}
+          <motion.div
+            initial={{ opacity: 0, y: -30, x: -30 }}
+            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             style={{
               width: "912.8px",
               height: "73.2px",
@@ -78,8 +93,14 @@ const AboutContentmargin: NextPage = () => {
             >
               More Than a Fragrance
             </div>
-          </div>
-          <div
+          </motion.div>
+
+          {/* Ornamen */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             style={{
               width: "912.8px",
               height: "33.9px",
@@ -91,16 +112,16 @@ const AboutContentmargin: NextPage = () => {
             }}
           >
             <Image
-              // Menambahkan src dengan format path yang benar untuk Next.js
               src="/gambar/seksi%203/ornament.svg"
               alt="Ornament"
               style={{ height: "14.6px", width: "100%", position: "relative" }}
-              width={204.2}
-              height={14.6}
+              width={204}
+              height={15}
               sizes="100vw"
             />
-          </div>
+          </motion.div>
         </div>
+
         <div
           style={{
             alignSelf: "stretch",
@@ -112,7 +133,12 @@ const AboutContentmargin: NextPage = () => {
             color: "#f8c56c",
           }}
         >
-          <div
+          {/* Gambar Pemandangan Borneo - Muncul dari bawah */}
+          <motion.div
+            initial={{ opacity: 0, y: 80 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
             style={{
               width: "912px",
               height: "578px",
@@ -135,7 +161,6 @@ const AboutContentmargin: NextPage = () => {
                 fill
                 style={{
                   objectFit: "cover",
-                  // KUNCI: Masking radial untuk memberi shadow/fade di semua sisi (atas, bawah, kiri, kanan)
                   maskImage:
                     "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)",
                   WebkitMaskImage:
@@ -144,7 +169,9 @@ const AboutContentmargin: NextPage = () => {
                 sizes="100vw"
               />
             </div>
-          </div>
+          </motion.div>
+
+          {/* Kontainer Teks Bawah */}
           <div
             style={{
               width: "518.1px",
@@ -154,7 +181,11 @@ const AboutContentmargin: NextPage = () => {
               maxWidth: "518.07px",
             }}
           >
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: -20, x: -20 }}
+              whileInView={{ opacity: 1, y: 0, x: 0 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
               style={{
                 alignSelf: "stretch",
                 display: "flex",
@@ -174,8 +205,13 @@ const AboutContentmargin: NextPage = () => {
                 "Born to reignite national pride through the art of scent the
                 leading narrator of the Nusantara."
               </i>
-            </div>
-            <div
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: -20, x: -20 }}
+              whileInView={{ opacity: 1, y: 0, x: 0 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
               style={{
                 alignSelf: "stretch",
                 display: "flex",
@@ -198,8 +234,13 @@ const AboutContentmargin: NextPage = () => {
                 islands to its rarely uncovered cultural riches — through the
                 fusion of visual art and storytelling aromas.
               </div>
-            </div>
-            <div
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: -20, x: -20 }}
+              whileInView={{ opacity: 1, y: 0, x: 0 }}
+              viewport={{ once: false }}
+              transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
               style={{
                 alignSelf: "stretch",
                 display: "flex",
@@ -221,10 +262,16 @@ const AboutContentmargin: NextPage = () => {
                 that brings the story of Indonesia into everyday life —
                 committed to sustainability and environmental preservation.
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
-        <div
+
+        {/* Statistik / Detail Kolom Bawah */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 1, delay: 1.4, ease: "easeOut" }}
           style={{
             alignSelf: "stretch",
             display: "flex",
@@ -299,6 +346,7 @@ const AboutContentmargin: NextPage = () => {
                 </div>
               </div>
             </div>
+            
             <div
               style={{
                 flex: "1",
@@ -368,6 +416,7 @@ const AboutContentmargin: NextPage = () => {
                 }}
               />
             </div>
+            
             <div
               style={{
                 display: "flex",
@@ -437,7 +486,7 @@ const AboutContentmargin: NextPage = () => {
               />
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

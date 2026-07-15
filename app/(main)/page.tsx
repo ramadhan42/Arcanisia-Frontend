@@ -26,9 +26,9 @@ export default function Home() {
 
       <SixthSection />
 
-      <EigthSection />
-
       <SeventhSection />
+      
+      <EigthSection />
 
       {/* <MapIndonesiaPage /> */}
 
