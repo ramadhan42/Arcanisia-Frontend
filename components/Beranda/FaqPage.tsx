@@ -178,502 +178,504 @@ const FAQPage: NextPage = () => {
           alignItems: "center",
         }}
       >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "1104px",
-          height: "169px",
-          display: "grid",
-          boxSizing: "border-box",
-          gridTemplateColumns: "repeat(2, 532px)",
-          gridTemplateRows: "169px",
-          gap: "40px",
-        }}
-      >
         <div
           style={{
+            width: "100%",
+            maxWidth: "1280px",
             height: "169px",
+            display: "grid",
+            boxSizing: "border-box",
+            gridTemplateColumns: "1fr 1fr",
+            gridTemplateRows: "169px",
+            gap: "40px",
+          }}
+        >
+          <div
+            style={{
+              height: "169px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gridColumn: "1",
+              gridRow: "1 / span 2",
+            }}
+          >
+            <div
+              style={{
+                alignSelf: "stretch",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
+            >
+              <div
+                style={{
+                  position: "relative",
+                  letterSpacing: "5px",
+                  lineHeight: "15px",
+                }}
+              >
+                PUSAT BANTUAN
+              </div>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                height: "154px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                padding: "16px 0px 0px",
+                boxSizing: "border-box",
+                fontSize: "53px",
+                fontFamily: "Gilland",
+              }}
+            >
+              <div
+                style={{
+                  position: "relative",
+                  lineHeight: "74px",
+                  background:
+                    "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Pertanyaan yang
+                <br />
+                Sering Diajukan
+              </div>
+            </div>
+          </div>
+
+          {/* teks tidak menemukan jawaban */}
+          <div
+            style={{
+              height: "169px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              justifyContent: "flex-end",
+              gridColumn: "2",
+              gridRow: "1 / span 2",
+              fontSize: "14px",
+              color: "rgba(201, 185, 154, 0.6)",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                position: "relative",
+                lineHeight: "26px",
+                display: "inline-block",
+              }}
+            >
+              <span
+                style={{ lineHeight: "25.2px" }}
+              >{`Tidak menemukan jawaban yang Anda cari? Tim kami siap membantu melalui live chat atau email `}</span>
+              <span style={{ color: "#c9a84c", lineHeight: "25.2px" }}>
+                hello@arcanisia.id
+              </span>
+              <span style={{ lineHeight: "25.2px" }}>.</span>
+            </div>
+          </div>
+        </div>
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "1280px",
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
-            gridColumn: "1",
-            gridRow: "1 / span 2",
+            padding: "64px 0px 0px",
+            boxSizing: "border-box",
+            color: "rgba(201, 185, 154, 0.5)",
           }}
         >
           <div
             style={{
               alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
+              display: "grid",
+              gridTemplateColumns: "252px 1fr",
+              gridTemplateRows: "auto",
+              gap: "32px",
             }}
           >
             <div
               style={{
-                position: "relative",
-                letterSpacing: "5px",
-                lineHeight: "15px",
-              }}
-            >
-              PUSAT BANTUAN
-            </div>
-          </div>
-          <div
-            style={{
-              width: "532px",
-              height: "154px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              padding: "16px 0px 0px",
-              boxSizing: "border-box",
-              fontSize: "48px",
-              fontFamily: "Gilland",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                lineHeight: "69px",
-                background:
-                  "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Pertanyaan yang
-              <br />
-              Sering Diajukan
-            </div>
-          </div>
-        </div>
-
-        {/* teks tidak menemukan jawaban */}
-        <div
-          style={{
-            height: "169px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            justifyContent: "flex-end",
-            gridColumn: "2",
-            gridRow: "1 / span 2",
-            fontSize: "12px",
-            color: "rgba(201, 185, 154, 0.6)",
-          }}
-        >
-          <div
-            style={{
-              width: "532px",
-              position: "relative",
-              lineHeight: "25.2px",
-              display: "inline-block",
-            }}
-          >
-            <span
-              style={{ lineHeight: "25.2px" }}
-            >{`Tidak menemukan jawaban yang Anda cari? Tim kami siap membantu melalui live chat atau email `}</span>
-            <span style={{ color: "#c9a84c", lineHeight: "25.2px" }}>
-              hello@arcanisia.id
-            </span>
-            <span style={{ lineHeight: "25.2px" }}>.</span>
-          </div>
-        </div>
-      </div>
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "1104px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          padding: "64px 0px 0px",
-          boxSizing: "border-box",
-          color: "rgba(201, 185, 154, 0.5)",
-        }}
-      >
-        <div
-          style={{
-            alignSelf: "stretch",
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 252px)",
-            gridTemplateRows: "395.927001953125px",
-            gap: "32px",
-          }}
-        >
-          <div
-            style={{
-              height: "290.5px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gridColumn: "1",
-              gridRow: "1",
-            }}
-          >
-            <div
-              style={{
-                alignSelf: "stretch",
+                height: "290.5px",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                gap: "8px",
-              }}
-            >
-              {categoriesData.map((cat) => {
-                const isActive = activeCategory === cat.id;
-                const count = faqData.filter(
-                  (faq) => faq.category === cat.id,
-                ).length;
-                return (
-                  <div
-                    key={cat.id}
-                    onClick={() => handleCategoryChange(cat.id)}
-                    style={{
-                      width: "252px",
-                      height: "40.3px",
-                      position: "relative",
-                      backgroundColor: isActive
-                        ? "rgba(201, 168, 76, 0.08)"
-                        : "transparent",
-                      border: isActive
-                        ? "0.7px solid rgba(201, 168, 76, 0.5)"
-                        : "none",
-                      boxSizing: "border-box",
-                      color: isActive ? "#c9a84c" : "inherit",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {isActive && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "0.67px",
-                          left: "0.67px",
-                          backgroundColor: "#c9a84c",
-                          width: "2px",
-                          height: "39px",
-                        }}
-                      />
-                    )}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "12.33px",
-                        left: "16.67px",
-                        letterSpacing: "2px",
-                        lineHeight: "15px",
-                        fontWeight: isActive ? "bold" : "normal",
-                      }}
-                    >
-                      {cat.label}
-                    </div>
-                    {isActive ? (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "13.33px",
-                          right: "16px",
-                          backgroundColor: "#c9a84c",
-                          padding: "0 6px",
-                          height: "14px",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          fontSize: "8px",
-                          color: "#091812",
-                          letterSpacing: "2px",
-                        }}
-                      >
-                        {count}
-                      </div>
-                    ) : (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "14.33px",
-                          right: "16px",
-                          fontSize: "8px",
-                          letterSpacing: "2px",
-                          lineHeight: "12px",
-                          color: "rgba(201, 168, 76, 0.3)",
-                        }}
-                      >
-                        {count}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-            <div
-              style={{
-                alignSelf: "stretch",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                padding: "32px 0px 0px",
-                fontSize: "9px",
-                color: "rgba(201, 185, 154, 0.4)",
+                gridColumn: "1",
+                gridRow: "1",
               }}
             >
               <div
                 style={{
                   alignSelf: "stretch",
-                  borderTop: "0.7px solid rgba(201, 168, 76, 0.1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: "8px",
+                }}
+              >
+                {categoriesData.map((cat) => {
+                  const isActive = activeCategory === cat.id;
+                  const count = faqData.filter(
+                    (faq) => faq.category === cat.id,
+                  ).length;
+                  return (
+                    <div
+                      key={cat.id}
+                      onClick={() => handleCategoryChange(cat.id)}
+                      style={{
+                        width: "252px",
+                        height: "40.3px",
+                        position: "relative",
+                        backgroundColor: isActive
+                          ? "rgba(201, 168, 76, 0.08)"
+                          : "transparent",
+                        border: isActive
+                          ? "0.7px solid rgba(201, 168, 76, 0.5)"
+                          : "none",
+                        boxSizing: "border-box",
+                        color: isActive ? "#c9a84c" : "inherit",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {isActive && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "0.67px",
+                            left: "0.67px",
+                            backgroundColor: "#c9a84c",
+                            width: "2px",
+                            height: "39px",
+                          }}
+                        />
+                      )}
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "12.33px",
+                          left: "16.67px",
+                          letterSpacing: "2px",
+                          lineHeight: "15px",
+                          fontWeight: isActive ? "bold" : "normal",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {cat.label}
+                      </div>
+                      {isActive ? (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "13.33px",
+                            right: "16px",
+                            backgroundColor: "#c9a84c",
+                            padding: "0 6px",
+                            height: "14px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "8px",
+                            color: "#091812",
+                            letterSpacing: "2px",
+                          }}
+                        >
+                          {count}
+                        </div>
+                      ) : (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "14.33px",
+                            right: "16px",
+                            fontSize: "8px",
+                            letterSpacing: "2px",
+                            lineHeight: "12px",
+                            color: "rgba(201, 168, 76, 0.3)",
+                          }}
+                        >
+                          {count}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <div
+                style={{
+                  alignSelf: "stretch",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
                   padding: "32px 0px 0px",
+                  fontSize: "9px",
+                  color: "rgba(201, 185, 154, 0.4)",
                 }}
               >
                 <div
                   style={{
                     alignSelf: "stretch",
+                    borderTop: "0.7px solid rgba(201, 168, 76, 0.1)",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "flex-start",
+                    padding: "32px 0px 0px",
                   }}
                 >
                   <div
                     style={{
-                      position: "relative",
-                      letterSpacing: "2.7px",
-                      lineHeight: "13.5px",
+                      alignSelf: "stretch",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
                     }}
                   >
-                    MASIH BUTUH BANTUAN?
+                    <div
+                      style={{
+                        position: "relative",
+                        letterSpacing: "2.7px",
+                        lineHeight: "13.5px",
+                      }}
+                    >
+                      MASIH BUTUH BANTUAN?
+                    </div>
                   </div>
-                </div>
-                <div
-                  style={{
-                    width: "252px",
-                    height: "27px",
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "12px 0px 0px",
-                    boxSizing: "border-box",
-                    gap: "8px",
-                    fontSize: "10px",
-                    color: "rgba(201, 168, 76, 0.7)",
-                  }}
-                >
-                  {/* hubungi kami icon */}
                   <div
                     style={{
+                      width: "252px",
+                      height: "27px",
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "center",
+                      padding: "12px 0px 0px",
+                      boxSizing: "border-box",
+                      gap: "8px",
+                      fontSize: "10px",
+                      color: "rgba(201, 168, 76, 0.7)",
                     }}
                   >
-                    <IconMail />
-                  </div>
-                  <div
-                    style={{
-                      position: "relative",
-                      letterSpacing: "1.5px",
-                      lineHeight: "15px",
-                    }}
-                  >
-                    Hubungi Kami
+                    {/* hubungi kami icon */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <IconMail />
+                    </div>
+                    <div
+                      style={{
+                        position: "relative",
+                        letterSpacing: "1.5px",
+                        lineHeight: "15px",
+                      }}
+                    >
+                      Hubungi Kami
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div
-            style={{
-              border: "0.7px solid rgba(201, 168, 76, 0.12)",
-              boxSizing: "border-box",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gridColumn: "2 / span 3",
-              gridRow: "1",
-              fontSize: "16px",
-              color: "rgba(201, 168, 76, 0.4)",
-            }}
-          >
             <div
               style={{
-                alignSelf: "stretch",
+                border: "0.7px solid rgba(201, 168, 76, 0.12)",
+                boxSizing: "border-box",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
+                gridColumn: "2",
+                gridRow: "1",
+                fontSize: "16px",
+                color: "rgba(201, 168, 76, 0.4)",
               }}
             >
-              {faqData
-                .filter((faq) => faq.category === activeCategory)
-                .map((faq, index) => {
-                  const isActive = activeId === faq.id;
-                  return (
-                    <div
-                      key={faq.id}
-                      style={{
-                        alignSelf: "stretch",
-                        backgroundColor: isActive
-                          ? "rgba(201, 168, 76, 0.03)"
-                          : "transparent",
-                        borderBottom: "0.7px solid rgba(201, 168, 76, 0.12)",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        color: isActive ? "#c9a84c" : "inherit",
-                      }}
-                    >
+              <div
+                style={{
+                  alignSelf: "stretch",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+              >
+                {faqData
+                  .filter((faq) => faq.category === activeCategory)
+                  .map((faq, index) => {
+                    const isActive = activeId === faq.id;
+                    return (
                       <div
+                        key={faq.id}
                         style={{
                           alignSelf: "stretch",
-                          height: "70px",
+                          backgroundColor: isActive
+                            ? "rgba(201, 168, 76, 0.03)"
+                            : "transparent",
+                          borderBottom: "0.7px solid rgba(201, 168, 76, 0.12)",
                           display: "flex",
+                          flexDirection: "column",
                           alignItems: "flex-start",
-                          justifyContent: "space-between",
-                          padding: "20px 24px",
-                          boxSizing: "border-box",
-                          gap: "20px",
-                          cursor: "pointer",
+                          color: isActive ? "#c9a84c" : "inherit",
                         }}
-                        onClick={() => toggleAccordion(faq.id)}
                       >
                         <div
                           style={{
-                            width: "718.7px",
+                            alignSelf: "stretch",
+                            height: "70px",
                             display: "flex",
                             alignItems: "flex-start",
-                            gap: "16px",
+                            justifyContent: "space-between",
+                            padding: "20px 24px",
+                            boxSizing: "border-box",
+                            gap: "20px",
+                            cursor: "pointer",
                           }}
+                          onClick={() => toggleAccordion(faq.id)}
                         >
                           <div
                             style={{
-                              height: "18px",
-                              width: "20px",
+                              width: "718.7px",
                               display: "flex",
-                              flexDirection: "column",
                               alignItems: "flex-start",
-                              padding: "2px 0px 0px",
-                              boxSizing: "border-box",
-                              minWidth: "20px",
+                              gap: "16px",
                             }}
                           >
                             <div
                               style={{
-                                position: "relative",
-                                lineHeight: "16px",
-                              }}
-                            >
-                              {String(index + 1).padStart(2, "0")}
-                            </div>
-                          </div>
-                          <div
-                            style={{
-                              display: "flex",
-                              flexDirection: "column",
-                              alignItems: "flex-start",
-                              fontSize: "18px",
-                              color: isActive
-                                ? "#f5edd6"
-                                : "rgba(245, 237, 214, 0.8)",
-                            }}
-                          >
-                            <div
-                              style={{
-                                position: "relative",
-                                lineHeight: "25.2px",
-                              }}
-                            >
-                              {faq.question}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            padding: "2px 0px 0px",
-                          }}
-                        >
-                          <div
-                            style={{
-                              height: "28px",
-                              width: "28px",
-                              backgroundColor: isActive
-                                ? "#c9a84c"
-                                : "transparent",
-                              border: `0.7px solid ${isActive ? "#c9a84c" : "rgba(201, 168, 76, 0.25)"}`,
-                              boxSizing: "border-box",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              color: isActive ? "#071d1b" : "#c9a84c",
-                            }}
-                          >
-                            {isActive ? <IconMinus /> : <IconPlus />}
-                          </div>
-                        </div>
-                      </div>
-
-                      <AnimatePresence>
-                        {isActive && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            style={{ overflow: "hidden", width: "100%" }}
-                          >
-                            <div
-                              style={{
-                                alignSelf: "stretch",
+                                height: "18px",
+                                width: "20px",
                                 display: "flex",
                                 flexDirection: "column",
                                 alignItems: "flex-start",
-                                padding: "0px 24px 20px 60px",
-                                fontSize: "12px",
-                                color: "rgba(201, 185, 154, 0.75)",
+                                padding: "2px 0px 0px",
+                                boxSizing: "border-box",
+                                minWidth: "20px",
                               }}
                             >
                               <div
                                 style={{
-                                  width: "32px",
-                                  height: "1px",
                                   position: "relative",
-                                  backgroundColor: "rgba(201, 168, 76, 0.3)",
+                                  lineHeight: "19px",
+                                  fontSize: "19px",
                                 }}
-                              />
+                              >
+                                {String(index + 1).padStart(2, "0")}
+                              </div>
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                fontSize: "21px",
+                                color: isActive
+                                  ? "#f5edd6"
+                                  : "rgba(245, 237, 214, 0.8)",
+                              }}
+                            >
                               <div
                                 style={{
-                                  width: "734.7px",
+                                  position: "relative",
+                                  lineHeight: "28px",
+                                }}
+                              >
+                                {faq.question}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "flex-start",
+                              padding: "2px 0px 0px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                height: "28px",
+                                width: "28px",
+                                backgroundColor: isActive
+                                  ? "#c9a84c"
+                                  : "transparent",
+                                border: `0.7px solid ${isActive ? "#c9a84c" : "rgba(201, 168, 76, 0.25)"}`,
+                                boxSizing: "border-box",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                color: isActive ? "#071d1b" : "#c9a84c",
+                              }}
+                            >
+                              {isActive ? <IconMinus /> : <IconPlus />}
+                            </div>
+                          </div>
+                        </div>
+
+                        <AnimatePresence>
+                          {isActive && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                              style={{ overflow: "hidden", width: "100%" }}
+                            >
+                              <div
+                                style={{
+                                  alignSelf: "stretch",
                                   display: "flex",
                                   flexDirection: "column",
                                   alignItems: "flex-start",
-                                  padding: "16px 0px 0px",
-                                  boxSizing: "border-box",
+                                  padding: "0px 24px 20px 60px",
+                                  fontSize: "14px",
+                                  color: "rgba(201, 185, 154, 0.75)",
                                 }}
                               >
                                 <div
                                   style={{
-                                    width: "735px",
+                                    width: "32px",
+                                    height: "1px",
                                     position: "relative",
-                                    lineHeight: "25.2px",
-                                    display: "inline-block",
+                                    backgroundColor: "rgba(201, 168, 76, 0.3)",
+                                  }}
+                                />
+                                <div
+                                  style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "flex-start",
+                                    padding: "16px 0px 0px",
+                                    boxSizing: "border-box",
                                   }}
                                 >
-                                  {faq.answer}
+                                  <div
+                                    style={{
+                                      width: "100%",
+                                      position: "relative",
+                                      lineHeight: "26px",
+                                      display: "inline-block",
+                                    }}
+                                  >
+                                    {faq.answer}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                })}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </motion.div>
     </div>
   );
