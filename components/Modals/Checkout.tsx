@@ -1,43 +1,12 @@
 import React, { useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-
-// --- Kumpulan Icon SVG ---
-const CloseIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 6 6 18" />
-    <path d="m6 6 12 12" />
-  </svg>
-);
-
-const ArrowLeftIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m15 18-6-6 6-6" />
-  </svg>
-);
+import { motion } from "framer-motion";
+import { X, ArrowLeft } from "lucide-react"; // Menggunakan module icon
 
 interface CheckoutModalProps {
   product: any;
   onClose: () => void;
-  onConfirm: () => void; // Tambahkan prop ini
+  onConfirm: (customerName: string) => void; // Menerima parameter nama customer
 }
 
 const CheckoutModal: React.FC<CheckoutModalProps> = ({
@@ -47,6 +16,9 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 }) => {
   // State untuk metode pembayaran terpilih
   const [paymentMethod, setPaymentMethod] = useState("bank_transfer");
+
+  // State untuk menangkap input nama lengkap dari user
+  const [customerName, setCustomerName] = useState("");
 
   if (!product) return null;
 
@@ -67,7 +39,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           onClick={onClose}
           className="flex items-center gap-2 hover:text-[#f8c56c] transition-colors"
         >
-          <ArrowLeftIcon />
+          <ArrowLeft size={16} />
           <span className="text-[12px] tracking-[2px]">KEMBALI</span>
         </button>
         <div className="text-[14px] tracking-[4px]">CHECKOUT</div>
@@ -75,7 +47,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
           onClick={onClose}
           className="w-7 h-7 flex items-center justify-center border border-[#c9b99a]/50 hover:bg-white/10 transition-colors"
         >
-          <CloseIcon />
+          <X size={14} />
         </button>
       </div>
 
@@ -93,12 +65,14 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
             className="flex gap-4 mb-8 relative"
           >
             <div className="w-[120px] h-[75px] relative rounded-sm overflow-hidden shrink-0">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                style={{ objectFit: "cover" }}
-              />
+              {product.image && (
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+              )}
               {/* Badge quantity */}
               <div
                 className="absolute top-0 left-0 w-5 h-5 flex items-center justify-center text-[#091812] text-[10px] font-bold"
@@ -165,6 +139,8 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </label>
               <input
                 type="text"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)} // Mengubah state berdasarkan input
                 placeholder="Masukkan nama lengkap"
                 className="bg-[#011e1b]/50 border border-[#c9a84c]/20 px-4 py-3 text-[12px] text-[#c9b99a] outline-none focus:border-[#c9a84c]/60 transition-colors"
               />
@@ -316,7 +292,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
           {/* TOMBOL KONFIRMASI */}
           <motion.button
-            onClick={onConfirm} // Hubungkan ke fungsi onConfirm
+            onClick={() => onConfirm(customerName)} // Mengirim data customerName saat diklik
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="w-full py-4 flex items-center justify-center text-[#091812] font-bold text-[10px] tracking-[3px] mb-4"

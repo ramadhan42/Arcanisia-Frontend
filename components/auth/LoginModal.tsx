@@ -1,6 +1,7 @@
 // ==========================================
 // 2. LoginModal.tsx
 // ==========================================
+import React, { useState } from "react";
 import type { NextPage } from "next";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -9,14 +10,27 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToRegister: () => void;
+  onLogin: (name: string) => void; // Prop baru untuk meneruskan nama user ke Navbar[cite: 14]
 }
 
 const LoginModal: NextPage<LoginModalProps> = ({
   isOpen,
   onClose,
   onSwitchToRegister,
+  onLogin,
 }) => {
+  // State untuk menangkap input nama/email
+  const [nameInput, setNameInput] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
+
   if (!isOpen) return null;
+
+  // Fungsi trigger login
+  const handleMasuk = () => {
+    // Jika input kosong, default ke "Umar"
+    const validName = nameInput.trim() ? nameInput.split("@")[0] : "Umar";
+    onLogin(validName);
+  };
 
   return (
     <motion.div
@@ -34,14 +48,14 @@ const LoginModal: NextPage<LoginModalProps> = ({
         justifyContent: "center",
         backdropFilter: "blur(4px)",
       }}
-      onClick={onClose} // Modal tertutup saat klik luar area
+      onClick={onClose} // Modal tertutup saat klik luar area[cite: 14]
     >
       <motion.div
         initial={{ scale: 0.95, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         exit={{ scale: 0.95, y: 20, opacity: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        onClick={(e) => e.stopPropagation()} // Mencegah modal tertutup saat klik dalam area
+        onClick={(e) => e.stopPropagation()} // Mencegah modal tertutup saat klik dalam area[cite: 14]
         style={{
           width: "100vw",
           height: "100vw",
@@ -60,7 +74,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
           boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
         }}
       >
-        {/* BAGIAN KIRI (IMAGE BACKGROUND) */}
+        {/* BAGIAN KIRI (IMAGE BACKGROUND)[cite: 14] */}
         <div
           style={{
             height: "100%",
@@ -182,7 +196,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
               </div>
             </div>
           </div>
-          {/* Benefit list */}
+          {/* Benefit list[cite: 14] */}
           <div
             style={{
               position: "absolute",
@@ -270,7 +284,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
           </div>
         </div>
 
-        {/* BAGIAN KANAN (FORM LOGIN) */}
+        {/* BAGIAN KANAN (FORM LOGIN)[cite: 14] */}
         <div
           style={{
             height: "100%",
@@ -289,7 +303,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
             color: "rgba(201, 185, 154, 0.5)",
           }}
         >
-          {/* TABS MASUK & DAFTAR */}
+          {/* TABS MASUK & DAFTAR[cite: 14] */}
           <div
             style={{
               width: "100%",
@@ -476,12 +490,14 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     lineHeight: "13.5px",
                   }}
                 >
-                  EMAIL
+                  NAMA / EMAIL
                 </label>
               </div>
               <input
-                type="email"
-                placeholder="nama@email.com"
+                type="text"
+                placeholder="Masukkan nama atau email"
+                value={nameInput} // Binding state nama
+                onChange={(e) => setNameInput(e.target.value)} // Mengubah state
                 style={{
                   width: "398.3px",
                   height: "43.3px",
@@ -535,6 +551,8 @@ const LoginModal: NextPage<LoginModalProps> = ({
                 <input
                   type="password"
                   placeholder="Masukkan password"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
                   style={{
                     width: "398.3px",
                     height: "43.3px",
@@ -617,6 +635,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
               }}
             >
               <button
+                onClick={handleMasuk} // Memanggil handleMasuk saat diklik
                 className="hover:opacity-90 transition-opacity"
                 style={{
                   width: "398.3px",

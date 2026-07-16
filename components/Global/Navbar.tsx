@@ -12,6 +12,7 @@ import {
   useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
+import { User, ChevronDown } from "lucide-react"; // Import icon User & ChevronDown dari lucide-react[cite: 13]
 import LoginModal from "../Auth/LoginModal";
 import RegisterModal from "../Auth/RegisterModal";
 
@@ -21,12 +22,16 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // State untuk mengontrol kemunculan Modal
+  // State untuk mengontrol kemunculan Modal[cite: 13]
   const [activeModal, setActiveModal] = useState<"login" | "register" | null>(
     null,
   );
 
-  // Fungsi untuk mengganti modal yang aktif
+  // State untuk status Login & Nama User
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  // Fungsi untuk mengganti modal yang aktif[cite: 13]
   const handleSwitchModal = (modalName: "login" | "register") => {
     setActiveModal(modalName);
   };
@@ -35,24 +40,56 @@ export default function Navbar() {
     setActiveModal(null);
   };
 
-  // Detect scroll direction
+  // Fungsi saat login berhasil
+  const handleLoginSuccess = (name: string) => {
+    setUserName(name);
+    setIsLoggedIn(true);
+    closeModal();
+  };
+
+  // Detect scroll direction[cite: 13]
   useMotionValueEvent(scrollY, "change", (latest) => {
     const prev = scrollY.getPrevious() || 0;
 
-    // Hide saat scroll ke bawah
     if (latest > prev && latest > 100) {
       setHidden(true);
     } else {
       setHidden(false);
     }
 
-    // Tambah background saat scroll
     if (latest > 50) {
       setScrolled(true);
     } else {
       setScrolled(false);
     }
   });
+
+  // Konstanta gradient emas untuk teks & background[cite: 13]
+  const goldGradient =
+    "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
+  const goldTextGradient = {
+    background: goldGradient,
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+  };
+
+  const handleScroll = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string,
+  ) => {
+    e.preventDefault();
+
+    if (window.location.pathname !== "/") {
+      window.location.href = `/#${targetId}`;
+      return;
+    }
+
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", `/#${targetId}`);
+    }
+  };
 
   return (
     <>
@@ -84,50 +121,38 @@ export default function Navbar() {
           />
         </motion.div>
 
-        {/* MENU */}
+        {/* MENU TENGAH */}
         <div className="hidden md:flex items-center gap-14">
-          {["ABOUT", "COLLECTION", "MISSION", "VALUES"].map((menu, index) => (
-            <motion.div
-              key={menu}
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{
-                delay: 0.2 + index * 0.1,
-                duration: 0.5,
-              }}
-              whileHover={{ y: -2 }}
-            >
-              <Link
-                href={`#${menu.toLowerCase()}`}
-                className="relative font-gilland font-light text-[14px] text-[#F5EDD6CC] tracking-[2px] group"
+          {["ABOUT", "COLLECTION", "MISSION", "VALUES"].map((menu, index) => {
+            const targetId = menu.toLowerCase();
+
+            return (
+              <motion.div
+                key={menu}
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{
+                  delay: 0.2 + index * 0.1,
+                  duration: 0.5,
+                }}
+                whileHover={{ y: -2 }}
               >
-                {menu}
-
-                {/* underline animation */}
-                <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-[#F8C56C] transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            </motion.div>
-          ))}
+                <a
+                  href={`/#${targetId}`}
+                  onClick={(e) => handleScroll(e, targetId)}
+                  className="relative font-gilland font-light text-[14px] text-[#F5EDD6CC] tracking-[2px] group cursor-pointer"
+                >
+                  {menu}
+                  <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-[#F8C56C] transition-all duration-300 group-hover:w-full"></span>
+                </a>
+              </motion.div>
+            );
+          })}
         </div>
-        {/* AUTH & BUTTON SHOP NOW */}
-        <div className="flex items-center gap-8">
-          <div className="hidden md:flex items-center gap-8">
-            <button
-              onClick={() => setActiveModal("login")}
-              className="relative font-gilland font-light text-[14px] text-[#F5EDD6CC] tracking-[2px] group"
-            >
-              MASUK
-              <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-[#F8C56C] transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button
-              onClick={() => setActiveModal("register")}
-              className="relative font-gilland font-light text-[14px] text-[#F5EDD6CC] tracking-[2px] group"
-            >
-              DAFTAR
-              <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-[#F8C56C] transition-all duration-300 group-hover:w-full"></span>
-            </button>
-          </div>
 
+        {/* SHOP NOW & MENU MASUK/USER (Kanan) */}
+        <div className="flex items-center gap-6">
+          {/* BUTTON SHOP NOW[cite: 13] */}
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -145,16 +170,64 @@ export default function Navbar() {
               </span>
             </button>
           </motion.div>
+
+          {/* LOGIC UNTUK MENU MASUK ATAU USER MENU */}
+          {isLoggedIn ? (
+            // Tampilan User Menu (Setelah Login)
+            <div className="flex items-center gap-4 border border-[#F8C56C] px-6 py-2.5 rounded-md hover:bg-[#F8C56C]/10 transition-all duration-300 cursor-pointer">
+              {/* Box Inisial */}
+              <div
+                className="h-[18px] w-[18px] flex items-center justify-center shrink-0"
+                style={{ background: goldGradient }}
+              >
+                <b className="font-montserrat text-[11px] text-[#091812] leading-none mb-[1px]">
+                  {userName.charAt(0).toUpperCase()}
+                </b>
+              </div>
+
+              {/* Teks Nama */}
+              <div className="flex items-center overflow-hidden max-w-[80px]">
+                <span
+                  className="font-graziemille text-[13px] tracking-[1.5px] truncate leading-none mt-[2px]"
+                  style={goldTextGradient}
+                >
+                  {userName.toLowerCase()}
+                </span>
+              </div>
+
+              {/* Icon Dropdown */}
+              <ChevronDown size={16} color="#F8C56C" className="shrink-0" />
+            </div>
+          ) : (
+            // Tampilan Menu Masuk (Sebelum Login)
+            <button
+              onClick={() => setActiveModal("login")}
+              className="flex items-center justify-center gap-2 px-4 py-2 hover:bg-white/5 transition-colors rounded-md group"
+            >
+              <User
+                size={16}
+                color="#fdde8a"
+                className="transition-transform group-hover:scale-110"
+              />
+              <span
+                className="font-graziemille text-[12px] tracking-[2px] leading-[15px] mt-[2px]"
+                style={goldTextGradient}
+              >
+                MASUK
+              </span>
+            </button>
+          )}
         </div>
       </motion.nav>
 
-      {/* Render komponen Modal dengan AnimatePresence agar smooth */}
+      {/* MODAL RENDER[cite: 13] */}
       <AnimatePresence>
         {activeModal === "login" && (
           <LoginModal
             isOpen={true}
             onClose={closeModal}
             onSwitchToRegister={() => handleSwitchModal("register")}
+            onLogin={handleLoginSuccess} // Melempar fungsi handleLoginSuccess ke modal
           />
         )}
       </AnimatePresence>

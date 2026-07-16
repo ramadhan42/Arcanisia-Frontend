@@ -17,13 +17,25 @@ export default function Home() {
 
       <Rekindling />
 
-      <About />
+      {/* Tambahkan id="about" agar terhubung dengan menu ABOUT */}
+      <section id="about">
+        <About />
+      </section>
 
-      <Collections />
+      {/* Tambahkan id="collection" agar terhubung dengan menu COLLECTION */}
+      <section id="collection">
+        <Collections />
+      </section>
 
-      <Missions />
+      {/* Tambahkan id="mission" agar terhubung dengan menu MISSION */}
+      <section id="mission">
+        <Missions />
+      </section>
 
-      <Honesty />
+      {/* Tambahkan id="values" agar terhubung dengan menu VALUES (menggunakan komponen Honesty) */}
+      <section id="values">
+        <Honesty />
+      </section>
 
       <MapSection />
 

@@ -2,9 +2,8 @@ import type { NextPage } from "next";
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CheckoutModal from "./Checkout";
-// import CheckoutModal from "./Checkout";
-// import CheckoutModal from "./CheckoutModal";
+import CheckoutModal from "./Checkout"; // Pastikan path import benar
+import ConfirmationModal from "./Confirmation"; // Pastikan import ConfirmationModal
 
 // Kumpulan Icon SVG bawaan
 const CloseIcon = () => (
@@ -89,12 +88,34 @@ interface ProductDetailProps {
 }
 
 const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
+  // --- STATE MANAJEMEN MODAL ---
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
+  const [customerName, setCustomerName] = useState("");
 
   if (!product) return null;
 
   const goldGradient =
     "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
+
+  // --- HANDLER KONFIRMASI CHECKOUT ---
+  const handleConfirmCheckout = (nameFromForm: string) => {
+    setCustomerName(nameFromForm); // Simpan nama dari form
+    setIsCheckoutOpen(false); // Tutup Checkout Modal
+    setIsConfirmationOpen(true); // Buka Confirmation Modal
+  };
+
+  // --- HANDLER KEMBALI KE BERANDA ---
+  const handleGoToBeranda = () => {
+    setIsConfirmationOpen(false); // Tutup modal confirmation
+
+    // Memanggil onClose bawaan ProductDetail untuk menutup semua modal
+    onClose();
+
+    // Catatan: Jika halaman beranda kamu ada di URL terpisah (bukan sekadar menutup modal),
+    // kamu bisa menggunakan Next.js router atau baris di bawah ini:
+    // window.location.href = "/";
+  };
 
   return (
     <>
@@ -115,7 +136,6 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
             sizes="(max-width: 768px) 100vw, 460px"
             priority
           />
-          {/* Label BESTSELLER */}
           <div
             className="absolute top-6 left-6 px-4 py-1.5 text-[#091812] font-montserrat font-bold text-[10px] tracking-[2px]"
             style={{ background: goldGradient }}
@@ -129,7 +149,6 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
           className="relative w-full md:w-[460px] flex flex-col p-8 md:p-[40px] shrink-0"
           style={{ backgroundColor: product.bgColor }}
         >
-          {/* Tombol Close */}
           <button
             onClick={onClose}
             className="absolute top-6 right-6 w-8 h-8 flex items-center justify-center border border-[#c9b99a]/30 text-[#c9b99a] hover:bg-white/10 transition-colors"
@@ -137,12 +156,10 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
             <CloseIcon />
           </button>
 
-          {/* Subtitle Lokasi */}
           <p className="text-[10px] tracking-[3px] text-[#c9b99a]/70 uppercase mb-2">
             {product.topTitle}
           </p>
 
-          {/* Judul Produk */}
           <h2
             className="text-[38px] font-gilland bg-clip-text text-transparent mb-3 leading-none"
             style={{ backgroundImage: goldGradient }}
@@ -150,18 +167,15 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
             {product.name}
           </h2>
 
-          {/* Ornamen Garis */}
           <div className="mb-5 flex items-center text-[#c9b99a]/50">
             <OrnamentIcon />
           </div>
 
-          {/* Deskripsi */}
           <p className="text-[13px] leading-relaxed text-[#c9b99a]/80 mb-7 pr-4">
             A mysterious voyage into the ancient heart of Buton, where sea-worn
             oud merges with the salty mist of the Java Sea.
           </p>
 
-          {/* Scent Notes */}
           <div className="mb-7">
             <p className="text-[10px] tracking-[2.5px] mb-3 text-[#c9b99a]/90">
               SCENT NOTES
@@ -180,7 +194,6 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
             </div>
           </div>
 
-          {/* Size & Quantity Container */}
           <div className="flex gap-10 mb-8">
             <div>
               <p className="text-[10px] tracking-[2.5px] mb-3 text-[#c9b99a]/90">
@@ -212,18 +225,13 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
             </div>
           </div>
 
-          {/* Harga */}
           <p className="text-[28px] font-gilland text-[#f8c56c] mb-6 mt-auto">
             {product.price}
           </p>
 
-          {/* Tombol Aksi */}
           <div className="flex gap-3 mb-6 font-montserrat text-[9px] tracking-[2px] font-bold">
             <button
-              onClick={() => {
-                setIsCheckoutOpen(true); // Buka Checkout
-                //
-              }}
+              onClick={() => setIsCheckoutOpen(true)}
               className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[#091812] hover:opacity-90 transition-opacity"
               style={{ background: goldGradient }}
             >
@@ -234,7 +242,6 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
             </button>
           </div>
 
-          {/* Benefit (Bottom row) */}
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[#c9a84c]/20 pt-5 text-[10px] text-[#c9b99a]/60 font-light">
             <span className="flex items-center gap-1.5">
               <DiamondIcon /> Gratis Ongkos Kirim
@@ -249,29 +256,60 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
         </div>
       </div>
 
-      {/* OVERLAY CHECKOUT MODAL */}
+      {/* OVERLAY UNTUK CHECKOUT & CONFIRMATION */}
       <AnimatePresence>
+        {/* CHECKOUT MODAL */}
         {isCheckoutOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            // Tambahkan onClose() pada overlay untuk menutup modal saat diklik di luarnya
+            onClick={() => setIsCheckoutOpen(false)}
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 cursor-pointer" // cursor-pointer menandakan bisa diklik
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 30 }}
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              onClick={(e) => e.stopPropagation()} // Hindari tertutup saat form di klik
-              className="relative shadow-2xl rounded-md"
+              // stopPropagation() mencegah klik di dalam form checkout ikut menutup modal
+              onClick={(e) => e.stopPropagation()}
+              className="relative shadow-2xl rounded-md cursor-default" // cursor-default kembalikan kursor normal
             >
               <CheckoutModal
                 product={product}
                 onClose={() => setIsCheckoutOpen(false)}
+                onConfirm={handleConfirmCheckout}
               />
             </motion.div>
+          </motion.div>
+        )}
+
+        {/* CONFIRMATION MODAL */}
+        {isConfirmationOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            // 1. Ubah onClick di sini agar klik di luar (overlay) kembali ke beranda
+            onClick={handleGoToBeranda}
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/80 backdrop-blur-sm cursor-pointer"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="w-full h-full flex items-center justify-center p-4 cursor-default"
+            >
+              <ConfirmationModal
+                product={product}
+                orderId="ARC-292322"
+                customerName={customerName}
+                // 2. Ubah onClose di sini agar klik tombol X dan "Kembali ke Beranda" kembali ke beranda
+                onClose={handleGoToBeranda}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
