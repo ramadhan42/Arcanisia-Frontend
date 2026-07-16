@@ -1,1074 +1,161 @@
-import type { NextPage } from "next";
+"use client";
+import React from "react";
 import Image from "next/image";
+import { X, Package, ChevronRight, ShoppingBag } from "lucide-react";
 
-const OrdersModal: NextPage = () => {
+// 1. Definisikan tipe untuk Order
+interface Order {
+  id: string;
+  name: string;
+  date: string;
+  price: string;
+  status: string;
+  statusColor: string;
+  image: string;
+  size: string;
+  qty: number;
+}
+
+// 2. Definisikan tipe untuk Props Modal
+interface OrdersModalProps {
+  onClose: () => void;
+  orders?: Order[]; // Optional, agar tidak error jika tidak ada data
+}
+
+// 3. Gunakan tipe tersebut pada komponen
+const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, orders = [] }) => {
+  // Data dummy diletakkan di dalam atau di luar komponen
+  const dummyOrders: Order[] = [
+    {
+      id: "ARC-847213",
+      name: "Emerald of Borneo",
+      date: "10 Jul 2026",
+      price: "Rp 950.000",
+      status: "SELESAI",
+      statusColor: "text-[#7dcfb6] bg-[#7dcfb6]/10",
+      image: "", // Placeholder akan aktif
+      size: "50ml",
+      qty: 1,
+    },
+    {
+      id: "ARC-612904",
+      name: "Whisper of Raja Ampat",
+      date: "3 Jul 2026",
+      price: "Rp 1.536.400",
+      status: "DALAM PENGIRIMAN",
+      statusColor: "text-[#4a9eda] bg-[#4a9eda]/10",
+      image: "",
+      size: "100ml",
+      qty: 1,
+    },
+    {
+      id: "ARC-501337",
+      name: "Glow of Borobudur",
+      date: "28 Jun 2026",
+      price: "Rp 1.207.200",
+      status: "SEDANG DIPROSES",
+      statusColor: "text-[#c9a84c] bg-[#c9a84c]/10",
+      image: "",
+      size: "30ml",
+      qty: 2,
+    },
+    // ... data lainnya
+  ];
   return (
-    <div
-      style={{
-        width: "100%",
-        position: "relative",
-        backgroundColor: "#0d1f16",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        maxWidth: "768px",
-        textAlign: "left",
-        fontSize: "9px",
-        color: "rgba(201, 168, 76, 0.5)",
-        fontFamily: "Montserrat",
-      }}
-    >
-      <div
-        style={{
-          alignSelf: "stretch",
-          borderBottom: "0.7px solid rgba(201, 168, 76, 0.15)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "20px 28px",
-          gap: "20px",
-        }}
-      >
-        <div
-          style={{
-            width: "122.9px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-          }}
-        >
-          <div
-            style={{
-              alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                letterSpacing: "4.5px",
-                lineHeight: "13.5px",
-              }}
-            >
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      {/* Container: 80% Desktop View */}
+      <div className="w-full max-w-[900px] h-[80vh] bg-[#0d1f16] flex flex-col text-[#c9b99a] shadow-2xl rounded-md overflow-hidden font-montserrat border border-[#c9a84c]/20">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-[#c9a84c]/15">
+          <div>
+            <p className="text-[9px] tracking-[4px] uppercase text-[#c9a84c]/50">
               AKUN SAYA
-            </div>
+            </p>
+            <h2 className="text-[24px] font-gilland text-[#f5edd6] mt-1">
+              Pesanan Saya
+            </h2>
           </div>
-          <div
-            style={{
-              width: "122.9px",
-              height: "38px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              padding: "2px 0px 0px",
-              boxSizing: "border-box",
-              fontSize: "24px",
-              color: "#f5edd6",
-              fontFamily: "'Cormorant Garamond'",
-            }}
+          <button
+            onClick={onClose}
+            className="p-2 border border-[#c9a84c]/25 hover:bg-white/5 transition-colors"
           >
-            <div style={{ position: "relative", lineHeight: "36px" }}>
-              <span
-                style={{ fontWeight: "300", lineHeight: "36px" }}
-              >{`Pesanan `}</span>
-              <i style={{ fontWeight: "300", lineHeight: "36px" }}>Saya</i>
-            </div>
-          </div>
+            <X size={16} />
+          </button>
         </div>
-        <div
-          style={{
-            height: "36px",
-            width: "36px",
-            border: "0.7px solid rgba(201, 168, 76, 0.25)",
-            boxSizing: "border-box",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Image
-            style={{ height: "15px", width: "100%", position: "relative" }}
-            width={15}
-            height={15}
-            sizes="100vw"
-            alt=""
-            src={""}
-          />
-        </div>
-      </div>
-      <div
-        style={{
-          alignSelf: "stretch",
-          height: "42.2px",
-          borderBottom: "0.7px solid rgba(201, 168, 76, 0.1)",
-          boxSizing: "border-box",
-          overflow: "hidden",
-          flexShrink: "0",
-          display: "flex",
-          alignItems: "flex-start",
-          padding: "0px 8px",
-          textAlign: "center",
-          color: "rgba(201, 185, 154, 0.4)",
-        }}
-      >
-        <div
-          style={{
-            alignSelf: "stretch",
-            width: "110.2px",
-            position: "relative",
-            color: "#c9a84c",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "14.33px",
-              left: "22px",
-              letterSpacing: "2.25px",
-              lineHeight: "13.5px",
-              fontWeight: "600",
-            }}
-          >
-            SEMUA
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: "14px",
-              left: "71.25px",
-              backgroundColor: "#c9a84c",
-              width: "18.9px",
-              height: "14px",
-              fontSize: "8px",
-              color: "#091812",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "1px",
-                left: "7px",
-                letterSpacing: "2.25px",
-                lineHeight: "12px",
-                fontWeight: "600",
-              }}
-            >
-              3
-            </div>
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: "40.5px",
-              left: "0px",
-              backgroundColor: "#c9a84c",
-              width: "110.2px",
-              height: "1px",
-            }}
-          />
-        </div>
-        <div
-          style={{
-            alignSelf: "stretch",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "14px 20px",
-          }}
-        >
-          <div
-            style={{
-              position: "relative",
-              letterSpacing: "2.25px",
-              lineHeight: "13.5px",
-              fontWeight: "600",
-            }}
-          >
-            MENUNGGU
-          </div>
-        </div>
-        <div
-          style={{
-            alignSelf: "stretch",
-            width: "129.6px",
-            position: "relative",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "14.33px",
-              left: "21px",
-              letterSpacing: "2.25px",
-              lineHeight: "13.5px",
-              fontWeight: "600",
-            }}
-          >
-            DIPROSES
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: "14px",
-              left: "92.26px",
-              backgroundColor: "rgba(201, 168, 76, 0.2)",
-              width: "17.3px",
-              height: "14px",
-              fontSize: "8px",
-              color: "rgba(201, 168, 76, 0.6)",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "1px",
-                left: "7px",
-                letterSpacing: "2.25px",
-                lineHeight: "12px",
-                fontWeight: "600",
-              }}
-            >
-              1
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            alignSelf: "stretch",
-            width: "116.8px",
-            position: "relative",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "14.33px",
-              left: "21px",
-              letterSpacing: "2.25px",
-              lineHeight: "13.5px",
-              fontWeight: "600",
-            }}
-          >
-            DIKIRIM
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: "14px",
-              left: "79.54px",
-              backgroundColor: "rgba(201, 168, 76, 0.2)",
-              width: "17.3px",
-              height: "14px",
-              fontSize: "8px",
-              color: "rgba(201, 168, 76, 0.6)",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "1px",
-                left: "7px",
-                letterSpacing: "2.25px",
-                lineHeight: "12px",
-                fontWeight: "600",
-              }}
-            >
-              1
-            </div>
-          </div>
-        </div>
-        <div
-          style={{
-            alignSelf: "stretch",
-            width: "117.4px",
-            position: "relative",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: "14.33px",
-              left: "21px",
-              letterSpacing: "2.25px",
-              lineHeight: "13.5px",
-              fontWeight: "600",
-            }}
-          >
-            SELESAI
-          </div>
-          <div
-            style={{
-              position: "absolute",
-              top: "14px",
-              left: "80.14px",
-              backgroundColor: "rgba(201, 168, 76, 0.2)",
-              width: "17.3px",
-              height: "14px",
-              fontSize: "8px",
-              color: "rgba(201, 168, 76, 0.6)",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "1px",
-                left: "7px",
-                letterSpacing: "2.25px",
-                lineHeight: "12px",
-                fontWeight: "600",
-              }}
-            >
-              1
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        style={{
-          alignSelf: "stretch",
-          flex: "1",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          padding: "20px",
-          color: "#c9a84c",
-        }}
-      >
-        <div
-          style={{
-            alignSelf: "stretch",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-          }}
-        >
-          <div
-            style={{
-              alignSelf: "stretch",
-              height: "149.4px",
-              border: "0.7px solid rgba(201, 168, 76, 0.15)",
-              boxSizing: "border-box",
-              overflow: "hidden",
-              flexShrink: "0",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                padding: "20px",
-                gap: "16px",
-              }}
-            >
-              <Image
-                style={{ height: "80px", width: "64px", objectFit: "cover" }}
-                width={64}
-                height={80}
-                sizes="100vw"
-                alt=""
-                src={""}
-              />
+
+        {/* List Pesanan Dinamis */}
+        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-6 space-y-4">
+          {dummyOrders.length > 0 ? (
+            dummyOrders.map((order) => (
               <div
-                style={{
-                  flex: "1",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
+                key={order.id}
+                className="border border-[#c9a84c]/15 p-4 flex gap-4 hover:border-[#c9a84c]/30 transition-all"
               >
-                <div
-                  style={{
-                    alignSelf: "stretch",
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    gap: "20px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <div
-                      style={{
-                        position: "relative",
-                        letterSpacing: "2.7px",
-                        lineHeight: "13.5px",
-                      }}
-                    >
-                      ARC-847213
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      backgroundColor: "rgba(201, 168, 76, 0.1)",
-                      display: "flex",
-                      alignItems: "center",
-                      padding: "4px 10px",
-                      gap: "6px",
-                    }}
-                  >
+                {/* Gambar Produk atau Icon */}
+                <div className="w-[64px] h-[80px] bg-black/20 flex items-center justify-center shrink-0 border border-[#c9a84c]/10">
+                  {order.image ? (
                     <Image
-                      style={{
-                        height: "10px",
-                        width: "10px",
-                        position: "relative",
-                      }}
-                      width={10}
-                      height={10}
-                      sizes="100vw"
-                      alt=""
-                      src={""}
+                      src={order.image}
+                      alt={order.name}
+                      width={64}
+                      height={80}
+                      className="object-cover"
                     />
-                    <div
-                      style={{
-                        position: "relative",
-                        letterSpacing: "1.35px",
-                        lineHeight: "13.5px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      SELESAI
-                    </div>
-                  </div>
+                  ) : (
+                    <Package size={24} className="text-[#c9a84c]/30" />
+                  )}
                 </div>
-                <div
-                  style={{
-                    width: "606.7px",
-                    height: "28px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    padding: "6px 0px 0px",
-                    boxSizing: "border-box",
-                    fontSize: "18px",
-                    color: "#f5edd6",
-                    fontFamily: "'Cormorant Garamond'",
-                  }}
-                >
-                  <div style={{ position: "relative", lineHeight: "21.6px" }}>
-                    Emerald of Borneo
-                  </div>
-                </div>
-                <div
-                  style={{
-                    width: "606.7px",
-                    height: "17px",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    padding: "2px 0px 0px",
-                    boxSizing: "border-box",
-                    fontSize: "10px",
-                    color: "rgba(201, 185, 154, 0.5)",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      lineHeight: "15px",
-                      fontWeight: "300",
-                    }}
-                  >
-                    50ml · Qty 1 · 10 Jul 2026
-                  </div>
-                </div>
-                <div
-                  style={{
-                    width: "606.7px",
-                    height: "42px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "12px 0px 0px",
-                    boxSizing: "border-box",
-                    gap: "20px",
-                    fontSize: "20px",
-                    fontFamily: "'Cormorant Garamond'",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <div style={{ position: "relative", lineHeight: "30px" }}>
-                      Rp 950.000
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      fontSize: "9px",
-                      color: "rgba(201, 185, 154, 0.4)",
-                      fontFamily: "Montserrat",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                      }}
+
+                {/* Informasi Order */}
+                <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <span className="text-[9px] tracking-[2px] text-[#c9b99a]/60">
+                      {order.id}
+                    </span>
+                    <span
+                      className={`px-2 py-1 text-[8px] font-bold tracking-[1px] uppercase ${order.statusColor}`}
                     >
-                      <div
-                        style={{
-                          position: "relative",
-                          letterSpacing: "1.8px",
-                          lineHeight: "13.5px",
-                        }}
-                      >
-                        DETAIL
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <Image
-                        style={{
-                          width: "100%",
-                          height: "13px",
-                          position: "relative",
-                        }}
-                        width={13}
-                        height={13}
-                        sizes="100vw"
-                        alt=""
-                        src={""}
-                      />
-                    </div>
+                      {order.status}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h4 className="font-gilland text-[18px] text-[#f5edd6]">
+                      {order.name}
+                    </h4>
+                    <p className="text-[10px] text-[#c9b99a]/50 mt-0.5">
+                      {order.size} · Qty {order.qty} · {order.date}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-[16px] font-gilland text-[#c9a84c]">
+                      {order.price}
+                    </span>
+                    <button className="flex items-center gap-1 text-[9px] tracking-[1px] text-[#c9b99a]/40 hover:text-[#c9a84c] transition-colors">
+                      DETAIL <ChevronRight size={12} />
+                    </button>
                   </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-[#c9a84c]/30">
+              <ShoppingBag size={48} className="mb-4" />
+              <p className="font-gilland text-[18px]">Belum ada pesanan.</p>
             </div>
-          </div>
-          <div
-            style={{
-              alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              padding: "12px 0px 0px",
-            }}
-          >
-            <div
-              style={{
-                alignSelf: "stretch",
-                height: "149.4px",
-                border: "0.7px solid rgba(201, 168, 76, 0.15)",
-                boxSizing: "border-box",
-                overflow: "hidden",
-                flexShrink: "0",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  padding: "20px",
-                  gap: "16px",
-                }}
-              >
-                <Image
-                  style={{ height: "80px", width: "64px", objectFit: "cover" }}
-                  width={64}
-                  height={80}
-                  sizes="100vw"
-                  alt=""
-                  src={""}
-                />
-                <div
-                  style={{
-                    flex: "1",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <div
-                    style={{
-                      alignSelf: "stretch",
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      gap: "20px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div
-                        style={{
-                          position: "relative",
-                          letterSpacing: "2.7px",
-                          lineHeight: "13.5px",
-                        }}
-                      >
-                        ARC-612904
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        backgroundColor: "rgba(125, 207, 182, 0.1)",
-                        display: "flex",
-                        alignItems: "center",
-                        padding: "4px 10px",
-                        gap: "6px",
-                        color: "#7dcfb6",
-                      }}
-                    >
-                      <Image
-                        style={{
-                          height: "10px",
-                          width: "10px",
-                          position: "relative",
-                        }}
-                        width={10}
-                        height={10}
-                        sizes="100vw"
-                        alt=""
-                        src={""}
-                      />
-                      <div
-                        style={{
-                          position: "relative",
-                          letterSpacing: "1.35px",
-                          lineHeight: "13.5px",
-                          fontWeight: "600",
-                        }}
-                      >
-                        DALAM PENGIRIMAN
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      width: "606.7px",
-                      height: "28px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      padding: "6px 0px 0px",
-                      boxSizing: "border-box",
-                      fontSize: "18px",
-                      color: "#f5edd6",
-                      fontFamily: "'Cormorant Garamond'",
-                    }}
-                  >
-                    <div style={{ position: "relative", lineHeight: "21.6px" }}>
-                      Whisper of Raja Ampat
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      width: "606.7px",
-                      height: "17px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      padding: "2px 0px 0px",
-                      boxSizing: "border-box",
-                      fontSize: "10px",
-                      color: "rgba(201, 185, 154, 0.5)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        position: "relative",
-                        lineHeight: "15px",
-                        fontWeight: "300",
-                      }}
-                    >
-                      100ml · Qty 1 · 3 Jul 2026
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      width: "606.7px",
-                      height: "42px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "12px 0px 0px",
-                      boxSizing: "border-box",
-                      gap: "20px",
-                      fontSize: "20px",
-                      fontFamily: "'Cormorant Garamond'",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div style={{ position: "relative", lineHeight: "30px" }}>
-                        Rp 1.536.400
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        fontSize: "9px",
-                        color: "rgba(201, 185, 154, 0.4)",
-                        fontFamily: "Montserrat",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: "relative",
-                            letterSpacing: "1.8px",
-                            lineHeight: "13.5px",
-                          }}
-                        >
-                          DETAIL
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <Image
-                          style={{
-                            width: "100%",
-                            height: "13px",
-                            position: "relative",
-                          }}
-                          width={13}
-                          height={13}
-                          sizes="100vw"
-                          alt=""
-                          src={""}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              padding: "12px 0px 0px",
-            }}
-          >
-            <div
-              style={{
-                alignSelf: "stretch",
-                height: "149.4px",
-                border: "0.7px solid rgba(201, 168, 76, 0.15)",
-                boxSizing: "border-box",
-                overflow: "hidden",
-                flexShrink: "0",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  padding: "20px",
-                  gap: "16px",
-                }}
-              >
-                <Image
-                  style={{ height: "80px", width: "64px", objectFit: "cover" }}
-                  width={64}
-                  height={80}
-                  sizes="100vw"
-                  alt=""
-                  src={""}
-                />
-                <div
-                  style={{
-                    flex: "1",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <div
-                    style={{
-                      alignSelf: "stretch",
-                      display: "flex",
-                      alignItems: "flex-start",
-                      justifyContent: "space-between",
-                      gap: "20px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div
-                        style={{
-                          position: "relative",
-                          letterSpacing: "2.7px",
-                          lineHeight: "13.5px",
-                        }}
-                      >
-                        ARC-501337
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        backgroundColor: "rgba(74, 158, 218, 0.1)",
-                        display: "flex",
-                        alignItems: "center",
-                        padding: "4px 10px",
-                        gap: "6px",
-                        color: "#4a9eda",
-                      }}
-                    >
-                      <Image
-                        style={{
-                          height: "10px",
-                          width: "10px",
-                          position: "relative",
-                        }}
-                        width={10}
-                        height={10}
-                        sizes="100vw"
-                        alt=""
-                        src={""}
-                      />
-                      <div
-                        style={{
-                          position: "relative",
-                          letterSpacing: "1.35px",
-                          lineHeight: "13.5px",
-                          fontWeight: "600",
-                        }}
-                      >
-                        SEDANG DIPROSES
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      width: "606.7px",
-                      height: "28px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      padding: "6px 0px 0px",
-                      boxSizing: "border-box",
-                      fontSize: "18px",
-                      color: "#f5edd6",
-                      fontFamily: "'Cormorant Garamond'",
-                    }}
-                  >
-                    <div style={{ position: "relative", lineHeight: "21.6px" }}>
-                      Glow of Borobudur
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      width: "606.7px",
-                      height: "17px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      padding: "2px 0px 0px",
-                      boxSizing: "border-box",
-                      fontSize: "10px",
-                      color: "rgba(201, 185, 154, 0.5)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        position: "relative",
-                        lineHeight: "15px",
-                        fontWeight: "300",
-                      }}
-                    >
-                      30ml · Qty 2 · 28 Jun 2026
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      width: "606.7px",
-                      height: "42px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "12px 0px 0px",
-                      boxSizing: "border-box",
-                      gap: "20px",
-                      fontSize: "20px",
-                      fontFamily: "'Cormorant Garamond'",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div style={{ position: "relative", lineHeight: "30px" }}>
-                        Rp 1.207.200
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        fontSize: "9px",
-                        color: "rgba(201, 185, 154, 0.4)",
-                        fontFamily: "Montserrat",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <div
-                          style={{
-                            position: "relative",
-                            letterSpacing: "1.8px",
-                            lineHeight: "13.5px",
-                          }}
-                        >
-                          DETAIL
-                        </div>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <Image
-                          style={{
-                            width: "100%",
-                            height: "13px",
-                            position: "relative",
-                          }}
-                          width={13}
-                          height={13}
-                          sizes="100vw"
-                          alt=""
-                          src={""}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
-      </div>
-      <div
-        style={{
-          alignSelf: "stretch",
-          borderTop: "0.7px solid rgba(201, 168, 76, 0.1)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "16px 28px",
-          gap: "20px",
-          fontSize: "10px",
-          color: "rgba(201, 185, 154, 0.3)",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-          }}
-        >
-          <div
-            style={{
-              position: "relative",
-              lineHeight: "15px",
-              fontWeight: "300",
-            }}
+
+        {/* Footer Modal */}
+        <div className="p-4 border-t border-[#c9a84c]/10 flex justify-between items-center text-[10px] text-[#c9b99a]/40">
+          <span>{dummyOrders.length} pesanan total</span>
+          <button
+            onClick={onClose}
+            className="flex items-center gap-2 hover:text-[#c9a84c] transition-colors uppercase tracking-[1px]"
           >
-            3 pesanan total
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            textAlign: "center",
-            color: "rgba(201, 168, 76, 0.6)",
-          }}
-        >
-          <Image
-            style={{ height: "12px", width: "12px", position: "relative" }}
-            width={12}
-            height={12}
-            sizes="100vw"
-            alt=""
-            src={""}
-          />
-          <div
-            style={{
-              position: "relative",
-              letterSpacing: "2px",
-              lineHeight: "15px",
-              fontWeight: "500",
-            }}
-          >
-            LANJUT BELANJA
-          </div>
+            Lanjut Belanja <ChevronRight size={12} />
+          </button>
         </div>
       </div>
     </div>

@@ -124,7 +124,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
         </div>
 
         {/* KOLOM KANAN: Form Checkout */}
-        <div className="flex-1 p-8 overflow-y-auto bg-black/10 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex-1 p-8 bg-black/10 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {/* INFORMASI KONTAK */}
           <h3 className="text-[12px] tracking-[3px] mb-5">INFORMASI KONTAK</h3>
           <motion.div

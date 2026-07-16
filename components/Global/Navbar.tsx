@@ -15,6 +15,7 @@ import {
 import { User, ChevronDown } from "lucide-react"; // Import icon User & ChevronDown dari lucide-react[cite: 13]
 import LoginModal from "../Auth/LoginModal";
 import RegisterModal from "../Auth/RegisterModal";
+import OrdersModal from "../Modals/Orders";
 
 export default function Navbar() {
   const { scrollY } = useScroll();
@@ -30,6 +31,16 @@ export default function Navbar() {
   // State untuk status Login & Nama User
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State baru untuk dropdown
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+
+  // Fungsi Logout
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserName("");
+    setIsDropdownOpen(false);
+  };
 
   // Fungsi untuk mengganti modal yang aktif[cite: 13]
   const handleSwitchModal = (modalName: "login" | "register") => {
@@ -93,6 +104,10 @@ export default function Navbar() {
 
   return (
     <>
+      {/* // Tambahkan di dalam return: */}
+      <AnimatePresence>
+        {isOrdersOpen && <OrdersModal onClose={() => setIsOrdersOpen(false)} />}
+      </AnimatePresence>
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
         animate={{
@@ -173,30 +188,60 @@ export default function Navbar() {
 
           {/* LOGIC UNTUK MENU MASUK ATAU USER MENU */}
           {isLoggedIn ? (
-            // Tampilan User Menu (Setelah Login)
-            <div className="flex items-center gap-4 border border-[#F8C56C] px-6 py-2.5 rounded-md hover:bg-[#F8C56C]/10 transition-all duration-300 cursor-pointer">
-              {/* Box Inisial */}
+            <div className="relative">
+              {" "}
+              {/* Bungkus dengan relative */}
+              {/* Trigger Dropdown */}
               <div
-                className="h-[18px] w-[18px] flex items-center justify-center shrink-0"
-                style={{ background: goldGradient }}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-4 border border-[#F8C56C] px-6 py-2.5 rounded-md hover:bg-[#F8C56C]/10 transition-all duration-300 cursor-pointer"
               >
-                <b className="font-montserrat text-[11px] text-[#091812] leading-none mb-[1px]">
-                  {userName.charAt(0).toUpperCase()}
-                </b>
-              </div>
-
-              {/* Teks Nama */}
-              <div className="flex items-center overflow-hidden max-w-[80px]">
-                <span
-                  className="font-graziemille text-[13px] tracking-[1.5px] truncate leading-none mt-[2px]"
-                  style={goldTextGradient}
+                <div
+                  className="h-[18px] w-[18px] flex items-center justify-center shrink-0"
+                  style={{ background: goldGradient }}
                 >
-                  {userName.toLowerCase()}
-                </span>
+                  <b className="font-montserrat text-[11px] text-[#091812] leading-none mb-[1px]">
+                    {userName.charAt(0).toUpperCase()}
+                  </b>
+                </div>
+                <div className="flex items-center overflow-hidden max-w-[80px]">
+                  <span
+                    className="font-graziemille text-[13px] tracking-[1.5px] truncate leading-none mt-[2px]"
+                    style={goldTextGradient}
+                  >
+                    {userName.toLowerCase()}
+                  </span>
+                </div>
+                <ChevronDown
+                  size={16}
+                  color="#F8C56C"
+                  className={`shrink-0 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                />
               </div>
-
-              {/* Icon Dropdown */}
-              <ChevronDown size={16} color="#F8C56C" className="shrink-0" />
+              {/* DROPDOWN MENU */}
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute top-full right-0 mt-2 w-40 bg-[#012421] border border-[#F8C56C]/30 rounded-md py-2 shadow-2xl z-50"
+                >
+                  <button
+                    onClick={() => {
+                      setIsOrdersOpen(true);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-[12px] text-[#c9b99a] hover:bg-[#F8C56C]/10 hover:text-[#F8C56C] transition-colors font-graziemille tracking-[1px]"
+                  >
+                    AKUN SAYA
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-[12px] text-[#c9b99a] hover:bg-[#F8C56C]/10 hover:text-[#F8C56C] transition-colors font-graziemille tracking-[1px]"
+                  >
+                    LOGOUT
+                  </button>
+                </motion.div>
+              )}
             </div>
           ) : (
             // Tampilan Menu Masuk (Sebelum Login)
@@ -219,7 +264,6 @@ export default function Navbar() {
           )}
         </div>
       </motion.nav>
-
       {/* MODAL RENDER[cite: 13] */}
       <AnimatePresence>
         {activeModal === "login" && (
