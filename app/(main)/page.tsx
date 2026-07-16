@@ -1,37 +1,35 @@
 "use client";
 
 import HeroSection from "@/components/Beranda/HeroSection";
-import SecondSection from "@/components/Beranda/SecondSection";
-import AboutContentmargin from "@/components/Beranda/ThirdSection";
-import FourthSection from "@/components/Beranda/FourthSection";
-import FifthSection from "@/components/Beranda/FifthSection";
-import SixthSection from "@/components/Beranda/SixthSection";
-import SeventhSection from "@/components/Beranda/SeventhSection";
-import EightSection from "@/components/Beranda/EightSection";
+import Rekindling from "@/components/Beranda/Rekindling";
+import About from "@/components/Beranda/About";
+import Collections from "@/components/Beranda/Collections";
+import Missions from "@/components/Beranda/Missions";
+import Honesty from "@/components/Beranda/Honesty";
+import Subscribe from "@/components/Beranda/Subscribe";
 import FAQPage from "@/components/Beranda/FaqPage";
+import MapSection from "@/components/Beranda/Islands";
 
 export default function Home() {
   return (
     <div>
       <HeroSection />
 
-      <SecondSection />
+      <Rekindling />
 
-      <AboutContentmargin />
+      <About />
 
-      <FourthSection />
+      <Collections />
 
-      <FifthSection />
+      <Missions />
 
-      <SixthSection />
+      <Honesty />
 
-      <SeventhSection />
+      <MapSection />
 
       <FAQPage />
 
-      <EightSection />
-
-      {/* <MapIndonesiaPage /> */}
+      <Subscribe />
     </div>
   );
 }

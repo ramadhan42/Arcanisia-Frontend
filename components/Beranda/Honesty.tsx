@@ -40,7 +40,7 @@ const essenceData = [
   },
 ];
 
-const SixthSection = () => {
+const Honesty = () => {
   return (
     // Wrapper luar untuk men-center-kan seluruh body section
     <section
@@ -423,4 +423,4 @@ const SixthSection = () => {
   );
 };
 
-export default SixthSection;
+export default Honesty;

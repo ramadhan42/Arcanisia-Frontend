@@ -26,7 +26,7 @@ const contactData = [
   },
 ];
 
-const EightSection: NextPage = () => {
+const Subscribe: NextPage = () => {
   return (
     <div
       style={{
@@ -446,4 +446,4 @@ const EightSection: NextPage = () => {
   );
 };
 
-export default EightSection;
+export default Subscribe;

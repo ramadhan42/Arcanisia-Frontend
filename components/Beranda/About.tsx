@@ -4,7 +4,7 @@ import type { NextPage } from "next";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-const AboutContentmargin: NextPage = () => {
+const About: NextPage = () => {
   return (
     <div
       style={{
@@ -346,7 +346,7 @@ const AboutContentmargin: NextPage = () => {
                 </div>
               </div>
             </div>
-            
+
             <div
               style={{
                 flex: "1",
@@ -416,7 +416,7 @@ const AboutContentmargin: NextPage = () => {
                 }}
               />
             </div>
-            
+
             <div
               style={{
                 display: "flex",
@@ -491,4 +491,4 @@ const AboutContentmargin: NextPage = () => {
     </div>
   );
 };
-export default AboutContentmargin;
+export default About;

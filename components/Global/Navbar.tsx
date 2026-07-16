@@ -1,12 +1,19 @@
-"use client";
+// ==========================================
+// 1. Navbar.tsx
+// ==========================================
 "use client";
 
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useMotionValueEvent } from "framer-motion";
-import LoginModal from "../auth/LoginModal";
-import RegisterModal from "../auth/RegisterModal";
+import {
+  motion,
+  useScroll,
+  useMotionValueEvent,
+  AnimatePresence,
+} from "framer-motion";
+import LoginModal from "../Auth/LoginModal";
+import RegisterModal from "../Auth/RegisterModal";
 
 export default function Navbar() {
   const { scrollY } = useScroll();
@@ -15,10 +22,20 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   // State untuk mengontrol kemunculan Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState<"login" | "register" | null>(
+    null,
+  );
 
-  // 🎯 Detect scroll direction
+  // Fungsi untuk mengganti modal yang aktif
+  const handleSwitchModal = (modalName: "login" | "register") => {
+    setActiveModal(modalName);
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+  };
+
+  // Detect scroll direction
   useMotionValueEvent(scrollY, "change", (latest) => {
     const prev = scrollY.getPrevious() || 0;
 
@@ -52,7 +69,7 @@ export default function Navbar() {
             : "bg-transparent"
         }`}
       >
-        {/* 🔥 LOGO */}
+        {/* LOGO */}
         <motion.div
           whileHover={{ scale: 1.05 }}
           className="flex-shrink-0 cursor-pointer"
@@ -67,7 +84,7 @@ export default function Navbar() {
           />
         </motion.div>
 
-        {/* 🔥 MENU */}
+        {/* MENU */}
         <div className="hidden md:flex items-center gap-14">
           {["ABOUT", "COLLECTION", "MISSION", "VALUES"].map((menu, index) => (
             <motion.div
@@ -92,18 +109,18 @@ export default function Navbar() {
             </motion.div>
           ))}
         </div>
-        {/* 🔥 AUTH & BUTTON SHOP NOW */}
+        {/* AUTH & BUTTON SHOP NOW */}
         <div className="flex items-center gap-8">
           <div className="hidden md:flex items-center gap-8">
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setActiveModal("login")}
               className="relative font-gilland font-light text-[14px] text-[#F5EDD6CC] tracking-[2px] group"
             >
               MASUK
               <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-[#F8C56C] transition-all duration-300 group-hover:w-full"></span>
             </button>
             <button
-              onClick={() => setIsRegisterModalOpen(true)}
+              onClick={() => setActiveModal("register")}
               className="relative font-gilland font-light text-[14px] text-[#F5EDD6CC] tracking-[2px] group"
             >
               DAFTAR
@@ -116,9 +133,7 @@ export default function Navbar() {
             whileTap={{ scale: 0.95 }}
             className="flex-shrink-0"
           >
-            <button
-              className="flex items-center gap-4 border border-[#F8C56C] px-6 py-2.5 rounded-md hover:bg-[#F8C56C]/10 transition-all duration-300"
-            >
+            <button className="flex items-center gap-4 border border-[#F8C56C] px-6 py-2.5 rounded-md hover:bg-[#F8C56C]/10 transition-all duration-300">
               <Image
                 src="/gambar/navbar/Icon.svg"
                 alt="Shop Icon"
@@ -133,9 +148,25 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Render komponen Modal di luar <nav> agar z-index modal bekerja sempurna */}
-      <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      <RegisterModal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} />
+      {/* Render komponen Modal dengan AnimatePresence agar smooth */}
+      <AnimatePresence>
+        {activeModal === "login" && (
+          <LoginModal
+            isOpen={true}
+            onClose={closeModal}
+            onSwitchToRegister={() => handleSwitchModal("register")}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {activeModal === "register" && (
+          <RegisterModal
+            isOpen={true}
+            onClose={closeModal}
+            onSwitchToLogin={() => handleSwitchModal("login")}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

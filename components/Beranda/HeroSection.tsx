@@ -17,7 +17,7 @@ export default function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* 1. Background kedua (Gambar Produk) - Muncul dari bawah */}
+      {/* 1. Background kedua (Gambar Produk) - Tetap muncul dari bawah agar dinamis */}
       <motion.div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         initial={{ opacity: 0, y: 80 }}
@@ -46,10 +46,9 @@ export default function HeroSection() {
 
       {/* Konten Utama (Logo, Teks, Button) */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-md mx-auto mt-12">
-
-        {/* 2. Logo - Muncul di tengah (Fade in + sedikit efek membesar) */}
+        {/* 2. Logo - Muncul membesar dari tengah (Center Pop-up) */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.5 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
@@ -63,10 +62,10 @@ export default function HeroSection() {
           />
         </motion.div>
 
-        {/* 3. Heading Teks - Muncul dari atas ke bawah, kiri ke kanan */}
+        {/* 3. Heading Teks - Muncul membesar perlahan dari tengah (Tanpa X/Y) */}
         <motion.h1
-          initial={{ opacity: 0, y: -30, x: -30 }}
-          whileInView={{ opacity: 1, y: 0, x: 0 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
           style={{
@@ -85,10 +84,10 @@ export default function HeroSection() {
           Where Every Island Tells Its fragrance
         </motion.h1>
 
-        {/* Lanjutan Teks - Mengikuti arah yang sama */}
+        {/* Lanjutan Teks - Mengikuti animasi membesar dari tengah */}
         <motion.p
-          initial={{ opacity: 0, y: -20, x: -20 }}
-          whileInView={{ opacity: 1, y: 0, x: 0 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
           style={{
@@ -104,13 +103,13 @@ export default function HeroSection() {
           landscapes.
         </motion.p>
 
-        {/* 4. Tombol Gold - Fade In */}
+        {/* 4. Tombol Gold - Fade In & Membesar dari tengah */}
         <motion.div
           className="w-max cursor-pointer hover:opacity-90 transition-opacity"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
-          transition={{ duration: 1, delay: 1.1, ease: "easeInOut" }}
+          transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
         >
           <div
             style={{

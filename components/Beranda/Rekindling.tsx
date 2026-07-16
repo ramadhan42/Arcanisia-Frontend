@@ -4,11 +4,10 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-export default function SecondSection() {
+export default function Rekindling() {
   return (
     // Container utama (Diberi warna dasar gelap agar tidak blank saat background slide up)
     <section className="relative w-full py-24 px-6 md:px-35 flex items-center overflow-hidden bg-[#012320]">
-      
       {/* 1. Background (Gambar Produk + Gradient) - Muncul dari bawah seperti di HeroSection */}
       <motion.div
         className="absolute inset-0 pointer-events-none"
@@ -34,7 +33,6 @@ export default function SecondSection() {
 
       {/* Konten Teks (Berada di atas background) */}
       <div className="relative z-10 w-full md:w-1/2 flex flex-col gap-6">
-        
         {/* 2. Heading Teks - Muncul dari atas ke bawah, kiri ke kanan */}
         <motion.h2
           initial={{ opacity: 0, y: -30, x: -30 }}

@@ -38,7 +38,7 @@ const missionData = [
   },
 ];
 
-const FifthSection = () => {
+const Missions = () => {
   return (
     // Section Utama
     <section
@@ -47,7 +47,7 @@ const FifthSection = () => {
         display: "flex",
         flexDirection: "column",
         backgroundColor: "#134b46",
-        background: "linear-gradient(180deg, rgba(0, 34, 31, 1), #012421)", 
+        background: "linear-gradient(180deg, rgba(0, 34, 31, 1), #012421)",
       }}
     >
       {/* --- BAGIAN ATAS --- */}
@@ -175,7 +175,7 @@ const FifthSection = () => {
           color: "#f5edd6",
           fontFamily: "Gilland",
           margin: "0 auto",
-          background: "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421)", 
+          background: "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421)",
         }}
       >
         {/* Looping Data JSON Dinamis dengan efek Staggered */}
@@ -321,4 +321,4 @@ const FifthSection = () => {
   );
 };
 
-export default FifthSection;
+export default Missions;
