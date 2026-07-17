@@ -1,497 +1,149 @@
 "use client";
 
-import type { NextPage } from "next";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-const About: NextPage = () => {
+const goldGradient = {
+  background:
+    "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+};
+
+const reveal = {
+  initial: { opacity: 0, scale: 0.9 },
+  whileInView: { opacity: 1, scale: 1 },
+  viewport: { once: false },
+};
+
+const statistics = [
+  { value: "6", label: "FRAGRANCES" },
+  { value: "100%", label: "NATURAL ORIGINS" },
+  { value: "6", label: "ISLANDS" },
+];
+
+export default function About() {
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "1295px",
-        position: "relative",
-        background: "linear-gradient(180deg, #00221f, #022421 50%, #00221f)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        textAlign: "center",
-        fontSize: "11.56px",
-        color: "rgba(245, 237, 214, 0.8)",
-        fontFamily: "'Grazie mille'",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          padding: "100px 37px",
-          boxSizing: "border-box",
-          maxWidth: "986.79px",
-        }}
-      >
-        <div
-          style={{
-            alignSelf: "stretch",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-          }}
+    <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#00221f,#022421_50%,#00221f)] px-10 py-8 text-center text-[#C9B99A] md:py-20 lg:py-24">
+      <div className="mx-auto flex w-full max-w-[1100px] flex-col items-center">
+        <motion.p
+          {...reveal}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="font-graziemille text-[7px] tracking-[5px] text-[#F5EDD6CC] sm:text-[9px] sm:tracking-[7px] md:text-[11px] md:tracking-[8px]"
         >
-          {/* Subtitle ABOUT ARCANISIA - Muncul membesar dari tengah */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            style={{
-              alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                letterSpacing: "8.48px",
-                lineHeight: "10.41px",
-              }}
-            >
-              ABOUT ARCANISIA
-            </div>
-          </motion.div>
+          ABOUT ARCANISIA
+        </motion.p>
 
-          {/* Main Title - Berurutan setelah subtitle */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            style={{
-              width: "912.8px",
-              height: "73.2px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              padding: "12.3px 0px 0px",
-              boxSizing: "border-box",
-              fontSize: "37px",
-              fontFamily: "Gilland",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                lineHeight: "60.29px",
-                background:
-                  "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              More Than a Fragrance
-            </div>
-          </motion.div>
-
-          {/* Ornamen */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-            style={{
-              width: "912.8px",
-              height: "33.9px",
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "center",
-              padding: "18.5px 0px 0px",
-              boxSizing: "border-box",
-            }}
-          >
-            <Image
-              src="/gambar/seksi%203/ornament.svg"
-              alt="Ornament"
-              style={{ height: "14.6px", width: "100%", position: "relative" }}
-              width={204}
-              height={15}
-              sizes="100vw"
-            />
-          </motion.div>
-        </div>
-
-        <div
-          style={{
-            alignSelf: "stretch",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "49.3px 0px 0px",
-            fontSize: "10.02px",
-            color: "#f8c56c",
-          }}
+        <motion.h2
+          {...reveal}
+          transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
+          className="mt-2 font-gilland text-[26px] leading-tight sm:text-[31px] md:mt-3 md:text-[42px]"
+          style={goldGradient}
         >
-          {/* Gambar Pemandangan Borneo - Tetap muncul dari bawah agar variatif, atau bisa diubah ke scale juga */}
-          <motion.div
-            initial={{ opacity: 0, y: 80 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-            style={{
-              width: "912px",
-              height: "578px",
-              position: "relative",
-              overflow: "hidden",
-              flexShrink: "0",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                height: "520px",
-                overflow: "hidden",
-              }}
-            >
-              <Image
-                src="/gambar/seksi%203/borneo2.jpg"
-                alt="Borneo Landscape"
-                fill
-                style={{
-                  objectFit: "cover",
-                  maskImage:
-                    "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)",
-                  WebkitMaskImage:
-                    "radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%)",
-                }}
-                sizes="100vw"
-              />
-            </div>
-          </motion.div>
+          More Than a Fragrance
+        </motion.h2>
 
-          {/* Kontainer Teks Bawah */}
-          <div
-            style={{
-              width: "518.1px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              maxWidth: "518.07px",
-            }}
-          >
-            {/* Quote Teks */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-              style={{
-                alignSelf: "stretch",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                fontSize: "20.04px",
-              }}
-            >
-              <i
-                style={{
-                  width: "518.1px",
-                  position: "relative",
-                  lineHeight: "34.08px",
-                  display: "inline-block",
-                }}
-              >
-                "Born to reignite national pride through the art of scent the
-                leading narrator of the Nusantara."
-              </i>
-            </motion.div>
-
-            {/* Paragraf 1 */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
-              style={{
-                alignSelf: "stretch",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "24.7px 0px 0px",
-                color: "#c9b99a",
-              }}
-            >
-              <div
-                style={{
-                  width: "518.1px",
-                  position: "relative",
-                  lineHeight: "22.05px",
-                  display: "inline-block",
-                }}
-              >
-                Arcanisia was born not merely to present fragrance, but to
-                reignite national pride for Indonesia — from its uncharted
-                islands to its rarely uncovered cultural riches — through the
-                fusion of visual art and storytelling aromas.
-              </div>
-            </motion.div>
-
-            {/* Paragraf 2 */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false }}
-              transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
-              style={{
-                alignSelf: "stretch",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "15.4px 0px 0px",
-                color: "rgba(201, 185, 154, 0.6)",
-              }}
-            >
-              <div
-                style={{
-                  width: "518.1px",
-                  position: "relative",
-                  lineHeight: "22.05px",
-                  display: "inline-block",
-                }}
-              >
-                Every bottle is an educational medium and sensory experience
-                that brings the story of Indonesia into everyday life —
-                committed to sustainability and environmental preservation.
-              </div>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Statistik / Detail Kolom Bawah */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false }}
-          transition={{ duration: 1, delay: 1.4, ease: "easeOut" }}
-          style={{
-            alignSelf: "stretch",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "49.3px 0px 0px",
-            fontSize: "32.38px",
-            color: "#f5edd6",
-            fontFamily: "Gilland",
-          }}
+          {...reveal}
+          transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+          className="relative mt-4 h-[10px] w-[130px] md:mt-5 md:h-[15px] md:w-[204px]"
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              justifyContent: "center",
-              padding: "30.8px 0px 0px",
-              boxSizing: "border-box",
-              maxWidth: "394.72px",
-            }}
+          <Image
+            src="/gambar/seksi%203/ornament.svg"
+            alt=""
+            fill
+            className="object-contain"
+            sizes="204px"
+          />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.25 }}
+          transition={{ duration: 1, delay: 0.35, ease: "easeOut" }}
+          className="relative mt-8 aspect-[1.91/1] w-full max-w-[912px] overflow-hidden md:mt-12 md:aspect-[1.75/1]"
+        >
+          <Image
+            src="/gambar/seksi%203/borneo2.jpg"
+            alt="Pegunungan hijau Nusantara"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) calc(100vw - 80px), 912px"
+          />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,transparent_48%,rgba(0,34,31,0.32)_100%)]" />
+        </motion.div>
+
+        <div
+          className="mt-5 flex items-center justify-center gap-[7px] md:mt-7"
+          aria-hidden="true"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-[#8B7440]/60" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#8B7440]/60" />
+          <span className="h-1.5 w-1.5 rounded-full bg-[#8B7440]/60" />
+          <span className="h-1.5 w-6 rounded-full bg-[#D6AD55]" />
+        </div>
+
+        <motion.blockquote
+          {...reveal}
+          transition={{ duration: 0.8, delay: 0.65, ease: "easeOut" }}
+          className="mt-7 max-w-[340px] font-graziemille text-[19px] leading-[1.65] italic sm:max-w-[440px] sm:text-[22px] md:mt-10 md:max-w-[650px] md:text-[28px] md:leading-[1.45]"
+          style={goldGradient}
+        >
+          &quot;Born to reignite national pride through the art of scent the
+          leading narrator of the Nusantara.&quot;
+        </motion.blockquote>
+
+        <div className="mt-6 flex max-w-[320px] flex-col gap-5 font-graziemille text-[14px] leading-[1.55] sm:max-w-[430px] sm:text-[15px] md:mt-8 md:max-w-[580px] md:text-[17px] md:leading-[1.6]">
+          <motion.p
+            {...reveal}
+            transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+            className="text-[#C9B99A]"
           >
-            <div
-              style={{
-                flex: "1",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-              }}
-            >
-              <div
-                style={{
-                  alignSelf: "stretch",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    lineHeight: "32.38px",
-                    background:
-                      "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
-                  6
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "131.6px",
-                  height: "15.4px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: "6.2px 0px 0px",
-                  boxSizing: "border-box",
-                  fontSize: "6.17px",
-                  fontFamily: "'Grazie mille'",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    letterSpacing: "1.54px",
-                    lineHeight: "9.25px",
-                  }}
-                >
-                  FRAGRANCES
-                </div>
-              </div>
-            </div>
+            Arcanisia was born not merely to present fragrance, but to reignite
+            national pride for Indonesia — from its uncharted islands to its
+            rarely uncovered cultural riches — through the fusion of visual art
+            and storytelling aromas.
+          </motion.p>
 
-            <div
-              style={{
-                flex: "1",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                position: "relative",
-                isolation: "isolate",
-              }}
-            >
-              <div
-                style={{
-                  alignSelf: "stretch",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  zIndex: "0",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    lineHeight: "32.38px",
-                    background:
-                      "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
-                  100%
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "131.6px",
-                  height: "15.4px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: "6.2px 0px 0px",
-                  boxSizing: "border-box",
-                  zIndex: "1",
-                  fontSize: "6.17px",
-                  fontFamily: "'Grazie mille'",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    letterSpacing: "1.54px",
-                    lineHeight: "9.25px",
-                  }}
-                >
-                  NATURAL ORIGINS
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "0.8px",
-                  height: "24.7px",
-                  position: "absolute",
-                  margin: "0",
-                  top: "6.17px",
-                  left: "0px",
-                  backgroundColor: "#f8c56c",
-                  zIndex: "2",
-                }}
-              />
-            </div>
+          <motion.p
+            {...reveal}
+            transition={{ duration: 0.8, delay: 0.95, ease: "easeOut" }}
+            className="text-[#C9B99A99]"
+          >
+            Every bottle is an educational medium and sensory experience that
+            brings the story of Indonesia into everyday life — committed to
+            sustainability and environmental preservation.
+          </motion.p>
+        </div>
 
+        <motion.div
+          {...reveal}
+          transition={{ duration: 0.9, delay: 1.05, ease: "easeOut" }}
+          className="mt-8 grid w-full max-w-[310px] grid-cols-3 md:mt-12 md:max-w-[440px]"
+        >
+          {statistics.map((stat, index) => (
             <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                position: "relative",
-                isolation: "isolate",
-              }}
+              key={stat.label}
+              className={`relative flex min-w-0 flex-col items-center ${
+                index > 0
+                  ? "before:absolute before:left-0 before:top-1 before:h-6 before:w-px before:bg-[#F8C56C]/70"
+                  : ""
+              }`}
             >
-              <div
-                style={{
-                  alignSelf: "stretch",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  zIndex: "0",
-                }}
+              <span
+                className="font-gilland text-[28px] leading-none md:text-[36px]"
+                style={goldGradient}
               >
-                <div
-                  style={{
-                    position: "relative",
-                    lineHeight: "32.38px",
-                    background:
-                      "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
-                  6
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "131.6px",
-                  height: "15.4px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: "6.2px 0px 0px",
-                  boxSizing: "border-box",
-                  zIndex: "1",
-                  fontSize: "6.17px",
-                  fontFamily: "'Grazie mille'",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    letterSpacing: "1.54px",
-                    lineHeight: "9.25px",
-                  }}
-                >
-                  ISLANDS
-                </div>
-              </div>
-              <div
-                style={{
-                  width: "0.8px",
-                  height: "24.7px",
-                  position: "absolute",
-                  margin: "0",
-                  top: "6.17px",
-                  left: "0px",
-                  backgroundColor: "#f8c56c",
-                  zIndex: "2",
-                }}
-              />
+                {stat.value}
+              </span>
+              <span className="mt-2 whitespace-nowrap font-graziemille text-[5px] tracking-[1.3px] text-[#F8C56C] sm:text-[6px] md:text-[8px] md:tracking-[1.6px]">
+                {stat.label}
+              </span>
             </div>
-          </div>
+          ))}
         </motion.div>
       </div>
-    </div>
+    </section>
   );
-};
-export default About;
+}

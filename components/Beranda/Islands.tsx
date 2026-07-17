@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import type { NextPage } from "next";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import styles from "./Islands.module.css";
 
 // --- DATA DINAMIS PULAU ---[cite: 23]
 const islandsData = [
@@ -72,6 +73,23 @@ const islandsData = [
 const MapSection: NextPage = () => {
   // State untuk menyimpan pulau yang sedang aktif[cite: 23]
   const [activeIsland, setActiveIsland] = useState("NIAS");
+  const activeIslandIndex = islandsData.findIndex(
+    (island) => island.id === activeIsland,
+  );
+
+  const selectIsland = (islandId: string) => {
+    setActiveIsland(islandId);
+  };
+
+  const handleIslandKeyDown = (
+    event: React.KeyboardEvent<SVGSVGElement>,
+    islandId: string,
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      selectIsland(islandId);
+    }
+  };
 
   // Mengambil data pulau yang aktif[cite: 23]
   const currentIslandData =
@@ -79,6 +97,7 @@ const MapSection: NextPage = () => {
 
   return (
     <section
+      className={styles.section}
       style={{
         width: "100%",
         minHeight: "100vh",
@@ -126,6 +145,7 @@ const MapSection: NextPage = () => {
       />
 
       <div
+        className={styles.inner}
         style={{
           display: "flex",
           flexDirection: "column",
@@ -136,6 +156,7 @@ const MapSection: NextPage = () => {
       >
         {/* --- BAGIAN 1: HEADER ---[cite: 23] */}
         <div
+          className={styles.header}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -145,6 +166,7 @@ const MapSection: NextPage = () => {
         >
           {/* Subtitle "JELAJAH NUSANTARA" - Animasi membesar dari tengah berurutan */}
           <motion.div
+            className={styles.eyebrow}
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
@@ -161,6 +183,7 @@ const MapSection: NextPage = () => {
 
           {/* Judul Utama "Six Islands, One Soul" - Animasi membesar dari tengah berurutan */}
           <motion.div
+            className={styles.title}
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
@@ -172,6 +195,7 @@ const MapSection: NextPage = () => {
             }}
           >
             <div
+              className={styles.titleText}
               style={{
                 lineHeight: "74.4px",
                 background:
@@ -209,6 +233,7 @@ const MapSection: NextPage = () => {
 
         {/* --- BAGIAN 2: PETA INDONESIA ---[cite: 23] */}
         <motion.div
+          className={styles.map}
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false, amount: 0.2 }}
@@ -295,10 +320,17 @@ const MapSection: NextPage = () => {
 
           {/* Papua[cite: 23] */}
           <svg
+            className={`${styles.clickableIsland} ${styles.papuaIsland}`}
             width="220"
             height="181"
             viewBox="0 0 220 181"
             xmlns="http://www.w3.org/2000/svg"
+            role="button"
+            tabIndex={0}
+            aria-label="Pilih Pulau Papua"
+            aria-pressed={activeIsland === "PAPUA"}
+            onClick={() => selectIsland("PAPUA")}
+            onKeyDown={(event) => handleIslandKeyDown(event, "PAPUA")}
             style={{
               position: "absolute",
               top: "36.3%",
@@ -332,8 +364,15 @@ const MapSection: NextPage = () => {
 
           {/* Nias[cite: 23] */}
           <svg
+            className={styles.clickableIsland}
             viewBox="0 0 17 21"
             xmlns="http://www.w3.org/2000/svg"
+            role="button"
+            tabIndex={0}
+            aria-label="Pilih Pulau Nias"
+            aria-pressed={activeIsland === "NIAS"}
+            onClick={() => selectIsland("NIAS")}
+            onKeyDown={(event) => handleIslandKeyDown(event, "NIAS")}
             style={{
               position: "absolute",
               top: "24.5%",
@@ -366,8 +405,15 @@ const MapSection: NextPage = () => {
 
           {/* Komodo[cite: 23] */}
           <svg
+            className={styles.clickableIsland}
             viewBox="0 0 10 13"
             xmlns="http://www.w3.org/2000/svg"
+            role="button"
+            tabIndex={0}
+            aria-label="Pilih Pulau Komodo"
+            aria-pressed={activeIsland === "KOMODO"}
+            onClick={() => selectIsland("KOMODO")}
+            onKeyDown={(event) => handleIslandKeyDown(event, "KOMODO")}
             style={{
               position: "absolute",
               top: "81%",
@@ -400,10 +446,17 @@ const MapSection: NextPage = () => {
 
           {/* Sumba[cite: 23] */}
           <svg
+            className={styles.clickableIsland}
             width="40"
             height="22"
             viewBox="0 0 40 22"
             xmlns="http://www.w3.org/2000/svg"
+            role="button"
+            tabIndex={0}
+            aria-label="Pilih Pulau Sumba"
+            aria-pressed={activeIsland === "SUMBA"}
+            onClick={() => selectIsland("SUMBA")}
+            onKeyDown={(event) => handleIslandKeyDown(event, "SUMBA")}
             style={{
               position: "absolute",
               top: "89.5%",
@@ -436,10 +489,17 @@ const MapSection: NextPage = () => {
 
           {/* Buton[cite: 23] */}
           <svg
+            className={styles.clickableIsland}
             width="15"
             height="28"
             viewBox="0 0 15 28"
             xmlns="http://www.w3.org/2000/svg"
+            role="button"
+            tabIndex={0}
+            aria-label="Pilih Pulau Buton"
+            aria-pressed={activeIsland === "BUTON"}
+            onClick={() => selectIsland("BUTON")}
+            onKeyDown={(event) => handleIslandKeyDown(event, "BUTON")}
             style={{
               position: "absolute",
               top: "60%",
@@ -472,10 +532,17 @@ const MapSection: NextPage = () => {
 
           {/* Alor[cite: 23] */}
           <svg
+            className={styles.clickableIsland}
             width="18"
             height="8"
             viewBox="0 0 18 8"
             xmlns="http://www.w3.org/2000/svg"
+            role="button"
+            tabIndex={0}
+            aria-label="Pilih Pulau Alor"
+            aria-pressed={activeIsland === "ALOR"}
+            onClick={() => selectIsland("ALOR")}
+            onKeyDown={(event) => handleIslandKeyDown(event, "ALOR")}
             style={{
               position: "absolute",
               top: "82.5%",
@@ -538,6 +605,7 @@ const MapSection: NextPage = () => {
 
         {/* --- BAGIAN 3: INFO BOX DINAMIS ---[cite: 23] */}
         <motion.div
+          className={styles.infoBox}
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false, amount: 0.2 }}
@@ -554,6 +622,7 @@ const MapSection: NextPage = () => {
         >
           <AnimatePresence mode="wait">
             <motion.div
+              className={styles.infoContent}
               key={activeIsland}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -571,6 +640,7 @@ const MapSection: NextPage = () => {
             >
               {/* Kolom 1: Region & Titik Emas[cite: 23] */}
               <div
+                className={styles.identityColumn}
                 style={{
                   width: "230.6px",
                   display: "flex",
@@ -578,10 +648,14 @@ const MapSection: NextPage = () => {
                   alignItems: "flex-start",
                 }}
               >
-                <div style={{ letterSpacing: "2.29px", lineHeight: "8.59px" }}>
+                <div
+                  className={styles.region}
+                  style={{ letterSpacing: "2.29px", lineHeight: "8.59px" }}
+                >
                   {currentIslandData.region}
                 </div>
                 <div
+                  className={styles.islandName}
                   style={{
                     padding: "2.5px 0px 0px",
                     fontSize: "33.1px",
@@ -601,6 +675,7 @@ const MapSection: NextPage = () => {
                   </div>
                 </div>
                 <div
+                  className={styles.subtitle}
                   style={{
                     padding: "2.5px 0px 0px",
                     fontSize: "9.55px",
@@ -624,11 +699,13 @@ const MapSection: NextPage = () => {
                     <div
                       key={i}
                       style={{
-                        width: i === 3 ? "12.7px" : "3.2px",
+                        width: i === activeIslandIndex ? "12.7px" : "3.2px",
                         height: "3.2px",
-                        borderRadius: i === 3 ? "4px" : "50%",
+                        borderRadius:
+                          i === activeIslandIndex ? "4px" : "50%",
                         backgroundColor: "#c9a84c",
-                        opacity: i === 3 ? "1" : "0.3",
+                        opacity: i === activeIslandIndex ? "1" : "0.3",
+                        transition: "width 0.3s ease, opacity 0.3s ease",
                       }}
                     />
                   ))}
@@ -637,6 +714,7 @@ const MapSection: NextPage = () => {
 
               {/* Kolom 2: Deskripsi[cite: 23] */}
               <div
+                className={styles.descriptionColumn}
                 style={{
                   width: "230.6px",
                   display: "flex",
@@ -666,6 +744,7 @@ const MapSection: NextPage = () => {
 
               {/* Kolom 3: Scent Notes[cite: 23] */}
               <div
+                className={styles.notesColumn}
                 style={{
                   width: "230.6px",
                   display: "flex",
@@ -745,6 +824,7 @@ const MapSection: NextPage = () => {
 
         {/* --- BAGIAN 4: BUTTON LIST PULAU DINAMIS ---[cite: 23] */}
         <motion.div
+          className={styles.islandList}
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
@@ -762,9 +842,12 @@ const MapSection: NextPage = () => {
             const isActive = activeIsland === island.id;
 
             return (
-              <motion.div
+              <motion.button
+                type="button"
                 key={island.id}
-                onClick={() => setActiveIsland(island.id)}
+                onClick={() => selectIsland(island.id)}
+                aria-pressed={isActive}
+                aria-label={`Tampilkan informasi Pulau ${island.name}`}
                 initial="rest"
                 animate={isActive ? "active" : "rest"}
                 whileHover="hover"
@@ -793,6 +876,7 @@ const MapSection: NextPage = () => {
                   padding: "6px 16px",
                   cursor: "pointer",
                   border: "0.7px solid",
+                  font: "inherit",
                 }}
               >
                 <div
@@ -804,7 +888,7 @@ const MapSection: NextPage = () => {
                 >
                   {island.id}
                 </div>
-              </motion.div>
+              </motion.button>
             );
           })}
         </motion.div>

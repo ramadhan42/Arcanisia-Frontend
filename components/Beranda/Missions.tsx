@@ -1,10 +1,8 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-// 1. Data Misi (MOCK DATA / JSON)[cite: 21]
 const missionData = [
   {
     id: "01",
@@ -38,287 +36,99 @@ const missionData = [
   },
 ];
 
-const Missions = () => {
+const goldText = {
+  background:
+    "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+};
+
+export default function Missions() {
   return (
-    // Section Utama[cite: 21]
-    <section
-      style={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "#134b46",
-        background: "linear-gradient(180deg, rgba(0, 34, 31, 1), #012421)",
-      }}
-    >
-      {/* --- BAGIAN ATAS --- */}
-      <div
+    <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#00221f,#012421)]">
+      <header
+        className="relative flex h-[112px] w-full flex-col items-center bg-cover bg-center px-6 pt-4 text-center md:h-[413px] md:justify-center md:pt-0"
         style={{
-          width: "100%",
-          height: "412.7px",
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "0px 24px",
-          boxSizing: "border-box",
-          textAlign: "center",
-          fontSize: "10px",
-          color: "#f5edd6",
-          fontFamily: "'Grazie mille'",
           backgroundImage:
-            "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421), url('/gambar/seksi%205/bg.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center center",
-          backgroundRepeat: "no-repeat",
+            "linear-gradient(180deg, rgba(0,34,31,0.58), #012421), url('/gambar/seksi%205/bg.png')",
         }}
       >
-        <div
-          style={{
-            width: "632px",
-            height: "146px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-          }}
+        <motion.p
+          initial={{ opacity: 0, scale: 0.85 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          className="font-graziemille text-[6px] leading-none tracking-[3px] text-[#F5EDD6CC] md:text-[13px] md:tracking-[5px]"
         >
-          {/* Subtitle "OUR MISSION" - Animasi fade scale in dari tengah */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            style={{
-              width: "631.7px",
-              height: "39px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              padding: "24px 0px 0px",
-              boxSizing: "border-box",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                letterSpacing: "5px",
-                lineHeight: "15px",
-              }}
-            >
-              OUR MISSION
-            </div>
-          </motion.div>
+          OUR MISSION
+        </motion.p>
 
-          {/* Judul Utama "Guided by Purpose" - Berurutan */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            style={{
-              width: "632px",
-              height: "76px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              fontSize: "40px",
-              fontFamily: "Gilland",
-            }}
-          >
-            <div
-              style={{
-                position: "relative",
-                lineHeight: "88px",
-                background:
-                  "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                flexShrink: "0",
-              }}
-            >
-              Guided by Purpose
-            </div>
-          </motion.div>
-        </div>
+        <motion.h2
+          initial={{ opacity: 0, scale: 0.85 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+          className="mt-2 font-gilland text-[20px] leading-tight md:mt-4 md:text-[43px]"
+          style={goldText}
+        >
+          Guided by Purpose
+        </motion.h2>
 
-        {/* Gambar Ornamen - Berurutan */}
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+          className="relative mt-3 h-2 w-[100px] md:mt-5 md:h-4 md:w-[213px]"
         >
           <Image
-            src="/gambar/seksi%204/ornamen.svg"
-            style={{ width: "213.2px", height: "15.3px", position: "relative" }}
-            width={213}
-            height={15}
-            sizes="100vw"
-            alt="Ornament"
+            src="/gambar/seksi%205/ornamen.svg"
+            alt=""
+            fill
+            className="object-contain"
+            sizes="213px"
           />
         </motion.div>
-      </div>
+      </header>
 
-      {/* --- BAGIAN BAWAH --- */}
-      <div
-        style={{
-          width: "100%",
-          position: "relative",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-start",
-          padding: "47.6px 17.8px",
-          boxSizing: "border-box",
-          maxWidth: "761.48px",
-          textAlign: "right",
-          fontSize: "47.59px",
-          color: "#f5edd6",
-          fontFamily: "Gilland",
-          margin: "0 auto",
-          background: "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421)",
-        }}
-      >
-        {/* Looping Data JSON Dinamis dengan efek Staggered Scale dari tengah */}
+      <div className="mx-auto w-full max-w-[762px] px-[22px] pb-10 pt-8 md:px-[18px] md:pb-12 md:pt-12">
         {missionData.map((item, index) => (
-          <motion.div
-            key={index}
+          <motion.article
+            key={item.id}
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.3 }}
-            // Penambahan delay berurutan (0.2 * index)
-            transition={{ duration: 0.8, delay: 0.2 * index, ease: "easeOut" }}
-            style={{
-              alignSelf: "stretch",
-              borderBottom: "0.5px solid rgba(201, 168, 76, 0.1)",
-              display: "flex",
-              alignItems: "flex-start",
-              padding: "23.8px 0px",
-              gap: "29.7px",
+            transition={{
+              duration: 0.8,
+              delay: 0.15 * index,
+              ease: "easeOut",
             }}
+            className="grid grid-cols-[42px_8px_minmax(0,1fr)] items-start gap-x-3 border-b border-[#C9A84C]/10 py-[15px] first:pt-0 md:grid-cols-[60px_8px_minmax(0,1fr)] md:gap-x-[30px] md:py-6"
           >
-            {/* Nomor (01, 02, dst)[cite: 21] */}
-            <div
-              style={{
-                width: "59.5px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
+            <span
+              className="text-right font-gilland text-[31px] leading-none md:text-[48px]"
+              style={goldText}
             >
-              <div
-                style={{
-                  position: "relative",
-                  lineHeight: "47.59px",
-                  background:
-                    "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                {item.id}
-              </div>
-            </div>
+              {item.id}
+            </span>
 
-            {/* Garis Vertikal & Titik Emas[cite: 21] */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                padding: "5.9px 0px 0px",
-              }}
-            >
-              <div
-                style={{
-                  width: "0.7px",
-                  height: "17.8px",
-                  position: "relative",
-                  backgroundColor: "rgba(201, 168, 76, 0.2)",
-                  flexShrink: "0",
-                }}
-              />
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  padding: "3px 0px",
-                  flexShrink: "0",
-                }}
-              >
-                <div
-                  style={{
-                    width: "4.5px",
-                    height: "4.5px",
-                    position: "relative",
-                    borderRadius: "16634850px",
-                    backgroundColor: "rgba(201, 168, 76, 0.3)",
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  width: "0.7px",
-                  flex: "1",
-                  position: "relative",
-                  backgroundColor: "rgba(201, 168, 76, 0.1)",
-                  flexShrink: "0",
-                }}
-              />
-            </div>
+            <span className="flex h-full min-h-[52px] flex-col items-center pt-1 md:min-h-[70px] md:pt-1.5">
+              <span className="h-[14px] w-px bg-[#C9A84C]/20 md:h-[18px]" />
+              <span className="my-1 h-1 w-1 shrink-0 rounded-full bg-[#C9A84C]/30" />
+              <span className="w-px flex-1 bg-[#C9A84C]/10" />
+            </span>
 
-            {/* Judul & Deskripsi[cite: 21] */}
-            <div
-              style={{
-                flex: "1",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
-                padding: "3px 0px 5.9px",
-                textAlign: "left",
-                fontSize: "20.82px",
-              }}
-            >
-              <div
-                style={{
-                  alignSelf: "stretch",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
-              >
-                <div style={{ position: "relative", lineHeight: "24.99px" }}>
-                  {item.title}
-                </div>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  padding: "5.9px 0px 0px",
-                  fontSize: "9.67px",
-                  color: "rgba(201, 185, 154, 0.6)",
-                  fontFamily: "'Grazie mille'",
-                }}
-              >
-                <div
-                  style={{
-                    width: "416.4px",
-                    position: "relative",
-                    lineHeight: "19.33px",
-                    display: "inline-block",
-                  }}
-                >
-                  {item.description}
-                </div>
-              </div>
+            <div className="min-w-0 pt-px text-left md:pt-0.5">
+              <h3 className="font-gilland text-[14px] leading-[1.15] text-[#F5EDD6] md:text-[23px] md:leading-[1.1]">
+                {item.title}
+              </h3>
+              <p className="mt-1.5 max-w-[430px] font-graziemille text-[9.5px] leading-[1.35] text-[#C9B99A99] md:mt-2 md:text-[12px] md:leading-[1.65]">
+                {item.description}
+              </p>
             </div>
-          </motion.div>
+          </motion.article>
         ))}
       </div>
     </section>
   );
-};
-
-export default Missions;
+}

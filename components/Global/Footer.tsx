@@ -1,197 +1,144 @@
 "use client";
 
-import type { NextPage } from 'next';
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-// Data Dinamis untuk Link Menu Footer
-const footerLinks = {
-  collection: [
-    "Secret of Buton",
-    "Whisper of Raja Ampat",
-    "Mystique of Komodo",
-    "Emerald of Borneo",
-    "Soul of Lombok",
-    "Glow of Borobudur"
-  ],
-  company: [
-    "About Arcanisia",
-    "Our Mission",
-    "Brand Values",
-    "Logo Story",
-    "Sustainability"
-  ],
-  support: [
-    "FAQ",
-    "Shipping Info",
-    "Returns Policy",
-    "Track Order",
-    "Contact Us"
-  ],
-  legal: [
-    "Privacy Policy",
-    "Terms of Service",
-    "Cookie Policy"
-  ]
-};
+const footerGroups = [
+  {
+    title: "COLLECTION",
+    links: [
+      "Secret of Buton",
+      "Whisper of Raja Ampat",
+      "Mystique of Komodo",
+      "Emerald of Borneo",
+      "Soul of Lombok",
+      "Glow of Borobudur",
+    ],
+  },
+  {
+    title: "COMPANY",
+    links: [
+      "About Arcanisia",
+      "Our Mission",
+      "Brand Values",
+      "Logo Story",
+      "Sustainability",
+    ],
+  },
+  {
+    title: "SUPPORT",
+    links: [
+      "FAQ",
+      "Shipping Info",
+      "Returns Policy",
+      "Track Order",
+      "Contact Us",
+    ],
+  },
+];
 
-const Footer: NextPage = () => {
+const legalLinks = ["Privacy Policy", "Terms of Service", "Cookie Policy"];
+
+export default function Footer() {
   return (
-    // Wrapper Utama - Menggunakan flex dan justify-center agar konten selalu di tengah
-    <footer 
-      style={{ 
-        width: "100%", 
-        position: "relative", 
-        backgroundColor: "#061716", 
-        overflow: "hidden", 
-        display: "flex",
-        justifyContent: "center",
-        textAlign: "left", 
-        fontSize: "11px", 
-        color: "#f8c56c", 
-        fontFamily: "'Grazie mille'" 
-      }}
-    >
-      {/* Background overlay redup */}
-      <div style={{ position: "absolute", top: "0", left: "0", width: "100%", height: "100%", opacity: "0.03", backgroundColor: "#ffffff" }} />
-      
-      {/* Kontainer Inner (Maksimal 1280px dan otomatis di tengah) */}
-      <div 
-        style={{ 
-          width: "100%", 
-          maxWidth: "1280px", 
-          display: "flex", 
-          flexDirection: "column", 
-          padding: "64px 24px", 
-          boxSizing: "border-box",
-          zIndex: 1
-        }}
-      >
-        {/* === BAGIAN ATAS (KOLOM-KOLOM) === */}
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", gap: "40px", width: "100%" }}>
-          
-          {/* Kolom 1: Logo & Deskripsi - Animasi masuk dari kiri */}
-          <motion.div 
+    <footer className="relative w-full overflow-hidden bg-[#061716] font-graziemille text-[#F8C56C]">
+      <div className="pointer-events-none absolute inset-0 bg-white/[0.02]" />
+
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-7 pb-7 pt-7 md:px-12 md:py-16 lg:px-16">
+        <div className="grid grid-cols-1 gap-7 md:grid-cols-2 md:gap-x-14 md:gap-y-12 lg:grid-cols-[minmax(300px,2fr)_repeat(3,minmax(130px,1fr))] lg:gap-12">
+          <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            style={{ width: "464px", display: "flex", flexDirection: "column", alignItems: "flex-start", fontSize: "13px", color: "rgba(201, 185, 154, 0.6)" }}
+            transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+            className="flex max-w-[465px] flex-col items-start"
           >
-            <Image 
-              src="/gambar/footer/logo arca fix 1.svg" 
-              style={{ width: "151.1px", height: "45.7px", position: "relative" }} 
-              width={151} 
-              height={46} 
-              sizes="100vw" 
-              alt="Arcanisia Logo" 
+            <Image
+              src="/gambar/footer/logo%20arca%20fix%201.svg"
+              width={151}
+              height={46}
+              className="h-auto w-[137px] md:w-[151px]"
+              alt="Arcanisia"
             />
-            <div style={{ padding: "24px 0px 0px", lineHeight: "22px" }}>
-              A luxury fragrance house born from the heart of the Indonesian archipelago. Six islands. Six stories. One nation breathed into being through scent.
-            </div>
-            <div style={{ padding: "24px 0px 0px" }}>
-              <Image 
-                src="/gambar/footer/ornamen.svg" 
-                style={{ width: "172px", height: "21.6px", position: "relative" }} 
-                width={172} 
-                height={22} 
-                sizes="100vw" 
-                alt="Arcanisia Ornament" 
-              />
-            </div>
+
+            <p className="mt-5 max-w-[215px] text-[8px] leading-4 text-[#C9B99A99] md:mt-6 md:max-w-[430px] md:text-[13px] md:leading-[1.7]">
+              A luxury fragrance house born from the heart of the Indonesian
+              archipelago. Six islands. Six stories. One nation breathed into
+              being through scent.
+            </p>
+
+            <Image
+              src="/gambar/footer/ornamen.svg"
+              width={162}
+              height={12}
+              className="mt-5 h-auto w-[82px] md:mt-6 md:w-[162px]"
+              alt=""
+            />
           </motion.div>
 
-          {/* Kolom 2: COLLECTION - Animasi slide-up */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}
-          >
-            <div style={{ letterSpacing: "3.15px", lineHeight: "13.5px", marginBottom: "24px" }}>
-              COLLECTION
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "11px", color: "rgba(201, 185, 154, 0.5)" }}>
-              {footerLinks.collection.map((item, index) => (
-                <div key={index} style={{ lineHeight: "16.5px", cursor: "pointer", transition: "color 0.3s" }} className="hover:text-[#f8c56c]">
-                  {item}
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          {footerGroups.map((group, index) => (
+            <motion.nav
+              key={group.title}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false }}
+              transition={{
+                duration: 0.8,
+                delay: 0.3 + index * 0.15,
+                ease: "easeOut",
+              }}
+              aria-label={group.title}
+            >
+              <h2 className="text-[7px] tracking-[3px] text-[#F8C56C] md:text-[11px] md:tracking-[3.15px]">
+                {group.title}
+              </h2>
 
-          {/* Kolom 3: COMPANY - Animasi slide-up */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}
-          >
-            <div style={{ letterSpacing: "3.15px", lineHeight: "13.5px", marginBottom: "24px" }}>
-              COMPANY
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "13px", color: "rgba(201, 185, 154, 0.5)" }}>
-              {footerLinks.company.map((item, index) => (
-                <div key={index} style={{ lineHeight: "16.5px", cursor: "pointer", transition: "color 0.3s" }} className="hover:text-[#f8c56c]">
-                  {item}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Kolom 4: SUPPORT - Animasi slide-up */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-            style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", minWidth: "150px" }}
-          >
-            <div style={{ letterSpacing: "3.15px", lineHeight: "13.5px", marginBottom: "24px" }}>
-              SUPPORT
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", fontSize: "13px", color: "rgba(201, 185, 154, 0.5)" }}>
-              {footerLinks.support.map((item, index) => (
-                <div key={index} style={{ lineHeight: "16.5px", cursor: "pointer", transition: "color 0.3s" }} className="hover:text-[#f8c56c]">
-                  {item}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
+              <ul className="mt-5 flex flex-col gap-[13px] md:mt-6 md:gap-3">
+                {group.links.map((link) => (
+                  <li key={link}>
+                    <a
+                      href="#"
+                      className="text-[8px] leading-4 text-[#C9B99A80] transition-colors hover:text-[#F8C56C] md:text-[12px]"
+                    >
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </motion.nav>
+          ))}
         </div>
 
-        {/* === BAGIAN BAWAH (COPYRIGHT & LEGAL) === */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false }}
-          transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
-          style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", padding: "64px 0px 0px", fontSize: "12px", color: "rgba(201, 185, 154, 0.3)" }}
+          transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
+          className="mt-9 border-t border-[#C9A84C]/10 pt-6 text-[#C9B99A4D] md:mt-16 md:pt-8"
         >
-          <div style={{ width: "100%", borderTop: "0.7px solid rgba(201, 168, 76, 0.1)", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", padding: "32px 0px 0px", gap: "20px" }}>
-            
-            {/* Copyright */}
-            <div style={{ letterSpacing: "1px", lineHeight: "15px" }}>
-              © 2026 Arcanisia Scent. All rights reserved. Made with love for Indonesia.
-            </div>
-            
-            {/* Legal Links */}
-            <div style={{ display: "flex", alignItems: "center", gap: "24px", textAlign: "center" }}>
-              {footerLinks.legal.map((item, index) => (
-                <div key={index} style={{ lineHeight: "15px", cursor: "pointer", transition: "color 0.3s" }} className="hover:text-[#f8c56c]">
-                  {item}
-                </div>
-              ))}
-            </div>
+          <div className="flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
+            <p className="max-w-[155px] text-[7px] leading-[1.45] tracking-[0.5px] md:max-w-none md:text-[11px]">
+              © 2026 Arcanisia Scent. All rights reserved. Made with love for
+              Indonesia.
+            </p>
 
+            <nav
+              aria-label="Legal"
+              className="flex flex-wrap items-center gap-x-5 gap-y-2"
+            >
+              {legalLinks.map((link) => (
+                <a
+                  key={link}
+                  href="#"
+                  className="text-[6px] transition-colors hover:text-[#F8C56C] md:text-[10px]"
+                >
+                  {link}
+                </a>
+              ))}
+            </nav>
           </div>
         </motion.div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

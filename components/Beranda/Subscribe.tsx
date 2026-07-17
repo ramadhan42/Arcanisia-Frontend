@@ -1,10 +1,8 @@
 "use client";
 
-import type { NextPage } from "next";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-// Data dinamis untuk informasi kontak
 const contactData = [
   {
     id: 1,
@@ -26,326 +24,92 @@ const contactData = [
   },
 ];
 
-const Subscribe: NextPage = () => {
+const goldGradient =
+  "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
+
+const goldText = {
+  background: goldGradient,
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+};
+
+export default function Subscribe() {
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "692.3px",
-        position: "relative",
-        backgroundColor: "#091812",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        textAlign: "center",
-        fontSize: "10px",
-        color: "#f5edd6",
-        fontFamily: "'Grazie mille'",
-      }}
-    >
-      {/* Garis Pembatas Atas */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.85 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: false, amount: 0.2 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        style={{
-          alignSelf: "stretch",
-          height: "1px",
-          position: "relative",
-          background:
-            "linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(201, 168, 76, 0.5) 50%, rgba(0, 0, 0, 0))",
-        }}
-      />
+    <section className="w-full overflow-hidden bg-[#012421] font-graziemille">
+      <div className="h-px w-full bg-[linear-gradient(90deg,transparent,rgba(201,168,76,0.5),transparent)]" />
 
-      {/* Bagian Newsletter (Atas) */}
-      <div
-        style={{
-          alignSelf: "stretch",
-          height: "501.9px",
-          position: "relative",
-          background: "linear-gradient(180deg, #071615, #012421)",
-          overflow: "hidden",
-          flexShrink: "0",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {/* Ornamen Lingkaran - Dianimasikan Scale-In bergantian */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius: "50%",
-            border: "0.7px solid rgba(201, 168, 76, 0.05)",
-            boxSizing: "border-box",
-            width: "280px",
-            height: "280px",
-          }}
-        />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius: "50%",
-            border: "0.7px solid rgba(201, 168, 76, 0.05)",
-            boxSizing: "border-box",
-            width: "380px",
-            height: "380px",
-          }}
-        />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, amount: 0.2 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius: "50%",
-            border: "0.7px solid rgba(201, 168, 76, 0.05)",
-            boxSizing: "border-box",
-            width: "480px",
-            height: "480px",
-          }}
-        />
+      <div className="relative flex min-h-[315px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,#071615,#012421)] px-6 py-5 md:min-h-[502px] md:px-10 md:py-16">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[280px] w-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#C9A84C]/5 md:h-[480px] md:w-[480px]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[210px] w-[210px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#C9A84C]/5 md:h-[380px] md:w-[380px]" />
 
-        {/* Konten Teks & Input */}
-        <div
-          style={{
-            zIndex: 1,
-            width: "100%",
-            maxWidth: "672px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            padding: "0 24px",
-            boxSizing: "border-box",
-          }}
-        >
-          <motion.div
+        <div className="relative z-10 flex w-full max-w-[672px] flex-col items-center text-center">
+          <motion.p
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            style={{
-              alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
+            className="text-[7px] tracking-[5px] text-[#F5EDD6] md:text-[10px]"
           >
-            <div
-              style={{
-                position: "relative",
-                letterSpacing: "5px",
-                lineHeight: "15px",
-              }}
-            >
-              STAY CONNECTED
-            </div>
-          </motion.div>
+            STAY CONNECTED
+          </motion.p>
 
-          <motion.div
+          <motion.h2
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            style={{
-              width: "100%",
-              maxWidth: "672px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              padding: "16px 0px 0px",
-              boxSizing: "border-box",
-              fontSize: "56px",
-              fontFamily: "Gilland",
-            }}
+            transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+            className="mt-3 font-gilland text-[34px] leading-[1.4] md:text-[56px] md:leading-[1.3]"
+            style={goldText}
           >
-            <div
-              style={{
-                position: "relative",
-                lineHeight: "72.8px",
-                background:
-                  "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                textAlign: "center",
-              }}
-            >
-              Join the Journey
-              <br />
-              of the Nusantara
-            </div>
-          </motion.div>
+            Join the Journey
+            <br />
+            of the Nusantara
+          </motion.h2>
 
-          <motion.div
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-            style={{
-              width: "100%",
-              maxWidth: "672px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              padding: "16px 0px 0px",
-              boxSizing: "border-box",
-              fontSize: "13px",
-              color: "#c9b99a",
-              textAlign: "center",
-            }}
+            transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
+            className="mt-3 max-w-[285px] text-[10px] leading-[1.7] text-[#C9B99A] md:max-w-[520px] md:text-[13px] md:leading-[2]"
           >
-            <div style={{ position: "relative", lineHeight: "26px" }}>
-              Subscribe to receive exclusive launches, island stories, and first
-              access to limited edition fragrances.
-            </div>
-          </motion.div>
+            Subscribe to receive exclusive launches, island stories, and first
+            access to limited edition fragrances.
+          </motion.p>
 
-          <motion.div
+          <motion.form
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-            style={{
-              alignSelf: "stretch",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              padding: "40px 0px 0px",
-              textAlign: "left",
-              fontSize: "12px",
-              color: "rgba(201, 185, 154, 0.4)",
-              fontFamily: "Montserrat",
-            }}
+            transition={{ duration: 0.8, delay: 0.55, ease: "easeOut" }}
+            className="mt-8 flex w-full max-w-[448px] flex-col text-left md:mt-10 md:h-[52px] md:flex-row"
+            onSubmit={(event) => event.preventDefault()}
           >
-            <div
-              style={{
-                height: "51.3px",
-                display: "flex",
-                alignItems: "flex-start",
-                maxWidth: "448px",
-                width: "100%",
-              }}
+            <input
+              type="email"
+              aria-label="Email"
+              placeholder="Enter your email"
+              className="h-[42px] w-full border border-[#C9B99AB3] bg-[#012421] px-4 font-sans text-[10px] font-light text-[#F5EDD6] outline-none placeholder:text-[#C9B99A40] focus:border-[#F8C56C] md:h-full md:flex-1 md:border-r-0 md:px-5 md:text-[12px]"
+            />
+            <button
+              type="submit"
+              className="flex h-[39px] w-full items-center justify-center gap-2 font-graziemille text-[8px] font-bold tracking-[2px] text-[#091812] transition-opacity hover:opacity-90 md:h-full md:w-auto md:px-8 md:text-[10px]"
+              style={{ background: goldGradient }}
             >
-              <div
-                style={{
-                  alignSelf: "stretch",
-                  flex: "1",
-                  backgroundColor: "#012421",
-                  borderTop: "0.7px solid rgba(201, 185, 154, 0.7)",
-                  borderBottom: "0.7px solid rgba(201, 185, 154, 0.7)",
-                  borderLeft: "0.7px solid rgba(201, 185, 154, 0.7)",
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                  justifyContent: "center",
-                  padding: "16px 20px",
-                }}
-              >
-                <div
-                  style={{
-                    alignSelf: "stretch",
-                    position: "relative",
-                    fontWeight: "300",
-                  }}
-                >
-                  Enter your email
-                </div>
-              </div>
-              <div
-                style={{
-                  alignSelf: "stretch",
-                  cursor: "pointer",
-                  background:
-                    "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "16px 32px",
-                  gap: "8px",
-                  textAlign: "center",
-                  fontSize: "10px",
-                  color: "#091812",
-                  transition: "opacity 0.3s ease",
-                }}
-                className="hover:opacity-90"
-              >
-                <b
-                  style={{
-                    position: "relative",
-                    letterSpacing: "2px",
-                    lineHeight: "15px",
-                  }}
-                >
-                  SUBSCRIBE
-                </b>
-                <Image
-                  src="/gambar/seksi%208/subscribe.svg"
-                  style={{
-                    height: "14px",
-                    width: "14px",
-                    position: "relative",
-                  }}
-                  width={14}
-                  height={14}
-                  sizes="100vw"
-                  alt="Subscribe Icon"
-                />
-              </div>
-            </div>
-          </motion.div>
+              SUBSCRIBE
+              <Image
+                src="/gambar/seksi%208/subscribe.svg"
+                width={14}
+                height={14}
+                alt=""
+              />
+            </button>
+          </motion.form>
         </div>
       </div>
 
-      {/* Bagian Informasi Kontak (Bawah - Dinamis) */}
-      <div
-        style={{
-          alignSelf: "stretch",
-          backgroundColor: "#012421",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "64px 24px",
-          textAlign: "left",
-          fontSize: "9px",
-          color: "#f8c56c",
-          fontFamily: "Montserrat",
-        }}
-      >
-        <div
-          style={{
-            width: "1074px",
-            position: "relative",
-            maxWidth: "1280px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "24px",
-          }}
-        >
+      <div className="bg-[#012421] px-5 pb-5 pt-5 md:px-10 md:py-16">
+        <div className="mx-auto flex w-full max-w-[1074px] flex-col gap-7 md:flex-row md:items-start md:justify-between md:gap-10">
           {contactData.map((contact, index) => (
             <motion.div
               key={contact.id}
@@ -354,96 +118,34 @@ const Subscribe: NextPage = () => {
               viewport={{ once: false, amount: 0.3 }}
               transition={{
                 duration: 0.6,
-                delay: 0.2 * index,
+                delay: 0.15 * index,
                 ease: "easeOut",
               }}
-              style={{ display: "flex", alignItems: "flex-start", gap: "16px" }}
+              className="flex items-start gap-4 text-left"
             >
-              <div
-                style={{
-                  height: "40px",
-                  width: "40px",
-                  border: "0.7px solid rgba(201, 168, 76, 0.3)",
-                  boxSizing: "border-box",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <div className="flex h-[45px] w-[45px] shrink-0 items-center justify-center border border-[#C9A84C]/30 md:h-10 md:w-10">
                 <Image
                   src={contact.iconSrc}
-                  style={{
-                    height: "16px",
-                    width: "16px",
-                    position: "relative",
-                  }}
-                  width={16}
-                  height={16}
-                  sizes="100vw"
-                  alt={`${contact.title} Icon`}
+                  width={17}
+                  height={17}
+                  alt=""
                 />
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
-              >
-                <div
-                  style={{
-                    alignSelf: "stretch",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      letterSpacing: "2.7px",
-                      lineHeight: "13.5px",
-                      fontWeight: "600",
-                    }}
-                  >
-                    {contact.title}
-                  </div>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    padding: "4px 0px 0px",
-                    boxSizing: "border-box",
-                    fontSize: "12px",
-                    color: "#c9b99a",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "relative",
-                      lineHeight: "21.6px",
-                      fontWeight: "300",
-                      flexShrink: "0",
-                    }}
-                  >
-                    {contact.lines.map((line, idx) => (
-                      <span key={idx}>
-                        {line}
-                        {idx < contact.lines.length - 1 && <br />}
-                      </span>
-                    ))}
-                  </div>
+              <div className="pt-0.5">
+                <h3 className="font-sans text-[9px] font-semibold tracking-[3px] text-[#F8C56C]">
+                  {contact.title}
+                </h3>
+                <div className="mt-1 font-graziemille text-[13px] font-light leading-[1.85] text-[#C9B99A] md:text-[12px] md:leading-[1.8]">
+                  {contact.lines.map((line) => (
+                    <p key={line}>{line}</p>
+                  ))}
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
-};
-
-export default Subscribe;
+}

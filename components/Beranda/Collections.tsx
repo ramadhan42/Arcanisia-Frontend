@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductDetail from "../Modals/ProductDetail";
@@ -68,44 +68,43 @@ const productsData = [
 ];
 
 const Collections = () => {
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<
+    (typeof productsData)[number] | null
+  >(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const goldGradient =
     "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
 
-  const handleDiscoverClick = (product: any) => {
+  const handleDiscoverClick = (product: (typeof productsData)[number]) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
   };
 
   return (
     <section
-      className="flex flex-col items-center w-full py-20 overflow-hidden relative"
-      // Perubahan background linear-gradient sesuai permintaan
+      className="relative flex w-full flex-col items-center overflow-hidden px-4 py-16 sm:px-6 md:py-20 lg:px-8 lg:py-24"
       style={{
         background: "linear-gradient(180deg, #00221f, #022421 50%, #00221f)",
       }}
     >
-      {/* Teks "THE COLLECTION" - Animasi dari tengah */}
       <motion.p
         initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-        className="text-[10px] text-[#F5EDD6] font-medium tracking-widest mb-3 uppercase"
+        className="mb-3 font-medium uppercase text-[#F5EDD6CC] text-[9px] tracking-[3px] sm:text-[10px]"
         style={{ fontFamily: "'Grazie mille', serif" }}
       >
         THE COLLECTION
       </motion.p>
 
-      {/* Teks "Six Islands, Six Stories" - Animasi dari tengah */}
       <motion.h2
         initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-        className="text-[35px] font-normal text-transparent bg-clip-text text-center mb-6"
+        className="mb-5 bg-clip-text px-2 text-center text-[28px] font-normal leading-tight text-transparent sm:text-[34px] md:mb-6 md:text-[40px]"
         style={{
           backgroundImage: goldGradient,
           fontFamily: "'Gilland', sans-serif",
@@ -114,29 +113,28 @@ const Collections = () => {
         Six Islands, Six Stories
       </motion.h2>
 
-      {/* Gambar Ornamen SVG - Animasi dari tengah */}
       <motion.div
         initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-        className="relative w-[213px] h-[17px] mb-6"
+        className="relative mb-5 h-[13px] w-[165px] sm:h-[15px] sm:w-[190px] md:mb-6 md:w-[213px]"
       >
         <Image
           src="/gambar/seksi%204/ornamen.svg"
           alt="Ornament line"
           fill
-          style={{ objectFit: "contain" }}
+          className="object-contain"
+          sizes="213px"
         />
       </motion.div>
 
-      {/* Teks Deskripsi Panjang - Animasi dari tengah */}
       <motion.p
         initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-        className="text-[14px] text-[#C9B99A] text-center max-w-[650px] leading-relaxed mb-16 px-4"
+        className="mb-10 max-w-[650px] px-4 text-center text-[13px] leading-relaxed text-[#C9B99A] sm:text-[14px] md:mb-14 md:text-[15px]"
         style={{ fontFamily: "'Grazie mille', serif", fontWeight: "normal" }}
       >
         Each fragrance is an olfactory journey through the soul of the
@@ -144,8 +142,7 @@ const Collections = () => {
         into being.
       </motion.p>
 
-      {/* Grid Produk - Gap diubah jadi 10 (gap-10) untuk memberi ruang karena card diperbesar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16 max-w-7xl mx-auto px-4">
+      <div className="mx-auto mb-12 grid w-full max-w-[1160px] grid-cols-1 gap-5 px-2 sm:grid-cols-2 sm:px-0 lg:grid-cols-3 lg:gap-7">
         {productsData.map((product, index) => (
           <motion.div
             key={product.id}
@@ -153,37 +150,33 @@ const Collections = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.2 * index, ease: "easeOut" }}
-            // Ukuran Card diperbesar dari w-[325px] menjadi w-[350px]
-            className="w-full md:w-[350px] h-auto flex flex-col rounded-sm border border-[#2a2a2a] relative"
+            className="relative flex h-full min-w-0 w-full flex-col overflow-hidden rounded-sm border border-[#F5EDD6]/10"
             style={{ backgroundColor: product.bgColor }}
           >
-            {/* BADGE (Hanya muncul jika product.badge ada isinya) */}
             {product.badge && (
               <div
-                className="absolute top-4 left-4 z-10 px-2 py-0.5 text-[9px] font-bold text-[#091812] tracking-wider shadow-md"
+                className="absolute left-3 top-3 z-10 px-2 py-1 text-[8px] font-bold tracking-wider text-[#091812] shadow-md sm:left-4 sm:top-4 sm:text-[9px]"
                 style={{ background: goldGradient }}
               >
                 {product.badge}
               </div>
             )}
 
-            {/* Bagian Atas: Gambar Produk (Tinggi gambar disesuaikan sedikit menjadi 260px) */}
-            <div className="relative w-full h-[320px] overflow-hidden">
+            <div className="relative aspect-[1.1/1] w-full overflow-hidden">
               <Image
                 src={product.image}
                 alt={product.name}
                 fill
                 quality={100}
-                style={{ objectFit: "cover", transform: "scale(1.1)" }}
-                sizes="(max-width: 768px) 100vw, 800px"
+                className="scale-105 object-cover transition-transform duration-500 hover:scale-110"
+                sizes="(max-width: 640px) calc(100vw - 48px), (max-width: 1279px) 50vw, 370px"
               />
             </div>
 
-            {/* Bagian Bawah: Informasi Produk */}
-            <div className="flex flex-col flex-1 p-6 pb-7 text-left justify-between">
+            <div className="flex flex-1 flex-col justify-between p-5 text-left sm:p-6 sm:pb-7">
               <div>
                 <p
-                  className="text-[10px] font-medium tracking-wider mb-2 uppercase truncate"
+                  className="mb-2 truncate text-[9px] font-medium uppercase tracking-wider sm:text-[10px]"
                   style={{
                     color: "#C9B99AB2",
                     fontFamily: "'Grazie mille', serif",
@@ -192,7 +185,7 @@ const Collections = () => {
                   {product.topTitle}
                 </p>
                 <h3
-                  className="text-[22px] font-normal text-transparent bg-clip-text mb-2"
+                  className="mb-2 bg-clip-text text-[20px] font-normal leading-tight text-transparent sm:text-[22px]"
                   style={{
                     backgroundImage: goldGradient,
                     fontFamily: "'Gilland', sans-serif",
@@ -200,27 +193,27 @@ const Collections = () => {
                 >
                   {product.name}
                 </h3>
-                <p className="text-[11px] text-[#F5EDD6] mb-6 tracking-wide">
+                <p className="mb-5 text-[10px] tracking-wide text-[#F5EDD6] sm:mb-6 sm:text-[11px]">
                   {product.size}
                 </p>
               </div>
 
-              <div className="flex flex-row items-center justify-between mt-auto">
+              <div className="mt-auto flex flex-row items-center justify-between gap-3">
                 <p
-                  className="text-[18px] text-[#F8C56C] font-normal"
+                  className="whitespace-nowrap text-[16px] font-normal text-[#F8C56C] sm:text-[18px]"
                   style={{ fontFamily: "'Gilland', sans-serif" }}
                 >
                   {product.price}
                 </p>
 
-                {/* Tombol memanggil Modal */}
                 <button
+                  type="button"
                   onClick={() => handleDiscoverClick(product)}
-                  className="flex flex-row items-center gap-1 hover:opacity-80 transition-opacity"
+                  className="flex shrink-0 flex-row items-center gap-1 transition-opacity hover:opacity-80"
                   style={{
                     color: "#F5EDD6CC",
                     fontFamily: "'Grazie mille', serif",
-                    fontSize: "12px",
+                    fontSize: "11px",
                     fontWeight: "500",
                   }}
                 >
@@ -246,12 +239,13 @@ const Collections = () => {
       </div>
 
       <motion.button
+        type="button"
         initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-        className="w-[260px] h-[40px] flex items-center justify-center gap-3 text-[12px] text-[#124B46] rounded-sm hover:opacity-90 transition-opacity"
-        style={{ background: goldGradient, fontWeight: "bold" }}
+        className="flex h-10 w-full max-w-[260px] items-center justify-center gap-3 rounded-sm font-gilland text-[10px] font-normal tracking-[1px] text-[#124B46] transition-opacity hover:opacity-90 sm:text-[11px]"
+        style={{ background: goldGradient }}
       >
         VIEW COMPLETE COLLECTION
         <svg

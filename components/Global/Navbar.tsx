@@ -298,25 +298,37 @@ export default function Navbar() {
 
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <>
-            <motion.button
-              type="button"
-              aria-label="Tutup menu"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 z-40 bg-black/35 lg:hidden"
-            />
+          <motion.div
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
+            className="fixed inset-0 z-[60] overflow-y-auto bg-[#012F2B] lg:hidden"
+          >
+            <div className="flex min-h-[100svh] flex-col px-6 pb-10 pt-6">
+              <div className="flex items-center justify-between">
+                <Image
+                  src="/gambar/navbar/logo%20arca%20fix%201.svg"
+                  alt="Arcanisia"
+                  width={142}
+                  height={36}
+                  className="h-auto w-[112px]"
+                />
+                <button
+                  type="button"
+                  aria-label="Tutup menu"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="relative flex h-8 w-8 items-center justify-center text-[#F8C56C]"
+                >
+                  <span className="absolute h-[2px] w-5 rotate-45 bg-current" />
+                  <span className="absolute h-[2px] w-5 -rotate-45 bg-current" />
+                </button>
+              </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: -16, scaleY: 0.96 }}
-              animate={{ opacity: 1, y: 0, scaleY: 1 }}
-              exit={{ opacity: 0, y: -16, scaleY: 0.96 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="fixed inset-x-3 top-[76px] z-[60] origin-top overflow-hidden rounded-lg border border-[#F8C56C]/30 bg-[#012421] shadow-2xl lg:hidden"
-            >
-              <div className="flex flex-col px-5 py-3">
+              <nav
+                aria-label="Navigasi mobile"
+                className="mt-10 flex flex-col items-center gap-11"
+              >
                 {["ABOUT", "COLLECTION", "MISSION", "VALUES"].map((menu) => {
                   const targetId = menu.toLowerCase();
 
@@ -325,44 +337,59 @@ export default function Navbar() {
                       key={menu}
                       href={`/#${targetId}`}
                       onClick={(e) => handleScroll(e, targetId)}
-                      className="border-b border-white/10 py-4 font-gilland text-[13px] tracking-[2px] text-[#F5EDD6CC] transition-colors last:border-b-0 hover:text-[#F8C56C]"
+                      className="font-gilland text-[35px] capitalize tracking-[5px] text-[#F5EDD6] transition-colors hover:text-[#F8C56C]"
                     >
-                      {menu}
+                      {menu.toLowerCase()}
                     </a>
                   );
                 })}
+              </nav>
+
+              <div className="mt-24 flex flex-col items-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOrdersOpen(true);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-6 font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
+                >
+                  <Image
+                    src="/gambar/navbar/Icon.svg"
+                    alt=""
+                    width={21}
+                    height={21}
+                    className="h-[21px] w-[21px]"
+                  />
+                  PESANAN SAYA
+                </button>
 
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="border-t border-[#F8C56C]/20 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F8C56C]"
+                  className="mt-20 flex h-[57px] w-[222px] items-center justify-center gap-7 rounded-xl border border-[#F8C56C] font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
                 >
+                  <Image
+                    src="/gambar/navbar/Icon.svg"
+                    alt=""
+                    width={21}
+                    height={21}
+                    className="h-[21px] w-[21px]"
+                  />
                   SHOP NOW
                 </button>
 
                 {isLoggedIn ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsOrdersOpen(true);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="border-t border-white/10 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F5EDD6CC]"
-                    >
-                      AKUN SAYA
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleLogout();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="border-t border-white/10 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F5EDD6CC]"
-                    >
-                      LOGOUT
-                    </button>
-                  </>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="mt-14 font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
+                  >
+                    LOGOUT
+                  </button>
                 ) : (
                   <button
                     type="button"
@@ -370,14 +397,15 @@ export default function Navbar() {
                       setActiveModal("login");
                       setIsMobileMenuOpen(false);
                     }}
-                    className="border-t border-white/10 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F5EDD6CC]"
+                    className="mt-14 flex items-center gap-6 font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
                   >
+                    <User size={23} fill="#F8C56C" strokeWidth={1.4} />
                     MASUK
                   </button>
                 )}
               </div>
-            </motion.div>
-          </>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
