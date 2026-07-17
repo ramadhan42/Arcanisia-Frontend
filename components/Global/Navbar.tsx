@@ -11,7 +11,12 @@ import {
   useMotionValueEvent,
   AnimatePresence,
 } from "framer-motion";
-import { User, ChevronDown } from "lucide-react"; // Import icon User & ChevronDown dari lucide-react[cite: 13]
+import {
+  User,
+  ChevronDown,
+  ShoppingBag,
+  LogOut,
+} from "lucide-react";
 import LoginModal from "../Auth/LoginModal";
 import RegisterModal from "../Auth/RegisterModal";
 import OrdersModal from "../Modals/Orders";
@@ -30,6 +35,7 @@ export default function Navbar() {
   // State untuk status Login & Nama User
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State baru untuk dropdown
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
@@ -39,6 +45,7 @@ export default function Navbar() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUserName("");
+    setUserEmail("");
     setIsDropdownOpen(false);
   };
 
@@ -52,8 +59,9 @@ export default function Navbar() {
   };
 
   // Fungsi saat login berhasil
-  const handleLoginSuccess = (name: string) => {
+  const handleLoginSuccess = (name: string, email: string) => {
     setUserName(name);
+    setUserEmail(email);
     setIsLoggedIn(true);
     closeModal();
   };
@@ -90,6 +98,7 @@ export default function Navbar() {
   ) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
+    setIsDropdownOpen(false);
 
     if (window.location.pathname !== "/") {
       window.location.assign(`/#${targetId}`);
@@ -175,8 +184,9 @@ export default function Navbar() {
             className="hidden flex-shrink-0 lg:block"
           >
             <button
+              type="button"
               aria-label="Shop now"
-              className="flex h-10 items-center gap-3 rounded-md border border-[#F8C56C] px-3 transition-all duration-300 hover:bg-[#F8C56C]/10 lg:h-auto lg:px-4 lg:py-2.5 xl:gap-4 xl:px-6"
+              className="flex h-[42px] items-center gap-3 rounded-md border border-[#F8C56C] px-4 transition-all duration-300 hover:bg-[#F8C56C]/10 xl:gap-4 xl:px-6"
             >
               <Image
                 src="/gambar/navbar/Icon.svg"
@@ -193,24 +203,25 @@ export default function Navbar() {
           {/* LOGIC UNTUK MENU MASUK ATAU USER MENU */}
           {isLoggedIn ? (
             <div className="relative hidden lg:block">
-              {" "}
-              {/* Bungkus dengan relative */}
               {/* Trigger Dropdown */}
-              <div
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex h-10 cursor-pointer items-center gap-2 rounded-md border border-[#F8C56C] px-2.5 transition-all duration-300 hover:bg-[#F8C56C]/10 lg:h-auto lg:px-4 lg:py-2.5 xl:gap-4 xl:px-6"
+              <button
+                type="button"
+                aria-label={`Buka menu akun ${userName}`}
+                aria-expanded={isDropdownOpen}
+                onClick={() => setIsDropdownOpen((open) => !open)}
+                className="flex h-[42px] min-w-[116px] cursor-pointer items-center gap-2.5 rounded-md border border-[#F8C56C] p-1 pr-2.5 transition-all duration-300 hover:bg-[#F8C56C]/10 xl:gap-3"
               >
                 <div
-                  className="h-[18px] w-[18px] flex items-center justify-center shrink-0"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center"
                   style={{ background: goldGradient }}
                 >
-                  <b className="font-montserrat text-[11px] text-[#091812] leading-none mb-[1px]">
+                  <b className="font-montserrat text-[15px] font-bold leading-none text-[#091812]">
                     {userName.charAt(0).toUpperCase()}
                   </b>
                 </div>
-                <div className="hidden max-w-[80px] items-center overflow-hidden lg:flex">
+                <div className="flex min-w-0 flex-1 items-center overflow-hidden">
                   <span
-                    className="font-graziemille text-[13px] tracking-[1.5px] truncate leading-none mt-[2px]"
+                    className="mt-[2px] max-w-[74px] truncate font-graziemille text-[13px] leading-none tracking-[0.5px]"
                     style={goldTextGradient}
                   >
                     {userName.toLowerCase()}
@@ -219,30 +230,61 @@ export default function Navbar() {
                 <ChevronDown
                   size={16}
                   color="#F8C56C"
-                  className={`shrink-0 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                  strokeWidth={2.4}
+                  className={`shrink-0 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
                 />
-              </div>
+              </button>
               {/* DROPDOWN MENU */}
               {isDropdownOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full right-0 mt-2 w-40 bg-[#012421] border border-[#F8C56C]/30 rounded-md py-2 shadow-2xl z-50"
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute right-0 top-full z-50 mt-2 w-[240px] overflow-hidden rounded-sm border border-[#7c7135]/45 bg-[#002d28] shadow-2xl"
                 >
+                  <div className="flex h-20 flex-col justify-center px-5 font-graziemille">
+                    <p className="truncate text-[16px] leading-none text-[#F8C56C]">
+                      {userName.toLowerCase()}
+                    </p>
+                    <p className="mt-3 truncate text-[12px] leading-none text-[#c9c7b7]">
+                      {userEmail.toLowerCase()}
+                    </p>
+                  </div>
+
+                  <div className="border-y border-[#7c7135]/35">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsOrdersOpen(true);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                    >
+                      <User size={18} strokeWidth={1.7} />
+                      <span>Profil Saya</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsOrdersOpen(true);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                    >
+                      <ShoppingBag size={18} strokeWidth={1.7} />
+                      <span>Pesanan Saya</span>
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => {
-                      setIsOrdersOpen(true);
-                      setIsDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-[12px] text-[#c9b99a] hover:bg-[#F8C56C]/10 hover:text-[#F8C56C] transition-colors font-graziemille tracking-[1px]"
-                  >
-                    AKUN SAYA
-                  </button>
-                  <button
+                    type="button"
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-[12px] text-[#c9b99a] hover:bg-[#F8C56C]/10 hover:text-[#F8C56C] transition-colors font-graziemille tracking-[1px]"
+                    className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#ff6673] transition-colors hover:bg-[#ff6673]/8"
                   >
-                    LOGOUT
+                    <LogOut size={18} strokeWidth={1.8} />
+                    <span>Keluar</span>
                   </button>
                 </motion.div>
               )}
@@ -250,9 +292,10 @@ export default function Navbar() {
           ) : (
             // Tampilan Menu Masuk (Sebelum Login)
             <button
+              type="button"
               onClick={() => setActiveModal("login")}
               aria-label="Masuk"
-              className="group hidden h-10 w-10 items-center justify-center gap-2 rounded-md transition-colors hover:bg-white/5 lg:flex lg:h-auto lg:w-auto lg:px-2 lg:py-2 xl:px-4"
+              className="group hidden h-[42px] items-center justify-center gap-2 rounded-md px-2 transition-colors hover:bg-white/5 lg:flex xl:px-4"
             >
               <User
                 size={16}
@@ -272,7 +315,10 @@ export default function Navbar() {
             type="button"
             aria-label={isMobileMenuOpen ? "Tutup menu" : "Buka menu"}
             aria-expanded={isMobileMenuOpen}
-            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            onClick={() => {
+              if (isMobileMenuOpen) setIsDropdownOpen(false);
+              setIsMobileMenuOpen((open) => !open);
+            }}
             className="flex h-10 w-10 items-center justify-center text-[#F8C56C] lg:hidden"
           >
             <span className="relative block h-[22px] w-6">
@@ -317,7 +363,10 @@ export default function Navbar() {
                 <button
                   type="button"
                   aria-label="Tutup menu"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    setIsMobileMenuOpen(false);
+                  }}
                   className="relative flex h-8 w-8 items-center justify-center text-[#F8C56C]"
                 >
                   <span className="absolute h-[2px] w-5 rotate-45 bg-current" />
@@ -345,29 +394,14 @@ export default function Navbar() {
                 })}
               </nav>
 
-              <div className="mt-24 flex flex-col items-center">
+              <div className="mt-16 flex flex-col items-center">
                 <button
                   type="button"
                   onClick={() => {
-                    setIsOrdersOpen(true);
+                    setIsDropdownOpen(false);
                     setIsMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-6 font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
-                >
-                  <Image
-                    src="/gambar/navbar/Icon.svg"
-                    alt=""
-                    width={21}
-                    height={21}
-                    className="h-[21px] w-[21px]"
-                  />
-                  PESANAN SAYA
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="mt-20 flex h-[57px] w-[222px] items-center justify-center gap-7 rounded-xl border border-[#F8C56C] font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
+                  className="flex h-[57px] w-[222px] items-center justify-center gap-7 rounded-xl border border-[#F8C56C] font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
                 >
                   <Image
                     src="/gambar/navbar/Icon.svg"
@@ -380,16 +414,98 @@ export default function Navbar() {
                 </button>
 
                 {isLoggedIn ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleLogout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="mt-14 font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
-                  >
-                    LOGOUT
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      aria-label={`Buka menu akun ${userName}`}
+                      aria-expanded={isDropdownOpen}
+                      onClick={() => setIsDropdownOpen((open) => !open)}
+                      className="mt-5 flex h-[57px] w-[222px] items-center rounded-xl border border-[#F8C56C] p-1.5 pr-4 text-[#F8C56C] transition-colors hover:bg-[#F8C56C]/10"
+                    >
+                      <span
+                        className="flex h-11 w-11 shrink-0 items-center justify-center"
+                        style={{ background: goldGradient }}
+                      >
+                        <b className="font-montserrat text-[17px] font-bold leading-none text-[#091812]">
+                          {userName.charAt(0).toUpperCase()}
+                        </b>
+                      </span>
+                      <span
+                        className="ml-4 min-w-0 flex-1 truncate text-left font-graziemille text-[15px] leading-none tracking-[0.5px]"
+                        style={goldTextGradient}
+                      >
+                        {userName.toLowerCase()}
+                      </span>
+                      <ChevronDown
+                        size={18}
+                        strokeWidth={2.2}
+                        className={`ml-2 shrink-0 transition-transform duration-200 ${
+                          isDropdownOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    <AnimatePresence>
+                      {isDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.2 }}
+                          className="mt-2 w-[min(280px,calc(100vw-48px))] overflow-hidden rounded-sm border border-[#7c7135]/45 bg-[#002d28] shadow-2xl"
+                        >
+                          <div className="flex h-20 flex-col justify-center px-5 font-graziemille">
+                            <p className="truncate text-[16px] leading-none text-[#F8C56C]">
+                              {userName.toLowerCase()}
+                            </p>
+                            <p className="mt-3 truncate text-[12px] leading-none text-[#c9c7b7]">
+                              {userEmail.toLowerCase()}
+                            </p>
+                          </div>
+
+                          <div className="border-y border-[#7c7135]/35">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsOrdersOpen(true);
+                                setIsDropdownOpen(false);
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                            >
+                              <User size={18} strokeWidth={1.7} />
+                              <span>Profil Saya</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsOrdersOpen(true);
+                                setIsDropdownOpen(false);
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                            >
+                              <ShoppingBag size={18} strokeWidth={1.7} />
+                              <span>Pesanan Saya</span>
+                            </button>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              handleLogout();
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#ff6673] transition-colors hover:bg-[#ff6673]/8"
+                          >
+                            <LogOut size={18} strokeWidth={1.8} />
+                            <span>Keluar</span>
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
                 ) : (
                   <button
                     type="button"

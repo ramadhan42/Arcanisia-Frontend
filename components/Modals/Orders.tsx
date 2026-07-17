@@ -1,9 +1,17 @@
 "use client";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { X, Package, ChevronRight, ShoppingBag } from "lucide-react";
+import {
+  Box,
+  CheckCircle2,
+  ChevronDown,
+  ShoppingBag,
+  Truck,
+  X,
+} from "lucide-react";
 
-// 1. Definisikan tipe untuk Order
+type OrderStatus = "pending" | "processing" | "shipping" | "completed";
+
 interface Order {
   id: string;
   name: string;
@@ -14,150 +22,264 @@ interface Order {
   image: string;
   size: string;
   qty: number;
+  statusKey?: OrderStatus;
 }
 
-// 2. Definisikan tipe untuk Props Modal
 interface OrdersModalProps {
   onClose: () => void;
-  orders?: Order[]; // Optional, agar tidak error jika tidak ada data
+  orders?: Order[];
 }
 
-// 3. Gunakan tipe tersebut pada komponen
 const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, orders = [] }) => {
-  // Data dummy diletakkan di dalam atau di luar komponen
   const dummyOrders: Order[] = [
     {
       id: "ARC-847213",
-      name: "Emerald of Borneo",
+      name: "Secret of Buton",
       date: "10 Jul 2026",
       price: "Rp 950.000",
       status: "SELESAI",
-      statusColor: "text-[#7dcfb6] bg-[#7dcfb6]/10",
-      image: "", // Placeholder akan aktif
+      statusColor: "text-[#d7c66e] bg-[#d7c66e]/10",
+      image: "/gambar/seksi%204/button.jpg",
       size: "50ml",
       qty: 1,
+      statusKey: "completed",
     },
     {
-      id: "ARC-612904",
-      name: "Whisper of Raja Ampat",
-      date: "3 Jul 2026",
-      price: "Rp 1.536.400",
+      id: "ARC-847213",
+      name: "Reverie of Sumba",
+      date: "10 Jul 2026",
+      price: "Rp 950.000",
       status: "DALAM PENGIRIMAN",
-      statusColor: "text-[#4a9eda] bg-[#4a9eda]/10",
-      image: "",
-      size: "100ml",
+      statusColor: "text-[#79c9bd] bg-[#79c9bd]/10",
+      image: "/gambar/seksi%204/sumba.jpg",
+      size: "50ml",
       qty: 1,
+      statusKey: "shipping",
     },
     {
-      id: "ARC-501337",
-      name: "Glow of Borobudur",
-      date: "28 Jun 2026",
-      price: "Rp 1.207.200",
+      id: "ARC-847213",
+      name: "Charm of Nias",
+      date: "10 Jul 2026",
+      price: "Rp 950.000",
       status: "SEDANG DIPROSES",
-      statusColor: "text-[#c9a84c] bg-[#c9a84c]/10",
-      image: "",
-      size: "30ml",
-      qty: 2,
+      statusColor: "text-[#3ca9d2] bg-[#3ca9d2]/10",
+      image: "/gambar/seksi%204/nias.jpg",
+      size: "50ml",
+      qty: 1,
+      statusKey: "processing",
     },
-    // ... data lainnya
   ];
+
+  const [activeFilter, setActiveFilter] = useState<"all" | OrderStatus>("all");
+  const displayedOrders = orders.length > 0 ? orders : dummyOrders;
+
+  const counts = useMemo(
+    () => ({
+      all: displayedOrders.length,
+      pending: displayedOrders.filter(
+        (order) => order.statusKey === "pending",
+      ).length,
+      processing: displayedOrders.filter(
+        (order) => order.statusKey === "processing",
+      ).length,
+      shipping: displayedOrders.filter(
+        (order) => order.statusKey === "shipping",
+      ).length,
+      completed: displayedOrders.filter(
+        (order) => order.statusKey === "completed",
+      ).length,
+    }),
+    [displayedOrders],
+  );
+
+  const filteredOrders =
+    activeFilter === "all"
+      ? displayedOrders
+      : displayedOrders.filter((order) => order.statusKey === activeFilter);
+
+  const tabs: Array<{
+    key: "all" | OrderStatus;
+    label: string;
+  }> = [
+    { key: "all", label: "SEMUA" },
+    { key: "pending", label: "MENUNGGU" },
+    { key: "processing", label: "DIPROSES" },
+    { key: "shipping", label: "DIKIRIM" },
+    { key: "completed", label: "SELESAI" },
+  ];
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
+
+  const statusIcon = (status: OrderStatus | undefined) => {
+    if (status === "completed") return <CheckCircle2 size={12} />;
+    if (status === "shipping") return <Truck size={12} />;
+    return <Box size={12} />;
+  };
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      {/* Container: 80% Desktop View */}
-      <div className="w-full max-w-[900px] h-[80vh] bg-[#0d1f16] flex flex-col text-[#c9b99a] shadow-2xl rounded-md overflow-hidden font-montserrat border border-[#c9a84c]/20">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#c9a84c]/15">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 backdrop-blur-sm sm:p-4"
+      onClick={onClose}
+      role="presentation"
+    >
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="orders-title"
+        onClick={(event) => event.stopPropagation()}
+        className="flex h-[calc(100svh-24px)] w-full max-w-[920px] flex-col overflow-hidden rounded-md border border-[#c9a84c]/20 bg-[#012f2b] font-graziemille text-[#c9b99a] shadow-2xl sm:h-[min(650px,calc(100svh-32px))]"
+      >
+        <header className="flex h-[88px] shrink-0 items-center justify-between border-b border-[#c9a84c]/15 px-5 sm:h-[92px] sm:px-7">
           <div>
-            <p className="text-[9px] tracking-[4px] uppercase text-[#c9a84c]/50">
+            <p className="text-[8px] tracking-[4px] text-[#c9a84c]/60 sm:text-[9px]">
               AKUN SAYA
             </p>
-            <h2 className="text-[24px] font-gilland text-[#f5edd6] mt-1">
+            <h2
+              id="orders-title"
+              className="mt-2 font-gilland text-[24px] leading-none text-[#f8c56c] sm:text-[27px]"
+            >
               Pesanan Saya
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 border border-[#c9a84c]/25 hover:bg-white/5 transition-colors"
+            aria-label="Tutup pesanan saya"
+            className="flex h-10 w-10 items-center justify-center border border-[#c9a84c]/30 text-[#c9a84c]/70 transition-colors hover:bg-white/5 hover:text-[#f8c56c] sm:h-11 sm:w-11"
           >
-            <X size={16} />
+            <X size={17} />
           </button>
-        </div>
+        </header>
 
-        {/* List Pesanan Dinamis */}
-        <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] p-6 space-y-4">
-          {dummyOrders.length > 0 ? (
-            dummyOrders.map((order) => (
-              <div
-                key={order.id}
-                className="border border-[#c9a84c]/15 p-4 flex gap-4 hover:border-[#c9a84c]/30 transition-all"
+        <nav
+          aria-label="Filter status pesanan"
+          className="flex h-[50px] shrink-0 overflow-x-auto border-b border-[#c9a84c]/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveFilter(tab.key)}
+              className={`relative flex h-full min-w-max flex-1 items-center justify-center gap-2 px-4 text-[8px] font-bold tracking-[3px] transition-colors sm:px-6 sm:text-[9px] ${
+                activeFilter === tab.key
+                  ? "text-[#f8c56c]"
+                  : "text-[#c9b99a]/35 hover:text-[#c9b99a]/70"
+              }`}
+            >
+              {tab.label}
+              {counts[tab.key] > 0 && (
+                <span
+                  className={`flex h-[18px] min-w-[18px] items-center justify-center px-1 text-[9px] tracking-normal ${
+                    activeFilter === tab.key
+                      ? "bg-[#f8c56c] text-[#012f2b]"
+                      : "bg-[#c9a84c]/15 text-[#c9a84c]/55"
+                  }`}
+                >
+                  {counts[tab.key]}
+                </span>
+              )}
+              {activeFilter === tab.key && (
+                <span className="absolute inset-x-1 bottom-0 h-[2px] bg-[#f8c56c] sm:inset-x-3" />
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className="flex-1 space-y-3 overflow-y-auto p-3 [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
+          {filteredOrders.length > 0 ? (
+            filteredOrders.map((order, index) => (
+              <article
+                key={`${order.id}-${order.name}`}
+                className="relative flex min-h-[132px] gap-3 border border-[#c9a84c]/15 p-3 transition-colors hover:border-[#c9a84c]/35 sm:min-h-[142px] sm:gap-5 sm:p-4"
               >
-                {/* Gambar Produk atau Icon */}
-                <div className="w-[64px] h-[80px] bg-black/20 flex items-center justify-center shrink-0 border border-[#c9a84c]/10">
+                <div className="relative h-[92px] w-[82px] shrink-0 overflow-hidden bg-black/20 sm:h-[108px] sm:w-[108px]">
                   {order.image ? (
                     <Image
                       src={order.image}
                       alt={order.name}
-                      width={64}
-                      height={80}
+                      fill
+                      sizes="(max-width: 639px) 82px, 108px"
                       className="object-cover"
                     />
                   ) : (
-                    <Package size={24} className="text-[#c9a84c]/30" />
+                    <div className="flex h-full items-center justify-center">
+                      <Box size={24} className="text-[#c9a84c]/30" />
+                    </div>
                   )}
+                  <span className="absolute left-0 top-0 z-10 flex h-4 min-w-4 items-center justify-center bg-[#f6d77c] px-1 font-montserrat text-[8px] font-bold text-[#183b34]">
+                    {order.qty || index + 1}
+                  </span>
                 </div>
 
-                {/* Informasi Order */}
-                <div className="flex-1 flex flex-col justify-between">
-                  <div className="flex justify-between items-start">
-                    <span className="text-[9px] tracking-[2px] text-[#c9b99a]/60">
-                      {order.id}
-                    </span>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate font-montserrat text-[8px] tracking-[3px] text-[#f8c56c]/85 sm:text-[9px]">
+                        {order.id}
+                      </p>
+                      <h3 className="mt-3 truncate font-gilland text-[17px] leading-none text-[#f8c56c] sm:text-[20px]">
+                        {order.name}
+                      </h3>
+                      <p className="mt-2 text-[9px] leading-none text-[#c9b99a]/35 sm:text-[10px]">
+                        {order.size} · Qty {order.qty} · {order.date}
+                      </p>
+                    </div>
+
                     <span
-                      className={`px-2 py-1 text-[8px] font-bold tracking-[1px] uppercase ${order.statusColor}`}
+                      className={`hidden shrink-0 items-center gap-1.5 px-3 py-2 font-montserrat text-[8px] font-semibold tracking-[1.5px] sm:flex ${order.statusColor}`}
                     >
+                      {statusIcon(order.statusKey)}
                       {order.status}
                     </span>
                   </div>
 
-                  <div>
-                    <h4 className="font-gilland text-[18px] text-[#f5edd6]">
-                      {order.name}
-                    </h4>
-                    <p className="text-[10px] text-[#c9b99a]/50 mt-0.5">
-                      {order.size} · Qty {order.qty} · {order.date}
-                    </p>
-                  </div>
-
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-[16px] font-gilland text-[#c9a84c]">
+                  <div className="mt-auto flex items-end justify-between gap-2">
+                    <span className="font-gilland text-[17px] leading-none text-[#f8c56c] sm:text-[19px]">
                       {order.price}
                     </span>
-                    <button className="flex items-center gap-1 text-[9px] tracking-[1px] text-[#c9b99a]/40 hover:text-[#c9a84c] transition-colors">
-                      DETAIL <ChevronRight size={12} />
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 font-montserrat text-[8px] tracking-[2px] text-[#c9b99a]/30 transition-colors hover:text-[#f8c56c]"
+                    >
+                      DETAIL <ChevronDown size={12} />
                     </button>
                   </div>
+
+                  <span
+                    className={`mt-3 flex w-fit items-center gap-1.5 px-2 py-1 font-montserrat text-[7px] font-semibold tracking-[1px] sm:hidden ${order.statusColor}`}
+                  >
+                    {statusIcon(order.statusKey)}
+                    {order.status}
+                  </span>
                 </div>
-              </div>
+              </article>
             ))
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-[#c9a84c]/30">
-              <ShoppingBag size={48} className="mb-4" />
-              <p className="font-gilland text-[18px]">Belum ada pesanan.</p>
+            <div className="flex h-full min-h-[220px] flex-col items-center justify-center text-[#c9a84c]/30">
+              <ShoppingBag size={42} className="mb-4" />
+              <p className="font-gilland text-[17px]">Belum ada pesanan.</p>
             </div>
           )}
         </div>
 
-        {/* Footer Modal */}
-        <div className="p-4 border-t border-[#c9a84c]/10 flex justify-between items-center text-[10px] text-[#c9b99a]/40">
-          <span>{dummyOrders.length} pesanan total</span>
+        <footer className="flex h-[54px] shrink-0 items-center justify-between border-t border-[#c9a84c]/10 px-5 text-[9px] text-[#c9b99a]/70 sm:px-7 sm:text-[10px]">
+          <span>{displayedOrders.length} pesanan total</span>
           <button
+            type="button"
             onClick={onClose}
-            className="flex items-center gap-2 hover:text-[#c9a84c] transition-colors uppercase tracking-[1px]"
+            className="flex items-center gap-3 font-montserrat text-[8px] tracking-[2.5px] text-[#f8c56c] transition-opacity hover:opacity-75 sm:text-[9px]"
           >
-            Lanjut Belanja <ChevronRight size={12} />
+            <ShoppingBag size={14} />
+            LANJUT BELANJA
           </button>
-        </div>
-      </div>
+        </footer>
+      </section>
     </div>
   );
 };

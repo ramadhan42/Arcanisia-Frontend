@@ -10,7 +10,7 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToRegister: () => void;
-  onLogin: (name: string) => void; // Prop baru untuk meneruskan nama user ke Navbar[cite: 14]
+  onLogin: (name: string, email: string) => void;
 }
 
 const LoginModal: NextPage<LoginModalProps> = ({
@@ -22,14 +22,19 @@ const LoginModal: NextPage<LoginModalProps> = ({
   // State untuk menangkap input nama/email
   const [nameInput, setNameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!isOpen) return null;
 
   // Fungsi trigger login
   const handleMasuk = () => {
-    // Jika input kosong, default ke "Umar"
-    const validName = nameInput.trim() ? nameInput.split("@")[0] : "Umar";
-    onLogin(validName);
+    const loginValue = nameInput.trim();
+    const validName = loginValue ? loginValue.split("@")[0] : "Umar";
+    const validEmail = loginValue.includes("@")
+      ? loginValue
+      : `${validName.toLowerCase()}@gmail.com`;
+
+    onLogin(validName, validEmail);
   };
 
   return (
@@ -50,6 +55,167 @@ const LoginModal: NextPage<LoginModalProps> = ({
       }}
       onClick={onClose} // Modal tertutup saat klik luar area[cite: 14]
     >
+      <motion.div
+        initial={{ y: 24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 24, opacity: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        onClick={(event) => event.stopPropagation()}
+        className="h-[100svh] w-full overflow-y-auto bg-[#012f2b] px-[clamp(24px,8.8vw,43px)] pb-9 pt-8 font-graziemille text-[#c9b99a] md:hidden"
+      >
+        <div className="mx-auto w-full max-w-[402px]">
+          <div className="grid h-12 grid-cols-2 border-b border-[#c9a84c]/20">
+            <button
+              type="button"
+              className="relative font-montserrat text-[12px] font-bold tracking-[4px] text-[#f8c56c]"
+            >
+              MASUK
+              <span className="absolute inset-x-0 bottom-0 h-[2px] bg-[#f8c56c]" />
+            </button>
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="font-montserrat text-[12px] font-bold tracking-[4px] text-[#c9b99a]/40 transition-colors hover:text-[#f8c56c]"
+            >
+              DAFTAR
+            </button>
+          </div>
+
+          <div className="mt-10">
+            <h2 className="font-gilland text-[clamp(30px,7.4vw,36px)] leading-none text-[#f8c56c]">
+              Selamat Datang
+            </h2>
+            <p className="mt-4 text-[clamp(15px,4vw,19px)] leading-none text-[#c9b99a]/40">
+              Masuk ke akun Arcanisia Anda
+            </p>
+          </div>
+
+          <form
+            className="mt-11"
+            onSubmit={(event) => {
+              event.preventDefault();
+              handleMasuk();
+            }}
+          >
+            <label
+              htmlFor="mobile-login-email"
+              className="font-montserrat text-[10px] font-medium tracking-[4px] text-[#f5edd6]"
+            >
+              EMAIL
+            </label>
+            <input
+              id="mobile-login-email"
+              type="email"
+              autoComplete="email"
+              placeholder="nama@email.com"
+              value={nameInput}
+              onChange={(event) => setNameInput(event.target.value)}
+              className="mt-3 h-[59px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
+            />
+
+            <label
+              htmlFor="mobile-login-password"
+              className="mt-6 block font-montserrat text-[10px] font-medium tracking-[4px] text-[#f5edd6]"
+            >
+              PASSWORD
+            </label>
+            <div className="relative mt-3">
+              <input
+                id="mobile-login-password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Masukkan password"
+                value={passwordInput}
+                onChange={(event) => setPasswordInput(event.target.value)}
+                className="h-[59px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 pr-14 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={
+                  showPassword ? "Sembunyikan password" : "Tampilkan password"
+                }
+                className="absolute inset-y-0 right-0 flex w-14 items-center justify-center"
+              >
+                <Image
+                  src="/gambar/login/eye.svg"
+                  width={19}
+                  height={19}
+                  alt=""
+                />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="mt-5 ml-auto block text-[13px] tracking-[1px] text-[#f8c56c]"
+            >
+              Lupa password?
+            </button>
+
+            <button
+              type="submit"
+              className="mt-6 flex h-[60px] w-full items-center justify-center gap-4 bg-[linear-gradient(256.8deg,#bda461,#fdde8a_24.52%,#bda461_50%,#fdde8a_75.48%,#bda461)] font-montserrat text-[12px] font-bold tracking-[5px] text-[#012421] transition-opacity hover:opacity-90"
+            >
+              MASUK
+              <span aria-hidden="true" className="text-[21px] font-normal">
+                →
+              </span>
+            </button>
+          </form>
+
+          <div className="my-11 flex items-center gap-4">
+            <span className="h-px flex-1 bg-[#c9a84c]/25" />
+            <span className="text-[12px] tracking-[5px] text-[#f8c56c]">
+              ◆◆◆
+            </span>
+            <span className="h-px flex-1 bg-[#c9a84c]/25" />
+          </div>
+
+          <div className="space-y-3">
+            <button
+              type="button"
+              className="flex h-[63px] w-full items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a] transition-colors hover:bg-white/5"
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
+                <Image
+                  src="/gambar/login/google.svg"
+                  width={18}
+                  height={18}
+                  alt=""
+                />
+              </span>
+              Lanjutkan dengan Google
+            </button>
+
+            <button
+              type="button"
+              className="flex h-[63px] w-full items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a] transition-colors hover:bg-white/5"
+            >
+              <Image
+                src="/gambar/login/facebook.svg"
+                width={28}
+                height={28}
+                alt=""
+              />
+              Lanjutkan dengan Facebook
+            </button>
+          </div>
+
+          <div className="mt-9 flex items-center justify-center gap-7 text-[14px]">
+            <span className="text-[#c9b99a]/35">Belum punya akun?</span>
+            <button
+              type="button"
+              onClick={onSwitchToRegister}
+              className="text-[18px] text-[#f8c56c] transition-opacity hover:opacity-80"
+            >
+              Daftar sekarang
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="hidden md:block">
       <motion.div
         initial={{ scale: 0.95, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -813,6 +979,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
           </div>
         </div>
       </motion.div>
+      </div>
     </motion.div>
   );
 };

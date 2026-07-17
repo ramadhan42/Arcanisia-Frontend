@@ -4,6 +4,7 @@
 import type { NextPage } from "next";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -16,6 +17,14 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
   onClose,
   onSwitchToLogin,
 }) => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+
   if (!isOpen) return null;
 
   return (
@@ -36,6 +45,212 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
       }}
       onClick={onClose}
     >
+      <motion.div
+        initial={{ y: 24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 24, opacity: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        onClick={(event) => event.stopPropagation()}
+        className="h-[100svh] w-full overflow-y-auto bg-[#012f2b] px-[clamp(24px,8.3vw,40px)] pb-8 pt-8 font-graziemille text-[#c9b99a] md:hidden"
+      >
+        <div className="mx-auto w-full max-w-[400px]">
+          <div className="grid h-12 grid-cols-2 border-b border-[#c9a84c]/20">
+            <button
+              type="button"
+              onClick={onSwitchToLogin}
+              className="font-montserrat text-[12px] font-bold tracking-[4px] text-[#c9b99a]/40 transition-colors hover:text-[#f8c56c]"
+            >
+              MASUK
+            </button>
+            <button
+              type="button"
+              className="relative font-montserrat text-[12px] font-bold tracking-[4px] text-[#f8c56c]"
+            >
+              DAFTAR
+              <span className="absolute inset-x-0 bottom-0 h-[2px] bg-[#f8c56c]" />
+            </button>
+          </div>
+
+          <div className="mt-10">
+            <h2 className="font-gilland text-[clamp(29px,7.2vw,35px)] leading-none text-[#f8c56c]">
+              Bergabung dengan Kami
+            </h2>
+            <p className="mt-4 text-[clamp(14px,3.8vw,18px)] leading-none text-[#c9b99a]/40">
+              Buat akun dan mulai perjalanan aromatik Anda
+            </p>
+          </div>
+
+          <form
+            className="mt-10"
+            onSubmit={(event) => {
+              event.preventDefault();
+              onSwitchToLogin();
+            }}
+          >
+            <label
+              htmlFor="mobile-register-name"
+              className="font-montserrat text-[10px] font-medium tracking-[4px] text-[#f5edd6]"
+            >
+              NAMA LENGKAP
+            </label>
+            <input
+              id="mobile-register-name"
+              type="text"
+              autoComplete="name"
+              placeholder="Masukkan nama lengkap"
+              value={fullName}
+              onChange={(event) => setFullName(event.target.value)}
+              className="mt-3 h-[58px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
+            />
+
+            <label
+              htmlFor="mobile-register-email"
+              className="mt-6 block font-montserrat text-[10px] font-medium tracking-[4px] text-[#f5edd6]"
+            >
+              EMAIL
+            </label>
+            <input
+              id="mobile-register-email"
+              type="email"
+              autoComplete="email"
+              placeholder="nama@email.com"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="mt-3 h-[58px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
+            />
+
+            <label
+              htmlFor="mobile-register-password"
+              className="mt-6 block font-montserrat text-[10px] font-medium tracking-[4px] text-[#f5edd6]"
+            >
+              PASSWORD
+            </label>
+            <div className="relative mt-3">
+              <input
+                id="mobile-register-password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                minLength={6}
+                placeholder="Min. 6 karakter"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="h-[58px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 pr-14 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={
+                  showPassword ? "Sembunyikan password" : "Tampilkan password"
+                }
+                className="absolute inset-y-0 right-0 flex w-14 items-center justify-center"
+              >
+                <Image
+                  src="/gambar/login/eye.svg"
+                  width={19}
+                  height={19}
+                  alt=""
+                />
+              </button>
+            </div>
+
+            <label
+              htmlFor="mobile-register-confirm-password"
+              className="mt-6 block font-montserrat text-[10px] font-medium tracking-[4px] text-[#f5edd6]"
+            >
+              KONFIRMASI PASSWORD
+            </label>
+            <div className="relative mt-3">
+              <input
+                id="mobile-register-confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                autoComplete="new-password"
+                placeholder="Ulangi password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                className="h-[58px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 pr-14 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setShowConfirmPassword((visible) => !visible)
+                }
+                aria-label={
+                  showConfirmPassword
+                    ? "Sembunyikan konfirmasi password"
+                    : "Tampilkan konfirmasi password"
+                }
+                className="absolute inset-y-0 right-0 flex w-14 items-center justify-center"
+              >
+                <Image
+                  src="/gambar/login/eye.svg"
+                  width={19}
+                  height={19}
+                  alt=""
+                />
+              </button>
+            </div>
+
+            <div className="mt-6 flex items-start gap-4 text-[12px] leading-[1.7] text-[#c9b99a]/55">
+              <label
+                htmlFor="mobile-register-terms"
+                className="mt-0.5 shrink-0 cursor-pointer"
+              >
+                <input
+                  id="mobile-register-terms"
+                  type="checkbox"
+                  required
+                  checked={acceptedTerms}
+                  onChange={(event) => setAcceptedTerms(event.target.checked)}
+                  className="peer sr-only"
+                />
+                <span className="flex h-[22px] w-[22px] items-center justify-center border border-[#c9a84c]/40 text-[13px] text-[#012f2b] peer-checked:bg-[#f8c56c]">
+                  {acceptedTerms ? "✓" : ""}
+                </span>
+              </label>
+              <span>
+                Saya menyetujui{" "}
+                <button
+                  type="button"
+                  className="text-[#f8c56c] underline underline-offset-2"
+                >
+                  Syarat &amp; Ketentuan
+                </button>{" "}
+                dan{" "}
+                <button
+                  type="button"
+                  className="text-[#f8c56c] underline underline-offset-2"
+                >
+                  Kebijakan Privasi
+                </button>{" "}
+                Arcanisia.
+              </span>
+            </div>
+
+            <button
+              type="submit"
+              className="mt-6 flex h-[60px] w-full items-center justify-center gap-4 bg-[linear-gradient(256.8deg,#bda461,#fdde8a_24.52%,#bda461_50%,#fdde8a_75.48%,#bda461)] font-montserrat text-[12px] font-bold tracking-[5px] text-[#012421] transition-opacity hover:opacity-90"
+            >
+              BUAT AKUN
+              <span aria-hidden="true" className="text-[21px] font-normal">
+                →
+              </span>
+            </button>
+          </form>
+
+          <div className="mt-9 flex items-center justify-center gap-7 text-[14px]">
+            <span className="text-[#c9b99a]/35">Sudah punya akun?</span>
+            <button
+              type="button"
+              onClick={onSwitchToLogin}
+              className="text-[18px] text-[#f8c56c] transition-opacity hover:opacity-80"
+            >
+              Masuk di sini
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="hidden md:block">
       <motion.div
         initial={{ scale: 0.95, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
@@ -867,6 +1082,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
           </div>
         </div>
       </motion.div>
+      </div>
     </motion.div>
   );
 };
