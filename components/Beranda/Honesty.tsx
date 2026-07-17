@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-// Data JSON Dinamis untuk 4 item di bawah
+// Data JSON Dinamis untuk 4 item di bawah[cite: 22]
 const essenceData = [
   {
     id: 1,
@@ -16,7 +16,7 @@ const essenceData = [
   },
   {
     id: 2,
-    imgSrc: "/gambar/seksi%206/2.svg", // Asumsi file ke-2 adalah 2.png
+    imgSrc: "/gambar/seksi%206/2.svg",
     topTitle: "SUSTAINABILITY",
     mainTitle: "Keberlanjutan",
     description:
@@ -42,7 +42,7 @@ const essenceData = [
 
 const Honesty = () => {
   return (
-    // Wrapper luar untuk men-center-kan seluruh body section
+    // Wrapper luar untuk men-center-kan seluruh body section[cite: 22]
     <section
       style={{
         width: "100%",
@@ -52,7 +52,7 @@ const Honesty = () => {
         overflow: "hidden",
       }}
     >
-      {/* Container Utama (Lebar Fix 1302px) */}
+      {/* Container Utama (Lebar Fix 1302px)[cite: 22] */}
       <div
         style={{
           width: "100%",
@@ -64,7 +64,7 @@ const Honesty = () => {
           fontFamily: "'Grazie mille'",
         }}
       >
-        {/* === BAGIAN ATAS === */}
+        {/* === BAGIAN ATAS ===[cite: 22] */}
         <div
           style={{
             position: "absolute",
@@ -80,7 +80,7 @@ const Honesty = () => {
             minHeight: "360px",
           }}
         >
-          {/* Gambar Background Utama - Muncul dari bawah */}
+          {/* Gambar Background Utama - Muncul dari bawah[cite: 22] */}
           <motion.div
             initial={{ opacity: 0, y: 80 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ const Honesty = () => {
             />
           </motion.div>
 
-          {/* Overlay Gradient */}
+          {/* Overlay Gradient[cite: 22] */}
           <div
             style={{
               width: "100%",
@@ -122,7 +122,7 @@ const Honesty = () => {
             }}
           />
 
-          {/* Konten Judul Atas */}
+          {/* Konten Judul Atas[cite: 22] */}
           <div
             style={{
               width: "100%",
@@ -150,10 +150,10 @@ const Honesty = () => {
                 alignItems: "flex-start",
               }}
             >
-              {/* Subtitle "THE ESSENCE" */}
+              {/* Subtitle "THE ESSENCE" - Scale in dari tengah berurutan */}
               <motion.div
-                initial={{ opacity: 0, y: -20, x: -20 }}
-                whileInView={{ opacity: 1, y: 0, x: 0 }}
+                initial={{ opacity: 0, scale: 0.85 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: false }}
                 transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                 style={{
@@ -177,10 +177,10 @@ const Honesty = () => {
                 </div>
               </motion.div>
 
-              {/* Title Utama "Honesty of Nusantara" */}
+              {/* Title Utama "Honesty of Nusantara" - Scale in dari tengah berurutan */}
               <motion.div
-                initial={{ opacity: 0, y: -30, x: -30 }}
-                whileInView={{ opacity: 1, y: 0, x: 0 }}
+                initial={{ opacity: 0, scale: 0.85 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: false }}
                 transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
                 style={{
@@ -209,9 +209,9 @@ const Honesty = () => {
               </motion.div>
             </div>
 
-            {/* Gambar Ornamen */}
+            {/* Gambar Ornamen - Scale in dari tengah berurutan */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: false }}
               transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
@@ -232,7 +232,7 @@ const Honesty = () => {
           </div>
         </div>
 
-        {/* === BAGIAN BAWAH (DINAMIS JSON) === */}
+        {/* === BAGIAN BAWAH (DINAMIS JSON) ===[cite: 22] */}
         <div
           style={{
             position: "absolute",
@@ -264,8 +264,8 @@ const Honesty = () => {
             {essenceData.map((item, index) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: false, amount: 0.2 }}
                 // Penambahan delay (0.2 * index) agar muncul bergantian
                 transition={{

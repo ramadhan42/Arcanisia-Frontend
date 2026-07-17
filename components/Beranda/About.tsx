@@ -39,10 +39,10 @@ const About: NextPage = () => {
             alignItems: "flex-start",
           }}
         >
-          {/* Subtitle ABOUT ARCANISIA */}
+          {/* Subtitle ABOUT ARCANISIA - Muncul membesar dari tengah */}
           <motion.div
-            initial={{ opacity: 0, y: -20, x: -20 }}
-            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             style={{
@@ -63,10 +63,10 @@ const About: NextPage = () => {
             </div>
           </motion.div>
 
-          {/* Main Title */}
+          {/* Main Title - Berurutan setelah subtitle */}
           <motion.div
-            initial={{ opacity: 0, y: -30, x: -30 }}
-            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             style={{
@@ -97,7 +97,7 @@ const About: NextPage = () => {
 
           {/* Ornamen */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
@@ -133,7 +133,7 @@ const About: NextPage = () => {
             color: "#f8c56c",
           }}
         >
-          {/* Gambar Pemandangan Borneo - Muncul dari bawah */}
+          {/* Gambar Pemandangan Borneo - Tetap muncul dari bawah agar variatif, atau bisa diubah ke scale juga */}
           <motion.div
             initial={{ opacity: 0, y: 80 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -181,9 +181,10 @@ const About: NextPage = () => {
               maxWidth: "518.07px",
             }}
           >
+            {/* Quote Teks */}
             <motion.div
-              initial={{ opacity: 0, y: -20, x: -20 }}
-              whileInView={{ opacity: 1, y: 0, x: 0 }}
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: false }}
               transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
               style={{
@@ -207,9 +208,10 @@ const About: NextPage = () => {
               </i>
             </motion.div>
 
+            {/* Paragraf 1 */}
             <motion.div
-              initial={{ opacity: 0, y: -20, x: -20 }}
-              whileInView={{ opacity: 1, y: 0, x: 0 }}
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: false }}
               transition={{ duration: 0.8, delay: 1.0, ease: "easeOut" }}
               style={{
@@ -236,9 +238,10 @@ const About: NextPage = () => {
               </div>
             </motion.div>
 
+            {/* Paragraf 2 */}
             <motion.div
-              initial={{ opacity: 0, y: -20, x: -20 }}
-              whileInView={{ opacity: 1, y: 0, x: 0 }}
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: false }}
               transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }}
               style={{
@@ -268,8 +271,8 @@ const About: NextPage = () => {
 
         {/* Statistik / Detail Kolom Bawah */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 1, delay: 1.4, ease: "easeOut" }}
           style={{

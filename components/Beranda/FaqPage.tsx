@@ -154,10 +154,10 @@ const FAQPage: NextPage = () => {
         overflowX: "hidden", // Mencegah horizontal scroll saat animasi slide
       }}
     >
-      {/* HEADER SECTION - Animasi Scroll */}
+      {/* HEADER SECTION - Animasi Membesar dari Tengah */}
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.85 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false, amount: 0.2 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         style={{
@@ -236,10 +236,10 @@ const FAQPage: NextPage = () => {
           gap: "32px",
         }}
       >
-        {/* SIDEBAR - Animasi Scroll Tertunda (Stagger) */}
+        {/* SIDEBAR - Animasi Skala Tengah (Dipercepat Sedikit agar urut) */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           style={{ display: "flex", flexDirection: "column" }}
@@ -350,10 +350,10 @@ const FAQPage: NextPage = () => {
           </div>
         </motion.div>
 
-        {/* FAQ LIST - Animasi Perpindahan Menu & Scroll */}
+        {/* FAQ LIST - Animasi Membesar (Scale in) Mengikuti Urutan Setelah Sidebar */}
         <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
           style={{
@@ -368,9 +368,9 @@ const FAQPage: NextPage = () => {
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCategory}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.4, ease: "easeInOut" }}
               style={{
                 display: "flex",

@@ -46,10 +46,10 @@ const Subscribe: NextPage = () => {
     >
       {/* Garis Pembatas Atas */}
       <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: false }}
-        transition={{ duration: 1 }}
+        initial={{ opacity: 0, scale: 0.85 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: false, amount: 0.2 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         style={{
           alignSelf: "stretch",
           height: "1px",
@@ -76,10 +76,10 @@ const Subscribe: NextPage = () => {
       >
         {/* Ornamen Lingkaran - Dianimasikan Scale-In bergantian */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false }}
-          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           style={{
             position: "absolute",
             top: "50%",
@@ -93,10 +93,10 @@ const Subscribe: NextPage = () => {
           }}
         />
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
+          initial={{ opacity: 0, scale: 0.85 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false }}
-          transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           style={{
             position: "absolute",
             top: "50%",
@@ -110,10 +110,10 @@ const Subscribe: NextPage = () => {
           }}
         />
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
+          initial={{ opacity: 0, scale: 0.85 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false }}
-          transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           style={{
             position: "absolute",
             top: "50%",
@@ -141,10 +141,10 @@ const Subscribe: NextPage = () => {
           }}
         >
           <motion.div
-            initial={{ opacity: 0, x: -20, y: -20 }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
               alignSelf: "stretch",
               display: "flex",
@@ -164,10 +164,10 @@ const Subscribe: NextPage = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: -30, y: -30 }}
-            whileInView={{ opacity: 1, x: 0, y: 0 }}
-            viewport={{ once: false }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             style={{
               width: "100%",
               maxWidth: "672px",

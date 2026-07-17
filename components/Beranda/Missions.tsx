@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-// 1. Data Misi (MOCK DATA / JSON)
+// 1. Data Misi (MOCK DATA / JSON)[cite: 21]
 const missionData = [
   {
     id: "01",
@@ -40,7 +40,7 @@ const missionData = [
 
 const Missions = () => {
   return (
-    // Section Utama
+    // Section Utama[cite: 21]
     <section
       style={{
         width: "100%",
@@ -82,10 +82,10 @@ const Missions = () => {
             alignItems: "flex-start",
           }}
         >
-          {/* Subtitle "OUR MISSION" */}
+          {/* Subtitle "OUR MISSION" - Animasi fade scale in dari tengah */}
           <motion.div
-            initial={{ opacity: 0, y: -20, x: -20 }}
-            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
             style={{
@@ -109,10 +109,10 @@ const Missions = () => {
             </div>
           </motion.div>
 
-          {/* Judul Utama "Guided by Purpose" */}
+          {/* Judul Utama "Guided by Purpose" - Berurutan */}
           <motion.div
-            initial={{ opacity: 0, y: -30, x: -30 }}
-            whileInView={{ opacity: 1, y: 0, x: 0 }}
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             style={{
@@ -141,9 +141,9 @@ const Missions = () => {
           </motion.div>
         </div>
 
-        {/* Gambar Ornamen */}
+        {/* Gambar Ornamen - Berurutan */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.85 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
@@ -178,14 +178,14 @@ const Missions = () => {
           background: "linear-gradient(180deg, rgba(0, 34, 31, 0.5), #012421)",
         }}
       >
-        {/* Looping Data JSON Dinamis dengan efek Staggered */}
+        {/* Looping Data JSON Dinamis dengan efek Staggered Scale dari tengah */}
         {missionData.map((item, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.3 }}
-            // Penambahan delay (0.2 * index) agar muncul bergantian
+            // Penambahan delay berurutan (0.2 * index)
             transition={{ duration: 0.8, delay: 0.2 * index, ease: "easeOut" }}
             style={{
               alignSelf: "stretch",
@@ -196,7 +196,7 @@ const Missions = () => {
               gap: "29.7px",
             }}
           >
-            {/* Nomor (01, 02, dst) */}
+            {/* Nomor (01, 02, dst)[cite: 21] */}
             <div
               style={{
                 width: "59.5px",
@@ -219,7 +219,7 @@ const Missions = () => {
               </div>
             </div>
 
-            {/* Garis Vertikal & Titik Emas */}
+            {/* Garis Vertikal & Titik Emas[cite: 21] */}
             <div
               style={{
                 display: "flex",
@@ -267,7 +267,7 @@ const Missions = () => {
               />
             </div>
 
-            {/* Judul & Deskripsi */}
+            {/* Judul & Deskripsi[cite: 21] */}
             <div
               style={{
                 flex: "1",

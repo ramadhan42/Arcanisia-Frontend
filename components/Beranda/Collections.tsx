@@ -87,10 +87,10 @@ const Collections = () => {
         background: "linear-gradient(180deg, #00221f, #022421 50%, #00221f)",
       }}
     >
-      {/* Teks "THE COLLECTION" */}
+      {/* Teks "THE COLLECTION" - Animasi dari tengah */}
       <motion.p
-        initial={{ opacity: 0, y: -20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.85 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
         className="text-[10px] text-[#F5EDD6] font-medium tracking-widest mb-3 uppercase"
@@ -99,9 +99,9 @@ const Collections = () => {
         THE COLLECTION
       </motion.p>
 
-      {/* Teks "Six Islands, Six Stories" */}
+      {/* Teks "Six Islands, Six Stories" - Animasi dari tengah */}
       <motion.h2
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
@@ -114,9 +114,9 @@ const Collections = () => {
         Six Islands, Six Stories
       </motion.h2>
 
-      {/* Gambar Ornamen SVG */}
+      {/* Gambar Ornamen SVG - Animasi dari tengah */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
@@ -130,10 +130,10 @@ const Collections = () => {
         />
       </motion.div>
 
-      {/* Teks Deskripsi Panjang */}
+      {/* Teks Deskripsi Panjang - Animasi dari tengah */}
       <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.85 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
         className="text-[14px] text-[#C9B99A] text-center max-w-[650px] leading-relaxed mb-16 px-4"
@@ -246,8 +246,8 @@ const Collections = () => {
       </div>
 
       <motion.button
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.85 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
         className="w-[260px] h-[40px] flex items-center justify-center gap-3 text-[12px] text-[#124B46] rounded-sm hover:opacity-90 transition-opacity"

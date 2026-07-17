@@ -33,10 +33,10 @@ export default function Rekindling() {
 
       {/* Konten Teks (Berada di atas background) */}
       <div className="relative z-10 w-full md:w-1/2 flex flex-col gap-6">
-        {/* 2. Heading Teks - Muncul dari atas ke bawah, kiri ke kanan */}
+        {/* 2. Heading Teks - Muncul membesar perlahan dari tengah secara smooth */}
         <motion.h2
-          initial={{ opacity: 0, y: -30, x: -30 }}
-          whileInView={{ opacity: 1, y: 0, x: 0 }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           style={{
@@ -46,20 +46,25 @@ export default function Rekindling() {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             lineHeight: "1.2",
+            transformOrigin: "center left", // Menjaga agar teks tetap rata kiri saat membesar
           }}
           className="font-gilland font-normal whitespace-pre-line"
         >
           {"Arcanisia \nRekindling Love \nfor Indonesia"}
         </motion.h2>
 
-        {/* 3. Lanjutan Teks - Mengikuti arah yang sama dengan tambahan delay */}
+        {/* 3. Lanjutan Teks - Mengikuti animasi dari tengah dengan tambahan delay */}
         <motion.p
-          initial={{ opacity: 0, y: -20, x: -20 }}
-          whileInView={{ opacity: 1, y: 0, x: 0 }}
+          initial={{ opacity: 0, scale: 0.85 }}
+          whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
           className="font-graziemille font-normal text-[14px]"
-          style={{ color: "#C9B99A", maxWidth: "400px" }}
+          style={{
+            color: "#C9B99A",
+            maxWidth: "400px",
+            transformOrigin: "center left",
+          }}
         >
           A fragrance brand that reignites the flame of love for Indonesia,
           where every scent breathes the soul of the Nusantara.
