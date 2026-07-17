@@ -5,7 +5,6 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   motion,
   useScroll,
@@ -34,6 +33,7 @@ export default function Navbar() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State baru untuk dropdown
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fungsi Logout
   const handleLogout = () => {
@@ -89,9 +89,10 @@ export default function Navbar() {
     targetId: string,
   ) => {
     e.preventDefault();
+    setIsMobileMenuOpen(false);
 
     if (window.location.pathname !== "/") {
-      window.location.href = `/#${targetId}`;
+      window.location.assign(`/#${targetId}`);
       return;
     }
 
@@ -115,7 +116,7 @@ export default function Navbar() {
           opacity: 1,
         }}
         transition={{ duration: 0.4, ease: "easeInOut" }}
-        className={`fixed top-0 w-full z-50 flex justify-between items-center px-6 md:px-12 py-5 transition-all duration-300 ${
+        className={`fixed inset-x-0 top-0 z-50 flex max-w-[100vw] items-center justify-between px-7 py-6 transition-all duration-300 lg:px-8 lg:py-5 xl:px-12 ${
           scrolled
             ? "backdrop-blur-xl bg-black/30 border-b border-white/10"
             : "bg-transparent"
@@ -131,13 +132,13 @@ export default function Navbar() {
             alt="Logo Arca"
             width={160}
             height={60}
-            className="object-contain"
+            className="h-auto w-[142px] object-contain lg:w-[140px] xl:w-[160px]"
             priority
           />
         </motion.div>
 
         {/* MENU TENGAH */}
-        <div className="hidden md:flex items-center gap-14">
+        <div className="hidden items-center gap-6 lg:flex xl:gap-14">
           {["ABOUT", "COLLECTION", "MISSION", "VALUES"].map((menu, index) => {
             const targetId = menu.toLowerCase();
 
@@ -155,7 +156,7 @@ export default function Navbar() {
                 <a
                   href={`/#${targetId}`}
                   onClick={(e) => handleScroll(e, targetId)}
-                  className="relative font-gilland font-light text-[14px] text-[#F5EDD6CC] tracking-[2px] group cursor-pointer"
+                  className="group relative cursor-pointer font-gilland text-[12px] font-light tracking-[2px] text-[#F5EDD6CC] xl:text-[14px]"
                 >
                   {menu}
                   <span className="absolute left-0 -bottom-1 w-0 h-[1px] bg-[#F8C56C] transition-all duration-300 group-hover:w-full"></span>
@@ -166,21 +167,24 @@ export default function Navbar() {
         </div>
 
         {/* SHOP NOW & MENU MASUK/USER (Kanan) */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 xl:gap-6">
           {/* BUTTON SHOP NOW[cite: 13] */}
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex-shrink-0"
+            className="hidden flex-shrink-0 lg:block"
           >
-            <button className="flex items-center gap-4 border border-[#F8C56C] px-6 py-2.5 rounded-md hover:bg-[#F8C56C]/10 transition-all duration-300">
+            <button
+              aria-label="Shop now"
+              className="flex h-10 items-center gap-3 rounded-md border border-[#F8C56C] px-3 transition-all duration-300 hover:bg-[#F8C56C]/10 lg:h-auto lg:px-4 lg:py-2.5 xl:gap-4 xl:px-6"
+            >
               <Image
                 src="/gambar/navbar/Icon.svg"
                 alt="Shop Icon"
                 width={16}
                 height={16}
               />
-              <span className="font-graziemille text-[13px] text-[#F8C56C] tracking-[1.5px]">
+              <span className="hidden font-graziemille text-[12px] tracking-[1.5px] text-[#F8C56C] lg:inline xl:text-[13px]">
                 SHOP NOW
               </span>
             </button>
@@ -188,13 +192,13 @@ export default function Navbar() {
 
           {/* LOGIC UNTUK MENU MASUK ATAU USER MENU */}
           {isLoggedIn ? (
-            <div className="relative">
+            <div className="relative hidden lg:block">
               {" "}
               {/* Bungkus dengan relative */}
               {/* Trigger Dropdown */}
               <div
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-4 border border-[#F8C56C] px-6 py-2.5 rounded-md hover:bg-[#F8C56C]/10 transition-all duration-300 cursor-pointer"
+                className="flex h-10 cursor-pointer items-center gap-2 rounded-md border border-[#F8C56C] px-2.5 transition-all duration-300 hover:bg-[#F8C56C]/10 lg:h-auto lg:px-4 lg:py-2.5 xl:gap-4 xl:px-6"
               >
                 <div
                   className="h-[18px] w-[18px] flex items-center justify-center shrink-0"
@@ -204,7 +208,7 @@ export default function Navbar() {
                     {userName.charAt(0).toUpperCase()}
                   </b>
                 </div>
-                <div className="flex items-center overflow-hidden max-w-[80px]">
+                <div className="hidden max-w-[80px] items-center overflow-hidden lg:flex">
                   <span
                     className="font-graziemille text-[13px] tracking-[1.5px] truncate leading-none mt-[2px]"
                     style={goldTextGradient}
@@ -247,7 +251,8 @@ export default function Navbar() {
             // Tampilan Menu Masuk (Sebelum Login)
             <button
               onClick={() => setActiveModal("login")}
-              className="flex items-center justify-center gap-2 px-4 py-2 hover:bg-white/5 transition-colors rounded-md group"
+              aria-label="Masuk"
+              className="group hidden h-10 w-10 items-center justify-center gap-2 rounded-md transition-colors hover:bg-white/5 lg:flex lg:h-auto lg:w-auto lg:px-2 lg:py-2 xl:px-4"
             >
               <User
                 size={16}
@@ -255,15 +260,127 @@ export default function Navbar() {
                 className="transition-transform group-hover:scale-110"
               />
               <span
-                className="font-graziemille text-[12px] tracking-[2px] leading-[15px] mt-[2px]"
+                className="mt-[2px] hidden font-graziemille text-[12px] leading-[15px] tracking-[2px] lg:inline"
                 style={goldTextGradient}
               >
                 MASUK
               </span>
             </button>
           )}
+
+          <button
+            type="button"
+            aria-label={isMobileMenuOpen ? "Tutup menu" : "Buka menu"}
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((open) => !open)}
+            className="flex h-10 w-10 items-center justify-center text-[#F8C56C] lg:hidden"
+          >
+            <span className="relative block h-[22px] w-6">
+              <span
+                className={`absolute left-0 top-0 h-[2px] w-6 rounded-full bg-current transition-transform duration-300 ${
+                  isMobileMenuOpen ? "translate-y-[10px] rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-[10px] h-[2px] w-6 rounded-full bg-current transition-opacity duration-300 ${
+                  isMobileMenuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`absolute bottom-0 left-0 h-[2px] w-6 rounded-full bg-current transition-transform duration-300 ${
+                  isMobileMenuOpen ? "-translate-y-[10px] -rotate-45" : ""
+                }`}
+              />
+            </span>
+          </button>
         </div>
       </motion.nav>
+
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <>
+            <motion.button
+              type="button"
+              aria-label="Tutup menu"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="fixed inset-0 z-40 bg-black/35 lg:hidden"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: -16, scaleY: 0.96 }}
+              animate={{ opacity: 1, y: 0, scaleY: 1 }}
+              exit={{ opacity: 0, y: -16, scaleY: 0.96 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="fixed inset-x-3 top-[76px] z-[60] origin-top overflow-hidden rounded-lg border border-[#F8C56C]/30 bg-[#012421] shadow-2xl lg:hidden"
+            >
+              <div className="flex flex-col px-5 py-3">
+                {["ABOUT", "COLLECTION", "MISSION", "VALUES"].map((menu) => {
+                  const targetId = menu.toLowerCase();
+
+                  return (
+                    <a
+                      key={menu}
+                      href={`/#${targetId}`}
+                      onClick={(e) => handleScroll(e, targetId)}
+                      className="border-b border-white/10 py-4 font-gilland text-[13px] tracking-[2px] text-[#F5EDD6CC] transition-colors last:border-b-0 hover:text-[#F8C56C]"
+                    >
+                      {menu}
+                    </a>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="border-t border-[#F8C56C]/20 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F8C56C]"
+                >
+                  SHOP NOW
+                </button>
+
+                {isLoggedIn ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsOrdersOpen(true);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="border-t border-white/10 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F5EDD6CC]"
+                    >
+                      AKUN SAYA
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="border-t border-white/10 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F5EDD6CC]"
+                    >
+                      LOGOUT
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveModal("login");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="border-t border-white/10 py-4 text-left font-graziemille text-[12px] tracking-[2px] text-[#F5EDD6CC]"
+                  >
+                    MASUK
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* MODAL RENDER[cite: 13] */}
       <AnimatePresence>
         {activeModal === "login" && (

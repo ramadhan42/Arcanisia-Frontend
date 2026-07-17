@@ -1,29 +1,17 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 
 export default function Rekindling() {
   return (
-    // Container utama (Diberi warna dasar gelap agar tidak blank saat background slide up)
-    <section className="relative w-full py-24 px-6 md:px-35 flex items-center overflow-hidden bg-[#012320]">
-      {/* 1. Background (Gambar Produk + Gradient) - Muncul dari bawah seperti di HeroSection */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        initial={{ opacity: 0, y: 80 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.3 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+    <section className="rekindling-section relative flex w-full items-center overflow-hidden bg-[#012320]">
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
         style={{
           backgroundImage: `
-            linear-gradient(to bottom, 
-              rgba(1, 35, 32, 0.61) 0%, 
-              rgba(1, 35, 32, 0.26) 15%, 
-              rgba(1, 35, 32, 0.17) 55%, 
-              rgba(1, 35, 32, 0.95) 100%
-            ), 
-            url('/gambar/seksi%202/produk.png')
+            linear-gradient(to bottom, rgba(0, 15, 14, 0.42), rgba(0, 12, 11, 0.62)),
+            url('/gambar/seksi%201/bg.jpg')
           `,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -31,38 +19,48 @@ export default function Rekindling() {
         }}
       />
 
-      {/* Konten Teks (Berada di atas background) */}
-      <div className="relative z-10 w-full md:w-1/2 flex flex-col gap-6">
-        {/* 2. Heading Teks - Muncul membesar perlahan dari tengah secara smooth */}
+      <motion.div
+        className="rekindling-product pointer-events-none absolute inset-0 z-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: false, amount: 0.3 }}
+        transition={{ duration: 1.2, ease: "easeInOut" }}
+        style={{
+          backgroundImage: `
+            radial-gradient(ellipse 95% 90% at 62% 48%, transparent 25%, rgba(0, 22, 20, 0.28) 72%, rgba(0, 12, 11, 0.68) 100%),
+            linear-gradient(to bottom, rgba(0, 13, 12, 0.35), transparent 24%, transparent 72%, rgba(0, 10, 9, 0.72)),
+            url('/gambar/seksi%202/produk.png')
+          `,
+          backgroundRepeat: "no-repeat",
+        }}
+      />
+
+      <div className="rekindling-content relative z-20 flex flex-col">
         <motion.h2
           initial={{ opacity: 0, scale: 0.85 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           style={{
-            fontSize: "45px",
             background:
               "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
-            lineHeight: "1.2",
-            transformOrigin: "center left", // Menjaga agar teks tetap rata kiri saat membesar
+            transformOrigin: "center left",
           }}
-          className="font-gilland font-normal whitespace-pre-line"
+          className="font-gilland whitespace-pre-line font-normal"
         >
           {"Arcanisia \nRekindling Love \nfor Indonesia"}
         </motion.h2>
 
-        {/* 3. Lanjutan Teks - Mengikuti animasi dari tengah dengan tambahan delay */}
         <motion.p
           initial={{ opacity: 0, scale: 0.85 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-          className="font-graziemille font-normal text-[14px]"
+          className="font-graziemille font-normal"
           style={{
             color: "#C9B99A",
-            maxWidth: "400px",
             transformOrigin: "center left",
           }}
         >

@@ -19,6 +19,14 @@
   }
 }
 
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -30,4 +38,74 @@ body {
 }
 .font-gilland {
   font-family: var(--font-gilland), sans-serif;
+}
+
+.rekindling-section {
+  height: min(100svh, 820px);
+  min-height: 560px;
+  padding: 7rem clamp(2rem, 9.8vw, 8.75rem);
+}
+
+.rekindling-content {
+  width: min(46%, 520px);
+  gap: clamp(1.25rem, 2.3vw, 2rem);
+}
+
+.rekindling-product {
+  background-position: 76% center;
+  background-size: cover;
+}
+
+.rekindling-content h2 {
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  line-height: 1.08;
+}
+
+.rekindling-content p {
+  max-width: 430px;
+  font-size: clamp(0.875rem, 1.65vw, 1.5rem);
+  line-height: 1.32;
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+  .rekindling-section {
+    aspect-ratio: auto;
+    height: auto;
+    min-height: 0;
+    align-items: center;
+    padding: 6vw 9.8vw;
+  }
+
+  .rekindling-content {
+    width: 46%;
+    max-width: none;
+    gap: 3.2vw;
+  }
+
+  .rekindling-product {
+    background-position: 76% center;
+    background-size: cover;
+    transform: scale(0.99);
+    transform-origin: 76% center;
+  }
+
+  .rekindling-content h2 {
+    font-size: 5.096vw;
+    line-height: 1.08;
+    white-space: pre;
+  }
+
+  .rekindling-content p {
+    max-width: 42vw;
+    font-size: 2.401vw;
+    line-height: 1.32;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .rekindling-section {
+    height: 100svh;
+    min-height: 100svh;
+    padding: 2rem clamp(2rem, 9.8vw, 5.5rem);
+  }
 }
