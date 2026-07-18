@@ -1,28 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
-
-const contactData = [
-  {
-    id: 1,
-    title: "LOCATION",
-    iconSrc: "/gambar/seksi%208/location.svg",
-    lines: ["Jl. Sudirman No. 88", "Jakarta Pusat, Indonesia 10220"],
-  },
-  {
-    id: 2,
-    title: "EMAIL",
-    iconSrc: "/gambar/seksi%208/email.svg",
-    lines: ["hello@arcanisia.com", "support@arcanisia.com"],
-  },
-  {
-    id: 3,
-    title: "FOLLOW US",
-    iconSrc: "/gambar/seksi%208/ig.svg",
-    lines: ["@arcanisia.scent", "@arcanisia_official"],
-  },
-];
+import { useState } from "react";
+import { newsletterService } from "@/services/api";
+import { useSiteContent } from "@/contexts/SiteContentContext";
+import SafeImage from "@/components/ui/SafeImage";
 
 const goldGradient =
   "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
@@ -34,6 +16,34 @@ const goldText = {
 };
 
 export default function Subscribe() {
+  const { section } = useSiteContent();
+  const newsletter = section<{
+    eyebrow?: string;
+    title?: string;
+    description?: string;
+    placeholder?: string;
+    button?: string;
+    button_label?: string;
+    button_icon?: string;
+  }>("newsletter");
+  const contact = section<{ items?: Array<{ title: string; icon?: string; icon_src?: string; lines: string[] }> }>("contact");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const subscribe = async () => {
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await newsletterService.subscribe(email.trim());
+      setEmail("");
+      setMessage("Terima kasih. Email Anda telah terdaftar.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Pendaftaran newsletter gagal.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <section className="w-full overflow-hidden bg-[#012421] font-graziemille">
       <div className="h-px w-full bg-[linear-gradient(90deg,transparent,rgba(201,168,76,0.5),transparent)]" />
@@ -50,7 +60,7 @@ export default function Subscribe() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-[7px] tracking-[5px] text-[#F5EDD6] md:text-[10px]"
           >
-            STAY CONNECTED
+            {newsletter.eyebrow ?? "STAY CONNECTED"}
           </motion.p>
 
           <motion.h2
@@ -61,9 +71,7 @@ export default function Subscribe() {
             className="mt-3 font-gilland text-[34px] leading-[1.4] md:text-[56px] md:leading-[1.3]"
             style={goldText}
           >
-            Join the Journey
-            <br />
-            of the Nusantara
+            {newsletter.title ?? "Join the Journey of the Nusantara"}
           </motion.h2>
 
           <motion.p
@@ -73,8 +81,7 @@ export default function Subscribe() {
             transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
             className="mt-3 max-w-[285px] text-[10px] leading-[1.7] text-[#C9B99A] md:max-w-[520px] md:text-[13px] md:leading-[2]"
           >
-            Subscribe to receive exclusive launches, island stories, and first
-            access to limited edition fragrances.
+            {newsletter.description}
           </motion.p>
 
           <motion.form
@@ -83,36 +90,47 @@ export default function Subscribe() {
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.55, ease: "easeOut" }}
             className="mt-8 flex w-full max-w-[448px] flex-col text-left md:mt-10 md:h-[52px] md:flex-row"
-            onSubmit={(event) => event.preventDefault()}
+            onSubmit={(event) => {
+              event.preventDefault();
+              void subscribe();
+            }}
           >
             <input
               type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               aria-label="Email"
-              placeholder="Enter your email"
+              placeholder={newsletter.placeholder ?? "Enter your email"}
               className="h-[42px] w-full border border-[#C9B99AB3] bg-[#012421] px-4 font-sans text-[10px] font-light text-[#F5EDD6] outline-none placeholder:text-[#C9B99A40] focus:border-[#F8C56C] md:h-full md:flex-1 md:border-r-0 md:px-5 md:text-[12px]"
             />
             <button
               type="submit"
+              disabled={isSubmitting}
               className="flex h-[39px] w-full items-center justify-center gap-2 font-graziemille text-[8px] font-bold tracking-[2px] text-[#091812] transition-opacity hover:opacity-90 md:h-full md:w-auto md:px-8 md:text-[10px]"
               style={{ background: goldGradient }}
             >
-              SUBSCRIBE
-              <Image
-                src="/gambar/seksi%208/subscribe.svg"
+              {isSubmitting
+                ? "SENDING..."
+                : (newsletter.button ?? newsletter.button_label ?? "SUBSCRIBE")}
+              <SafeImage
+                src={newsletter.button_icon ?? "/gambar/seksi%208/subscribe.svg"}
                 width={14}
                 height={14}
+                className="object-contain"
                 alt=""
               />
             </button>
           </motion.form>
+          {message && <p role="status" className="mt-3 text-xs text-[#F8C56C]">{message}</p>}
         </div>
       </div>
 
       <div className="bg-[#012421] px-5 pb-5 pt-5 md:px-10 md:py-16">
         <div className="mx-auto flex w-full max-w-[1074px] flex-col gap-7 md:flex-row md:items-start md:justify-between md:gap-10">
-          {contactData.map((contact, index) => (
+          {(contact.items ?? []).map((item, index) => (
             <motion.div
-              key={contact.id}
+              key={`${item.title}-${index}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, amount: 0.3 }}
@@ -124,21 +142,22 @@ export default function Subscribe() {
               className="flex items-start gap-4 text-left"
             >
               <div className="flex h-[45px] w-[45px] shrink-0 items-center justify-center border border-[#C9A84C]/30 md:h-10 md:w-10">
-                <Image
-                  src={contact.iconSrc}
+                <SafeImage
+                  src={item.icon ?? item.icon_src ?? "/gambar/seksi%208/email.svg"}
                   width={17}
                   height={17}
+                  className="object-contain"
                   alt=""
                 />
               </div>
 
               <div className="pt-0.5">
                 <h3 className="font-sans text-[9px] font-semibold tracking-[3px] text-[#F8C56C]">
-                  {contact.title}
+                  {item.title}
                 </h3>
                 <div className="mt-1 font-graziemille text-[13px] font-light leading-[1.85] text-[#C9B99A] md:text-[12px] md:leading-[1.8]">
-                  {contact.lines.map((line) => (
-                    <p key={line}>{line}</p>
+                  {(item.lines ?? []).map((line, lineIndex) => (
+                    <p key={`${line}-${lineIndex}`}>{line}</p>
                   ))}
                 </div>
               </div>

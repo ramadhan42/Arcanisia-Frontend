@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Islands.module.css";
+import { useSiteContent } from "@/contexts/SiteContentContext";
 
 // --- DATA DINAMIS PULAU ---[cite: 23]
 const islandsData = [
@@ -71,9 +72,52 @@ const islandsData = [
 ];
 
 const MapSection: NextPage = () => {
+  const { section } = useSiteContent();
+  const content = section<{
+    eyebrow?: string;
+    title?: string;
+    islands?: Array<Partial<(typeof islandsData)[number]> & { id: string }>;
+    items?: Array<Partial<(typeof islandsData)[number]> & { id: string }>;
+  }>("islands");
+  const cmsIslands = content.islands?.length
+    ? content.islands
+    : content.items?.length
+      ? content.items
+      : null;
+  const renderedIslands = (cmsIslands ?? islandsData)
+    .filter((island): island is NonNullable<typeof island> => Boolean(island))
+    .map((island) => {
+      const raw = island as Partial<(typeof islandsData)[number]> & {
+        id?: string;
+        label_position?: { top?: string; left?: string };
+      };
+      const fallback =
+        islandsData.find(
+          (item) =>
+            item.id.toUpperCase() === String(raw.id ?? "").toUpperCase(),
+        ) ?? islandsData[0];
+      const position = raw.labelPosition ?? raw.label_position;
+
+      return {
+        ...fallback,
+        ...raw,
+        id: String(raw.id ?? fallback.id).toUpperCase(),
+        name: raw.name ?? fallback.name,
+        region: raw.region ?? fallback.region,
+        subtitle: raw.subtitle ?? fallback.subtitle,
+        description: raw.description ?? fallback.description,
+        notes: raw.notes?.length ? raw.notes : fallback.notes,
+        labelPosition: {
+          top: position?.top ?? fallback.labelPosition.top,
+          left: position?.left ?? fallback.labelPosition.left,
+        },
+      };
+    });
   // State untuk menyimpan pulau yang sedang aktif[cite: 23]
-  const [activeIsland, setActiveIsland] = useState("NIAS");
-  const activeIslandIndex = islandsData.findIndex(
+  const [activeIsland, setActiveIsland] = useState(
+    () => renderedIslands[0]?.id ?? "NIAS",
+  );
+  const activeIslandIndex = renderedIslands.findIndex(
     (island) => island.id === activeIsland,
   );
 
@@ -93,7 +137,10 @@ const MapSection: NextPage = () => {
 
   // Mengambil data pulau yang aktif[cite: 23]
   const currentIslandData =
-    islandsData.find((island) => island.id === activeIsland) || islandsData[3];
+    renderedIslands.find((island) => island.id === activeIsland) ||
+    renderedIslands[0];
+
+  if (!currentIslandData) return null;
 
   return (
     <section
@@ -178,7 +225,7 @@ const MapSection: NextPage = () => {
               marginBottom: "16px",
             }}
           >
-            JELAJAH NUSANTARA
+            {content.eyebrow ?? "JELAJAH NUSANTARA"}
           </motion.div>
 
           {/* Judul Utama "Six Islands, One Soul" - Animasi membesar dari tengah berurutan */}
@@ -204,7 +251,7 @@ const MapSection: NextPage = () => {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              Six Islands, One Soul
+              {content.title ?? "Six Islands, One Soul"}
             </div>
           </motion.div>
 
@@ -575,7 +622,7 @@ const MapSection: NextPage = () => {
 
           {/* Dinamis Titik Label Pulau[cite: 23] */}
           <AnimatePresence>
-            {islandsData.map(
+            {renderedIslands.map(
               (island) =>
                 activeIsland === island.id && (
                   <motion.div
@@ -586,8 +633,8 @@ const MapSection: NextPage = () => {
                     transition={{ duration: 0.3 }}
                     style={{
                       position: "absolute",
-                      top: island.labelPosition.top,
-                      left: island.labelPosition.left,
+                      top: island.labelPosition?.top ?? "0%",
+                      left: island.labelPosition?.left ?? "0%",
                       lineHeight: "26px",
                       background:
                         "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
@@ -838,7 +885,7 @@ const MapSection: NextPage = () => {
             fontSize: "12px",
           }}
         >
-          {islandsData.map((island) => {
+          {renderedIslands.map((island) => {
             const isActive = activeIsland === island.id;
 
             return (

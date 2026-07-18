@@ -1,9 +1,13 @@
 import type { NextPage } from "next";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import CheckoutModal from "./Checkout"; // Pastikan path import benar
-import ConfirmationModal from "./Confirmation"; // Pastikan import ConfirmationModal
+import CheckoutModal from "./Checkout";
+import ConfirmationModal from "./Confirmation";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAuthDialog } from "@/contexts/AuthDialogContext";
+import { useCart } from "@/contexts/CartContext";
+import type { Order, Product } from "@/types/api";
 
 // Kumpulan Icon SVG bawaan
 const CloseIcon = () => (
@@ -82,8 +86,25 @@ const OrnamentIcon = () => (
   </svg>
 );
 
+interface ProductDetailProduct {
+  id: number;
+  slug: string;
+  sku: string;
+  image: string;
+  name: string;
+  bgColor: string;
+  badge?: string;
+  topTitle: string;
+  description: string | null;
+  scentNotes: string[];
+  size: string;
+  price: string;
+  rawPrice: string;
+  stock: number;
+}
+
 interface ProductDetailProps {
-  product: any;
+  product: ProductDetailProduct;
   onClose: () => void;
 }
 
@@ -91,18 +112,82 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
   // --- STATE MANAJEMEN MODAL ---
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [customerName, setCustomerName] = useState("");
-
-  if (!product) return null;
+  const [quantity, setQuantity] = useState(1);
+  const [order, setOrder] = useState<Order | null>(null);
+  const [message, setMessage] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
+  const pendingAction = useRef<"add" | "buy" | null>(null);
+  const { isAuthenticated } = useAuth();
+  const { openLogin } = useAuthDialog();
+  const { addItem, openCart } = useCart();
 
   const goldGradient =
     "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
 
   // --- HANDLER KONFIRMASI CHECKOUT ---
-  const handleConfirmCheckout = (nameFromForm: string) => {
-    setCustomerName(nameFromForm); // Simpan nama dari form
-    setIsCheckoutOpen(false); // Tutup Checkout Modal
-    setIsConfirmationOpen(true); // Buka Confirmation Modal
+  const apiProduct: Product = {
+    id: product.id,
+    slug: product.slug,
+    sku: product.sku,
+    image: product.image,
+    top_title: product.topTitle,
+    name: product.name,
+    description: product.description,
+    scent_notes: product.scentNotes,
+    bg_color: product.bgColor,
+    size: product.size,
+    price: product.rawPrice,
+    stock: product.stock,
+    is_active: true,
+    badge: product.badge ?? null,
+  };
+
+  const handleConfirmCheckout = (createdOrder: Order) => {
+    setOrder(createdOrder);
+    setIsCheckoutOpen(false);
+    setIsConfirmationOpen(true);
+  };
+
+  const performAddToCart = useCallback(() => {
+    setIsAdding(true);
+    setMessage("");
+    void addItem(product.id, quantity)
+      .then(() => {
+        setMessage("Produk ditambahkan ke keranjang.");
+        openCart();
+      })
+      .catch((error) =>
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "Produk gagal ditambahkan.",
+        ),
+      )
+      .finally(() => setIsAdding(false));
+  }, [addItem, openCart, product.id, quantity]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !pendingAction.current) return;
+    const action = pendingAction.current;
+    pendingAction.current = null;
+    if (action === "add") performAddToCart();
+    else setIsCheckoutOpen(true);
+  }, [isAuthenticated, performAddToCart]);
+
+  const handleAddToCart = () => {
+    if (isAuthenticated) performAddToCart();
+    else {
+      pendingAction.current = "add";
+      openLogin();
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (isAuthenticated) setIsCheckoutOpen(true);
+    else {
+      pendingAction.current = "buy";
+      openLogin();
+    }
   };
 
   // --- HANDLER KEMBALI KE BERANDA ---
@@ -140,7 +225,7 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
             className="absolute top-6 left-6 px-4 py-1.5 text-[#091812] font-montserrat font-bold text-[10px] tracking-[2px]"
             style={{ background: goldGradient }}
           >
-            BESTSELLER
+            {product.badge ?? "ARCANISIA"}
           </div>
         </div>
 
@@ -172,8 +257,8 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
           </div>
 
           <p className="text-[13px] leading-relaxed text-[#c9b99a]/80 mb-7 pr-4">
-            A mysterious voyage into the ancient heart of Buton, where sea-worn
-            oud merges with the salty mist of the Java Sea.
+            {product.description ??
+              "An olfactory journey inspired by the soul of the Indonesian archipelago."}
           </p>
 
           <div className="mb-7">
@@ -181,16 +266,17 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
               SCENT NOTES
             </p>
             <div className="flex flex-wrap gap-2 text-[12px] italic text-[#c9b99a]/80">
-              {["Sea Salt", "Aged Oud", "Tropical Wood", "Island Spice"].map(
-                (note) => (
+              {(product.scentNotes.length > 0
+                ? product.scentNotes
+                : ["Signature Arcanisia"]
+              ).map((note: string) => (
                   <span
                     key={note}
                     className="border border-[#c9a84c]/30 px-3 py-1.5"
                   >
                     {note}
                   </span>
-                ),
-              )}
+                ))}
             </div>
           </div>
 
@@ -206,7 +292,7 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
                   border: "0.5px solid #f8c56c",
                 }}
               >
-                15 ml
+                {product.size}
               </div>
             </div>
             <div>
@@ -214,11 +300,11 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
                 QUANTITY
               </p>
               <div className="flex items-center border border-[#c9a84c]/40 text-[#f5edd6]">
-                <button className="w-9 h-9 flex items-center justify-center hover:bg-white/10 text-lg transition-colors">
+                <button type="button" disabled={quantity <= 1} onClick={() => setQuantity((value) => Math.max(1, value - 1))} className="w-9 h-9 flex items-center justify-center hover:bg-white/10 text-lg transition-colors disabled:opacity-30">
                   -
                 </button>
-                <span className="w-10 text-center text-[14px]">1</span>
-                <button className="w-9 h-9 flex items-center justify-center hover:bg-white/10 text-lg transition-colors">
+                <span className="w-10 text-center text-[14px]">{quantity}</span>
+                <button type="button" disabled={quantity >= product.stock} onClick={() => setQuantity((value) => Math.min(product.stock, value + 1))} className="w-9 h-9 flex items-center justify-center hover:bg-white/10 text-lg transition-colors disabled:opacity-30">
                   +
                 </button>
               </div>
@@ -231,16 +317,19 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
 
           <div className="flex gap-3 mb-6 font-montserrat text-[9px] tracking-[2px] font-bold">
             <button
-              onClick={() => setIsCheckoutOpen(true)}
+              disabled={product.stock < 1}
+              onClick={handleBuyNow}
               className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[#091812] hover:opacity-90 transition-opacity"
               style={{ background: goldGradient }}
             >
               BELI SEKARANG <ArrowRightIcon />
             </button>
-            <button className="flex-1 flex items-center justify-center gap-2 py-3.5 border border-[#c9a84c]/60 text-[#f8c56c] hover:bg-[#c9a84c]/10 transition-colors">
-              <CartIcon /> TAMBAH KE KERANJANG
+            <button disabled={isAdding || product.stock < 1} onClick={handleAddToCart} className="flex-1 flex items-center justify-center gap-2 py-3.5 border border-[#c9a84c]/60 text-[#f8c56c] hover:bg-[#c9a84c]/10 transition-colors disabled:opacity-50">
+              <CartIcon /> {isAdding ? "MENAMBAHKAN..." : "TAMBAH KE KERANJANG"}
             </button>
           </div>
+          {message && <p role="status" className="mb-3 text-[11px] text-[#f8c56c]">{message}</p>}
+          <p className="mb-4 text-[10px] text-[#c9b99a]/50">Stok tersedia: {product.stock}</p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[#c9a84c]/20 pt-5 text-[10px] text-[#c9b99a]/60 font-light">
             <span className="flex items-center gap-1.5">
@@ -279,7 +368,8 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
               className="relative shadow-2xl rounded-md cursor-default" // cursor-default kembalikan kursor normal
             >
               <CheckoutModal
-                product={product}
+                items={[{ product: apiProduct, quantity }]}
+                mode="buy-now"
                 onClose={() => setIsCheckoutOpen(false)}
                 onConfirm={handleConfirmCheckout}
               />
@@ -288,7 +378,7 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
         )}
 
         {/* CONFIRMATION MODAL */}
-        {isConfirmationOpen && (
+        {isConfirmationOpen && order && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -303,10 +393,7 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
               className="w-full h-full flex items-center justify-center p-4 cursor-default"
             >
               <ConfirmationModal
-                product={product}
-                orderId="ARC-292322"
-                customerName={customerName}
-                // 2. Ubah onClose di sini agar klik tombol X dan "Kembali ke Beranda" kembali ke beranda
+                order={order}
                 onClose={handleGoToBeranda}
               />
             </div>

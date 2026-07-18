@@ -1,26 +1,24 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { CheckCircle, X, Package } from "lucide-react"; // Menggunakan module icon
+import { CheckCircle, X, Package } from "lucide-react";
+import type { Order } from "@/types/api";
 
 interface ConfirmationModalProps {
-  product: any;
-  orderId: string;
-  customerName: string; // Nama didapat dari form input checkout
+  order: Order;
   onClose: () => void;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
-  product,
-  orderId,
-  customerName,
+  order,
   onClose,
 }) => {
   const goldGradient =
     "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
 
   // Gunakan nama "Customer" jika input nama kosong
-  const displayName = customerName?.trim() ? customerName : "Customer";
+  const firstItem = order.items[0];
+  const displayName = order.customer_name?.trim() || "Customer";
 
   return (
     <motion.div
@@ -30,7 +28,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       // Background disesuaikan dengan warna produk
       // Ukuran diperkecil 10%: max-w jadi 900px dan tinggi di desktop jadi 630px
       className="w-full max-w-[900px] min-h-[100vh] md:min-h-0 md:h-[630px] md:rounded-md text-[#c9b99a] font-graziemille shadow-2xl flex flex-col items-center relative overflow-hidden"
-      style={{ backgroundColor: product?.bgColor || "#012421" }}
+      style={{ backgroundColor: "#012421" }}
     >
       {/* Header */}
       <div className="w-full flex items-center justify-between px-8 py-5 border-b border-[#c9a84c]/15">
@@ -62,26 +60,26 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
         {/* Deskripsi */}
         <p className="text-[14px] text-[#c9b99a]/80 leading-relaxed max-w-[550px] mb-6 font-light">
-          Pesanan Anda telah kami terima. Kami akan segera memproses pengiriman
+          Pesanan Anda telah kami terima. Status pembayaran saat ini{" "}
           <span className="font-gilland text-[#d4af37] mx-1 font-normal text-[16px]">
-            {product?.name || "Produk"}
-          </span>{" "}
-          ke alamat Anda.
+            {order.payment?.status ?? "pending"}
+          </span>
+          . Pesanan akan diproses sesuai status pembayaran di sistem.
         </p>
 
         {/* No Pesanan */}
         <p className="text-[11px] tracking-[3px] text-[#d4af37] mb-8 uppercase">
-          NO. PESANAN: {orderId}
+          NO. PESANAN: {order.order_number}
         </p>
 
         {/* Card Produk (Diperkecil sedikit secara proporsional) */}
         <div className="w-full max-w-[450px] border border-[#c9a84c]/30 bg-transparent flex items-stretch text-left mb-10 h-[115px]">
           {/* Sisi Kiri: Gambar Produk */}
           <div className="relative w-[180px] h-full shrink-0 bg-black/10 flex items-center justify-center">
-            {product?.image ? (
+            {firstItem?.product_image ? (
               <Image
-                src={product.image}
-                alt={product.name || "Product image"}
+                src={firstItem.product_image}
+                alt={firstItem.product_name || "Product image"}
                 fill
                 className="object-cover"
               />
@@ -94,16 +92,16 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           {/* Sisi Kanan: Detail Produk */}
           <div className="flex flex-col justify-center p-5 flex-1">
             <p className="text-[9px] tracking-[3px] text-[#c9b99a]/60 uppercase mb-1">
-              {product?.topTitle || "COLLECTION"}
+              {order.items.length} ITEM · {order.payment_method.replace("_", " ")}
             </p>
             <h4
               className="text-[18px] font-gilland bg-clip-text text-transparent mb-1"
               style={{ backgroundImage: goldGradient }}
             >
-              {product?.name || "Nama Produk"}
+              {firstItem?.product_name || "Pesanan Arcanisia"}
             </h4>
             <p className="text-[12px] text-[#c9b99a]/60">
-              {product?.size || "15 ml Parfum"}
+              {firstItem?.product_size || "Arcanisia"} · {order.total}
             </p>
           </div>
         </div>

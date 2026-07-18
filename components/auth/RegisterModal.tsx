@@ -10,12 +10,20 @@ interface RegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToLogin: () => void;
+  onRegister: (
+    name: string,
+    email: string,
+    password: string,
+    passwordConfirmation: string,
+    acceptedTerms: boolean,
+  ) => Promise<void>;
 }
 
 const RegisterModal: NextPage<RegisterModalProps> = ({
   isOpen,
   onClose,
   onSwitchToLogin,
+  onRegister,
 }) => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,8 +32,54 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   if (!isOpen) return null;
+
+  const handleRegister = async () => {
+    setErrorMessage("");
+
+    if (!fullName.trim() || !email.trim() || !password) {
+      setErrorMessage("Nama, email, dan password wajib diisi.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setErrorMessage("Password minimal 8 karakter.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Konfirmasi password tidak sama.");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setErrorMessage("Anda harus menyetujui Syarat & Ketentuan.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await onRegister(
+        fullName.trim(),
+        email.trim(),
+        password,
+        confirmPassword,
+        acceptedTerms,
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Pendaftaran gagal. Silakan coba kembali.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <motion.div
@@ -84,7 +138,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
             className="mt-10"
             onSubmit={(event) => {
               event.preventDefault();
-              onSwitchToLogin();
+              void handleRegister();
             }}
           >
             <label
@@ -97,6 +151,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               id="mobile-register-name"
               type="text"
               autoComplete="name"
+              required
               placeholder="Masukkan nama lengkap"
               value={fullName}
               onChange={(event) => setFullName(event.target.value)}
@@ -113,6 +168,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               id="mobile-register-email"
               type="email"
               autoComplete="email"
+              required
               placeholder="nama@email.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -130,8 +186,9 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                 id="mobile-register-password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="new-password"
-                minLength={6}
-                placeholder="Min. 6 karakter"
+              required
+              minLength={8}
+              placeholder="Min. 8 karakter"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 className="h-[58px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 pr-14 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
@@ -164,6 +221,8 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                 id="mobile-register-confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
                 autoComplete="new-password"
+                required
+                minLength={8}
                 placeholder="Ulangi password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
@@ -226,11 +285,21 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               </span>
             </div>
 
+            {errorMessage && (
+              <p
+                role="alert"
+                className="mt-5 text-[13px] leading-relaxed text-[#ff7b86]"
+              >
+                {errorMessage}
+              </p>
+            )}
+
             <button
               type="submit"
-              className="mt-6 flex h-[60px] w-full items-center justify-center gap-4 bg-[linear-gradient(256.8deg,#bda461,#fdde8a_24.52%,#bda461_50%,#fdde8a_75.48%,#bda461)] font-montserrat text-[12px] font-bold tracking-[5px] text-[#012421] transition-opacity hover:opacity-90"
+              disabled={isSubmitting}
+              className="mt-6 flex h-[60px] w-full items-center justify-center gap-4 bg-[linear-gradient(256.8deg,#bda461,#fdde8a_24.52%,#bda461_50%,#fdde8a_75.48%,#bda461)] font-montserrat text-[12px] font-bold tracking-[5px] text-[#012421] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              BUAT AKUN
+              {isSubmitting ? "MEMPROSES..." : "BUAT AKUN"}
               <span aria-hidden="true" className="text-[21px] font-normal">
                 →
               </span>
@@ -719,7 +788,11 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               </div>
               <input
                 type="text"
+                autoComplete="name"
+                required
                 placeholder="Masukkan nama lengkap"
+                value={fullName}
+                onChange={(event) => setFullName(event.target.value)}
                 style={{
                   width: "398.3px",
                   height: "43.3px",
@@ -767,7 +840,11 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               </div>
               <input
                 type="email"
+                autoComplete="email"
+                required
                 placeholder="nama@email.com"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 style={{
                   width: "398.3px",
                   height: "43.3px",
@@ -818,8 +895,13 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                 }}
               >
                 <input
-                  type="password"
-                  placeholder="Min. 6 karakter"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  placeholder="Min. 8 karakter"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   style={{
                     width: "398.3px",
                     height: "43.3px",
@@ -833,7 +915,14 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     fontFamily: "'Grazie mille'",
                   }}
                 />
-                <div
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  aria-label={
+                    showPassword
+                      ? "Sembunyikan password"
+                      : "Tampilkan password"
+                  }
                   style={{
                     position: "absolute",
                     top: "20.17px",
@@ -843,6 +932,9 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     alignItems: "flex-start",
                     justifyContent: "center",
                     cursor: "pointer",
+                    border: "none",
+                    background: "transparent",
+                    padding: 0,
                   }}
                 >
                   <Image
@@ -851,7 +943,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     height={15}
                     alt="Eye Icon"
                   />
-                </div>
+                </button>
               </div>
             </div>
             <div
@@ -890,8 +982,13 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                 }}
               >
                 <input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
                   placeholder="Ulangi password"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
                   style={{
                     width: "398.3px",
                     height: "43.3px",
@@ -905,7 +1002,16 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     fontFamily: "'Grazie mille'",
                   }}
                 />
-                <div
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmPassword((visible) => !visible)
+                  }
+                  aria-label={
+                    showConfirmPassword
+                      ? "Sembunyikan konfirmasi password"
+                      : "Tampilkan konfirmasi password"
+                  }
                   style={{
                     position: "absolute",
                     top: "20.17px",
@@ -915,6 +1021,9 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     alignItems: "flex-start",
                     justifyContent: "center",
                     cursor: "pointer",
+                    border: "none",
+                    background: "transparent",
+                    padding: 0,
                   }}
                 >
                   <Image
@@ -923,7 +1032,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     height={15}
                     alt="Eye Icon"
                   />
-                </div>
+                </button>
               </div>
             </div>
 
@@ -949,6 +1058,9 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               >
                 <input
                   type="checkbox"
+                  required
+                  checked={acceptedTerms}
+                  onChange={(event) => setAcceptedTerms(event.target.checked)}
                   style={{
                     height: "14px",
                     width: "14px",
@@ -1000,6 +1112,22 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               </div>
             </div>
 
+            {errorMessage && (
+              <p
+                role="alert"
+                style={{
+                  width: "398.3px",
+                  margin: "14px 0 0",
+                  fontSize: "11px",
+                  lineHeight: "16px",
+                  color: "#ff7b86",
+                  textAlign: "left",
+                }}
+              >
+                {errorMessage}
+              </p>
+            )}
+
             <div
               style={{
                 alignSelf: "stretch",
@@ -1013,6 +1141,9 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               }}
             >
               <button
+                type="button"
+                onClick={() => void handleRegister()}
+                disabled={isSubmitting}
                 className="hover:opacity-90 transition-opacity"
                 style={{
                   width: "398.3px",
@@ -1026,6 +1157,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                   boxSizing: "border-box",
                   border: "none",
                   cursor: "pointer",
+                  opacity: isSubmitting ? 0.6 : 1,
                 }}
               >
                 <div
@@ -1036,7 +1168,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     fontWeight: "bold",
                   }}
                 >
-                  BUAT AKUN
+                  {isSubmitting ? "MEMPROSES..." : "BUAT AKUN"}
                 </div>
               </button>
             </div>

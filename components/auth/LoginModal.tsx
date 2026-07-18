@@ -10,7 +10,7 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToRegister: () => void;
-  onLogin: (name: string, email: string) => void;
+  onLogin: (email: string, password: string) => Promise<void>;
 }
 
 const LoginModal: NextPage<LoginModalProps> = ({
@@ -19,22 +19,29 @@ const LoginModal: NextPage<LoginModalProps> = ({
   onSwitchToRegister,
   onLogin,
 }) => {
-  // State untuk menangkap input nama/email
-  const [nameInput, setNameInput] = useState("");
+  const [emailInput, setEmailInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   if (!isOpen) return null;
 
-  // Fungsi trigger login
-  const handleMasuk = () => {
-    const loginValue = nameInput.trim();
-    const validName = loginValue ? loginValue.split("@")[0] : "Umar";
-    const validEmail = loginValue.includes("@")
-      ? loginValue
-      : `${validName.toLowerCase()}@gmail.com`;
+  const handleMasuk = async () => {
+    setErrorMessage("");
+    setIsSubmitting(true);
 
-    onLogin(validName, validEmail);
+    try {
+      await onLogin(emailInput.trim(), passwordInput);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Login gagal. Silakan coba kembali.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -108,8 +115,9 @@ const LoginModal: NextPage<LoginModalProps> = ({
               type="email"
               autoComplete="email"
               placeholder="nama@email.com"
-              value={nameInput}
-              onChange={(event) => setNameInput(event.target.value)}
+              required
+              value={emailInput}
+              onChange={(event) => setEmailInput(event.target.value)}
               className="mt-3 h-[59px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
             />
 
@@ -125,6 +133,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 placeholder="Masukkan password"
+                required
                 value={passwordInput}
                 onChange={(event) => setPasswordInput(event.target.value)}
                 className="h-[59px] w-full border border-[#c9a84c]/25 bg-[#012724] px-5 pr-14 text-[15px] text-[#c9b99a] outline-none transition-colors placeholder:text-[#c9b99a]/20 focus:border-[#f8c56c]/60"
@@ -148,16 +157,28 @@ const LoginModal: NextPage<LoginModalProps> = ({
 
             <button
               type="button"
-              className="mt-5 ml-auto block text-[13px] tracking-[1px] text-[#f8c56c]"
+              disabled
+              title="Belum tersedia"
+              className="mt-5 ml-auto block cursor-not-allowed text-[13px] tracking-[1px] text-[#f8c56c]/50"
             >
-              Lupa password?
+              Lupa password? (belum tersedia)
             </button>
+
+            {errorMessage && (
+              <p
+                role="alert"
+                className="mt-5 text-[13px] leading-relaxed text-[#ff7b86]"
+              >
+                {errorMessage}
+              </p>
+            )}
 
             <button
               type="submit"
-              className="mt-6 flex h-[60px] w-full items-center justify-center gap-4 bg-[linear-gradient(256.8deg,#bda461,#fdde8a_24.52%,#bda461_50%,#fdde8a_75.48%,#bda461)] font-montserrat text-[12px] font-bold tracking-[5px] text-[#012421] transition-opacity hover:opacity-90"
+              disabled={isSubmitting}
+              className="mt-6 flex h-[60px] w-full items-center justify-center gap-4 bg-[linear-gradient(256.8deg,#bda461,#fdde8a_24.52%,#bda461_50%,#fdde8a_75.48%,#bda461)] font-montserrat text-[12px] font-bold tracking-[5px] text-[#012421] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              MASUK
+              {isSubmitting ? "MEMPROSES..." : "MASUK"}
               <span aria-hidden="true" className="text-[21px] font-normal">
                 →
               </span>
@@ -175,7 +196,9 @@ const LoginModal: NextPage<LoginModalProps> = ({
           <div className="space-y-3">
             <button
               type="button"
-              className="flex h-[63px] w-full items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a] transition-colors hover:bg-white/5"
+              disabled
+              title="Belum tersedia"
+              className="flex h-[63px] w-full cursor-not-allowed items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a]/40"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
                 <Image
@@ -190,7 +213,9 @@ const LoginModal: NextPage<LoginModalProps> = ({
 
             <button
               type="button"
-              className="flex h-[63px] w-full items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a] transition-colors hover:bg-white/5"
+              disabled
+              title="Belum tersedia"
+              className="flex h-[63px] w-full cursor-not-allowed items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a]/40"
             >
               <Image
                 src="/gambar/login/facebook.svg"
@@ -656,14 +681,16 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     lineHeight: "13.5px",
                   }}
                 >
-                  NAMA / EMAIL
+                  EMAIL
                 </label>
               </div>
               <input
-                type="text"
-                placeholder="Masukkan nama atau email"
-                value={nameInput} // Binding state nama
-                onChange={(e) => setNameInput(e.target.value)} // Mengubah state
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="Masukkan email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
                 style={{
                   width: "398.3px",
                   height: "43.3px",
@@ -715,7 +742,9 @@ const LoginModal: NextPage<LoginModalProps> = ({
                 }}
               >
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
                   placeholder="Masukkan password"
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
@@ -732,7 +761,14 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     fontFamily: "'Grazie mille'",
                   }}
                 />
-                <div
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  aria-label={
+                    showPassword
+                      ? "Sembunyikan password"
+                      : "Tampilkan password"
+                  }
                   style={{
                     position: "absolute",
                     top: "20.17px",
@@ -742,6 +778,9 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     alignItems: "flex-start",
                     justifyContent: "center",
                     cursor: "pointer",
+                    background: "transparent",
+                    border: "none",
+                    padding: 0,
                   }}
                 >
                   <Image
@@ -750,9 +789,24 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     height={15}
                     alt="Eye Icon"
                   />
-                </div>
+                </button>
               </div>
             </div>
+
+            {errorMessage && (
+              <p
+                role="alert"
+                style={{
+                  margin: "14px 0 0",
+                  fontSize: "11px",
+                  lineHeight: "16px",
+                  color: "#ff7b86",
+                  textAlign: "left",
+                }}
+              >
+                {errorMessage}
+              </p>
+            )}
 
             <div
               style={{
@@ -801,7 +855,9 @@ const LoginModal: NextPage<LoginModalProps> = ({
               }}
             >
               <button
-                onClick={handleMasuk} // Memanggil handleMasuk saat diklik
+                type="button"
+                onClick={handleMasuk}
+                disabled={isSubmitting}
                 className="hover:opacity-90 transition-opacity"
                 style={{
                   width: "398.3px",
@@ -815,6 +871,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
                   boxSizing: "border-box",
                   border: "none",
                   cursor: "pointer",
+                  opacity: isSubmitting ? 0.6 : 1,
                 }}
               >
                 <div
@@ -825,7 +882,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     fontWeight: "bold",
                   }}
                 >
-                  MASUK
+                  {isSubmitting ? "MEMPROSES..." : "MASUK"}
                 </div>
               </button>
             </div>

@@ -1,16 +1,53 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSiteContent } from "@/contexts/SiteContentContext";
+import SafeImage from "@/components/ui/SafeImage";
+
+function splitIntoTwoLines(text: string): string[] {
+  if (text.includes("\n")) {
+    return text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }
+
+  const marker = text.match(/a journey/i);
+  if (marker && marker.index && marker.index > 0) {
+    return [text.slice(0, marker.index).trim(), text.slice(marker.index).trim()];
+  }
+
+  const mid = Math.floor(text.length / 2);
+  let breakIndex = text.indexOf(" ", mid);
+  if (breakIndex === -1) breakIndex = text.lastIndexOf(" ", mid);
+  if (breakIndex === -1) return [text];
+  return [text.slice(0, breakIndex).trim(), text.slice(breakIndex).trim()];
+}
 
 export default function HeroSection() {
+  const { section } = useSiteContent();
+  const content = section<{
+    title?: string;
+    description?: string;
+    cta?: string;
+    cta_label?: string;
+    background_image?: string;
+    product_image?: string;
+    logo_image?: string;
+  }>("hero");
+
+  const description =
+    content.description ??
+    "Six fragrances crafted from the soul of the Indonesian archipelago — each bottle a journey through the Nusantara's most sacred landscapes.";
+  const descriptionLines = splitIntoTwoLines(description);
+
   return (
     <section
       className="relative flex h-[min(100svh,650px)] min-h-[580px] w-full flex-col items-center justify-start overflow-hidden pt-24 md:h-auto md:min-h-screen md:justify-center md:pt-0"
       style={{
         backgroundImage:
-          "linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)), url('/gambar/seksi%201/bg.jpg')",
+          `linear-gradient(to top, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)), url('${content.background_image ?? "/gambar/seksi%201/bg.jpg"}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
@@ -24,8 +61,8 @@ export default function HeroSection() {
         transition={{ duration: 1, ease: "easeOut" }}
       >
         {/* Mobile: tampilkan seluruh komposisi agar botol di kedua sisi tidak terpotong. */}
-        <Image
-          src="/gambar/seksi%201/produk.png"
+        <SafeImage
+          src={content.product_image ?? "/gambar/seksi%201/produk.png"}
           fill
           className="object-contain object-bottom md:hidden"
           sizes="100vw"
@@ -34,8 +71,8 @@ export default function HeroSection() {
         />
 
         {/* Desktop: pertahankan komposisi hero yang sudah ada. */}
-        <Image
-          src="/gambar/seksi%201/produk.png"
+        <SafeImage
+          src={content.product_image ?? "/gambar/seksi%201/produk.png"}
           fill
           className="hidden object-cover object-bottom md:block"
           sizes="100vw"
@@ -51,8 +88,8 @@ export default function HeroSection() {
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
         >
-          <Image
-            src="/gambar/seksi%201/logo.png"
+          <SafeImage
+            src={content.logo_image ?? "/gambar/seksi%201/logo.png"}
             alt="Evomi Logo"
             width={245}
             height={245}
@@ -76,7 +113,7 @@ export default function HeroSection() {
           }}
           className="max-w-[330px] font-graziemille text-[23px] font-medium italic leading-tight md:max-w-none md:whitespace-nowrap md:text-[28px] md:leading-snug"
         >
-          Where Every Island Tells Its Fragrance
+          {content.title ?? "Where Every Island Tells Its Fragrance"}
         </motion.h1>
 
         <motion.p
@@ -91,9 +128,17 @@ export default function HeroSection() {
           }}
           className="max-w-[320px] font-graziemille text-[12px] font-normal md:max-w-none md:whitespace-nowrap md:text-[13px]"
         >
-          Six fragrances crafted from the soul of the Indonesian archipelago
-          each bottle <br className="hidden md:block" /> a journey through the Nusantara&apos;s most sacred
-          landscapes.
+          {descriptionLines.map((line, index) => (
+            <span key={index}>
+              {line}
+              {index < descriptionLines.length - 1 && (
+                <>
+                  {" "}
+                  <br className="hidden md:block" />
+                </>
+              )}
+            </span>
+          ))}
         </motion.p>
 
         <motion.div
@@ -134,7 +179,7 @@ export default function HeroSection() {
               }}
               className="font-gilland font-bold"
             >
-              EXPLORE COLLECTION
+              {content.cta ?? content.cta_label ?? "EXPLORE COLLECTION"}
             </b>
           </a>
         </motion.div>

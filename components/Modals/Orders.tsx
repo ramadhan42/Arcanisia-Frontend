@@ -1,127 +1,131 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import {
   Box,
-  CheckCircle2,
   ChevronDown,
+  ChevronUp,
+  LoaderCircle,
+  RefreshCw,
   ShoppingBag,
-  Truck,
   X,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { orderService } from "@/services/api";
+import type { Order, OrderStatus, PaginationMeta } from "@/types/api";
 
-type OrderStatus = "pending" | "processing" | "shipping" | "completed";
+const labels: Record<OrderStatus, string> = {
+  pending: "MENUNGGU",
+  processing: "DIPROSES",
+  shipping: "DIKIRIM",
+  completed: "SELESAI",
+  cancelled: "DIBATALKAN",
+};
 
-interface Order {
-  id: string;
-  name: string;
-  date: string;
-  price: string;
-  status: string;
-  statusColor: string;
-  image: string;
-  size: string;
-  qty: number;
-  statusKey?: OrderStatus;
-}
+const statusTabs = [
+  "",
+  "pending",
+  "processing",
+  "shipping",
+  "completed",
+  "cancelled",
+] as const;
 
-interface OrdersModalProps {
-  onClose: () => void;
-  orders?: Order[];
-}
+type StatusFilter = (typeof statusTabs)[number];
 
-const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, orders = [] }) => {
-  const dummyOrders: Order[] = [
-    {
-      id: "ARC-847213",
-      name: "Secret of Buton",
-      date: "10 Jul 2026",
-      price: "Rp 950.000",
-      status: "SELESAI",
-      statusColor: "text-[#d7c66e] bg-[#d7c66e]/10",
-      image: "/gambar/seksi%204/button.jpg",
-      size: "50ml",
-      qty: 1,
-      statusKey: "completed",
-    },
-    {
-      id: "ARC-847213",
-      name: "Reverie of Sumba",
-      date: "10 Jul 2026",
-      price: "Rp 950.000",
-      status: "DALAM PENGIRIMAN",
-      statusColor: "text-[#79c9bd] bg-[#79c9bd]/10",
-      image: "/gambar/seksi%204/sumba.jpg",
-      size: "50ml",
-      qty: 1,
-      statusKey: "shipping",
-    },
-    {
-      id: "ARC-847213",
-      name: "Charm of Nias",
-      date: "10 Jul 2026",
-      price: "Rp 950.000",
-      status: "SEDANG DIPROSES",
-      statusColor: "text-[#3ca9d2] bg-[#3ca9d2]/10",
-      image: "/gambar/seksi%204/nias.jpg",
-      size: "50ml",
-      qty: 1,
-      statusKey: "processing",
-    },
-  ];
+type StatusCounts = Record<"all" | OrderStatus, number>;
 
-  const [activeFilter, setActiveFilter] = useState<"all" | OrderStatus>("all");
-  const displayedOrders = orders.length > 0 ? orders : dummyOrders;
+const emptyCounts: StatusCounts = {
+  all: 0,
+  pending: 0,
+  processing: 0,
+  shipping: 0,
+  completed: 0,
+  cancelled: 0,
+};
 
-  const counts = useMemo(
-    () => ({
-      all: displayedOrders.length,
-      pending: displayedOrders.filter(
-        (order) => order.statusKey === "pending",
-      ).length,
-      processing: displayedOrders.filter(
-        (order) => order.statusKey === "processing",
-      ).length,
-      shipping: displayedOrders.filter(
-        (order) => order.statusKey === "shipping",
-      ).length,
-      completed: displayedOrders.filter(
-        (order) => order.statusKey === "completed",
-      ).length,
-    }),
-    [displayedOrders],
-  );
+const currency = new Intl.NumberFormat("id-ID", {
+  style: "currency",
+  currency: "IDR",
+  maximumFractionDigits: 0,
+});
 
-  const filteredOrders =
-    activeFilter === "all"
-      ? displayedOrders
-      : displayedOrders.filter((order) => order.statusKey === activeFilter);
+const hideScrollbar =
+  "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]";
 
-  const tabs: Array<{
-    key: "all" | OrderStatus;
-    label: string;
-  }> = [
-    { key: "all", label: "SEMUA" },
-    { key: "pending", label: "MENUNGGU" },
-    { key: "processing", label: "DIPROSES" },
-    { key: "shipping", label: "DIKIRIM" },
-    { key: "completed", label: "SELESAI" },
-  ];
+export default function OrdersModal({ onClose }: { onClose: () => void }) {
+  const { token } = useAuth();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta>();
+  const [counts, setCounts] = useState<StatusCounts>(emptyCounts);
+  const [status, setStatus] = useState<StatusFilter>("");
+  const [page, setPage] = useState(1);
+  const [expanded, setExpanded] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const loadCounts = useCallback(async () => {
+    if (!token) return;
+
+    const results = await Promise.all(
+      statusTabs.map(async (value) => {
+        const response = await orderService.list(token, {
+          page: 1,
+          per_page: 1,
+          status: value || undefined,
+        });
+        return [value || "all", response.meta?.total ?? response.data.length] as const;
+      }),
+    );
+
+    setCounts(
+      results.reduce(
+        (next, [key, total]) => ({ ...next, [key]: total }),
+        { ...emptyCounts },
+      ),
+    );
+  }, [token]);
+
+  const load = useCallback(async () => {
+    if (!token) return;
+    setIsLoading(true);
+    setError("");
+    try {
+      const response = await orderService.list(token, {
+        page,
+        status: status || undefined,
+      });
+      setOrders(response.data);
+      setMeta(response.meta);
+      void loadCounts().catch(() => undefined);
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Pesanan gagal dimuat.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadCounts, page, status, token]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
+  }, [load]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  const statusIcon = (status: OrderStatus | undefined) => {
-    if (status === "completed") return <CheckCircle2 size={12} />;
-    if (status === "shipping") return <Truck size={12} />;
-    return <Box size={12} />;
-  };
+  const tabCount = (value: StatusFilter) =>
+    value ? counts[value] : counts.all;
+
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3 backdrop-blur-sm sm:p-4"
@@ -159,129 +163,192 @@ const OrdersModal: React.FC<OrdersModalProps> = ({ onClose, orders = [] }) => {
 
         <nav
           aria-label="Filter status pesanan"
-          className="flex h-[50px] shrink-0 overflow-x-auto border-b border-[#c9a84c]/10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className={`flex h-[50px] shrink-0 overflow-x-auto border-b border-[#c9a84c]/10 ${hideScrollbar}`}
         >
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveFilter(tab.key)}
-              className={`relative flex h-full min-w-max flex-1 items-center justify-center gap-2 px-4 text-[8px] font-bold tracking-[3px] transition-colors sm:px-6 sm:text-[9px] ${
-                activeFilter === tab.key
-                  ? "text-[#f8c56c]"
-                  : "text-[#c9b99a]/35 hover:text-[#c9b99a]/70"
-              }`}
-            >
-              {tab.label}
-              {counts[tab.key] > 0 && (
-                <span
-                  className={`flex h-[18px] min-w-[18px] items-center justify-center px-1 text-[9px] tracking-normal ${
-                    activeFilter === tab.key
-                      ? "bg-[#f8c56c] text-[#012f2b]"
-                      : "bg-[#c9a84c]/15 text-[#c9a84c]/55"
-                  }`}
-                >
-                  {counts[tab.key]}
-                </span>
-              )}
-              {activeFilter === tab.key && (
-                <span className="absolute inset-x-1 bottom-0 h-[2px] bg-[#f8c56c] sm:inset-x-3" />
-              )}
-            </button>
-          ))}
+          {statusTabs.map((value) => {
+            const active = status === value;
+            const count = tabCount(value);
+
+            return (
+              <button
+                key={value || "all"}
+                type="button"
+                onClick={() => {
+                  setStatus(value);
+                  setPage(1);
+                  setExpanded(null);
+                }}
+                className={`relative flex h-full min-w-max flex-1 items-center justify-center gap-2 px-4 text-[8px] font-bold tracking-[3px] transition-colors sm:px-5 sm:text-[9px] ${
+                  active
+                    ? "text-[#f8c56c]"
+                    : "text-[#c9b99a]/35 hover:text-[#c9b99a]/70"
+                }`}
+              >
+                <span>{value ? labels[value] : "SEMUA"}</span>
+                {count > 0 && (
+                  <span
+                    className={`flex h-[18px] min-w-[18px] items-center justify-center px-1 text-[9px] tracking-normal ${
+                      active
+                        ? "bg-[#f8c56c] text-[#012f2b]"
+                        : "bg-[#c9a84c]/15 text-[#c9a84c]/55"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                )}
+                {active && (
+                  <span className="absolute inset-x-1 bottom-0 h-[2px] bg-[#f8c56c] sm:inset-x-2" />
+                )}
+              </button>
+            );
+          })}
         </nav>
 
-        <div className="flex-1 space-y-3 overflow-y-auto p-3 [scrollbar-width:none] sm:p-5 [&::-webkit-scrollbar]:hidden">
-          {filteredOrders.length > 0 ? (
-            filteredOrders.map((order, index) => (
-              <article
-                key={`${order.id}-${order.name}`}
-                className="relative flex min-h-[132px] gap-3 border border-[#c9a84c]/15 p-3 transition-colors hover:border-[#c9a84c]/35 sm:min-h-[142px] sm:gap-5 sm:p-4"
-              >
-                <div className="relative h-[92px] w-[82px] shrink-0 overflow-hidden bg-black/20 sm:h-[108px] sm:w-[108px]">
-                  {order.image ? (
-                    <Image
-                      src={order.image}
-                      alt={order.name}
-                      fill
-                      sizes="(max-width: 639px) 82px, 108px"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <Box size={24} className="text-[#c9a84c]/30" />
-                    </div>
-                  )}
-                  <span className="absolute left-0 top-0 z-10 flex h-4 min-w-4 items-center justify-center bg-[#f6d77c] px-1 font-montserrat text-[8px] font-bold text-[#183b34]">
-                    {order.qty || index + 1}
-                  </span>
-                </div>
-
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="truncate font-montserrat text-[8px] tracking-[3px] text-[#f8c56c]/85 sm:text-[9px]">
-                        {order.id}
-                      </p>
-                      <h3 className="mt-3 truncate font-gilland text-[17px] leading-none text-[#f8c56c] sm:text-[20px]">
-                        {order.name}
-                      </h3>
-                      <p className="mt-2 text-[9px] leading-none text-[#c9b99a]/35 sm:text-[10px]">
-                        {order.size} · Qty {order.qty} · {order.date}
-                      </p>
-                    </div>
-
-                    <span
-                      className={`hidden shrink-0 items-center gap-1.5 px-3 py-2 font-montserrat text-[8px] font-semibold tracking-[1.5px] sm:flex ${order.statusColor}`}
-                    >
-                      {statusIcon(order.statusKey)}
-                      {order.status}
-                    </span>
-                  </div>
-
-                  <div className="mt-auto flex items-end justify-between gap-2">
-                    <span className="font-gilland text-[17px] leading-none text-[#f8c56c] sm:text-[19px]">
-                      {order.price}
-                    </span>
-                    <button
-                      type="button"
-                      className="flex items-center gap-2 font-montserrat text-[8px] tracking-[2px] text-[#c9b99a]/30 transition-colors hover:text-[#f8c56c]"
-                    >
-                      DETAIL <ChevronDown size={12} />
-                    </button>
-                  </div>
-
-                  <span
-                    className={`mt-3 flex w-fit items-center gap-1.5 px-2 py-1 font-montserrat text-[7px] font-semibold tracking-[1px] sm:hidden ${order.statusColor}`}
-                  >
-                    {statusIcon(order.statusKey)}
-                    {order.status}
-                  </span>
-                </div>
-              </article>
-            ))
-          ) : (
-            <div className="flex h-full min-h-[220px] flex-col items-center justify-center text-[#c9a84c]/30">
-              <ShoppingBag size={42} className="mb-4" />
-              <p className="font-gilland text-[17px]">Belum ada pesanan.</p>
+        <div
+          className={`flex-1 space-y-3 overflow-y-auto p-3 sm:p-5 ${hideScrollbar}`}
+        >
+          {isLoading && (
+            <div className="flex h-full min-h-[220px] items-center justify-center">
+              <LoaderCircle className="animate-spin text-[#f8c56c]" />
             </div>
           )}
+          {!isLoading && error && (
+            <div className="flex h-full min-h-[220px] flex-col items-center justify-center text-[#ff7b86]">
+              <p>{error}</p>
+              <button
+                type="button"
+                onClick={() => void load()}
+                className="mt-4 flex items-center gap-2 text-[#f8c56c]"
+              >
+                <RefreshCw size={14} /> COBA LAGI
+              </button>
+            </div>
+          )}
+          {!isLoading && !error && orders.length === 0 && (
+            <div className="flex h-full min-h-[220px] flex-col items-center justify-center text-[#c9a84c]/40">
+              <Box size={42} />
+              <p className="mt-4 font-gilland text-lg">Belum ada pesanan.</p>
+            </div>
+          )}
+          {!isLoading &&
+            !error &&
+            orders.map((order) => (
+              <article
+                key={order.id}
+                className="border border-[#c9a84c]/15 p-4 transition-colors hover:border-[#c9a84c]/35"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-[9px] tracking-[3px] text-[#f8c56c]">
+                      {order.order_number}
+                    </p>
+                    <p className="mt-2 text-xs text-[#c9b99a]/55">
+                      {new Date(
+                        order.ordered_at ?? order.created_at,
+                      ).toLocaleDateString("id-ID", { dateStyle: "medium" })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="bg-[#c9a84c]/10 px-3 py-2 text-[8px] tracking-[1px] text-[#f8c56c]">
+                      {labels[order.status]}
+                    </span>
+                    <p className="mt-3 font-gilland text-lg text-[#f8c56c]">
+                      {currency.format(Number(order.total))}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-3 text-[10px] text-[#c9b99a]/55">
+                  Pembayaran: {order.payment?.status ?? "pending"} ·{" "}
+                  {order.payment_method.replace("_", " ")}
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExpanded(expanded === order.id ? null : order.id)
+                  }
+                  className="mt-3 flex items-center gap-2 text-[9px] tracking-[2px] text-[#f8c56c]"
+                >
+                  DETAIL{" "}
+                  {expanded === order.id ? (
+                    <ChevronUp size={13} />
+                  ) : (
+                    <ChevronDown size={13} />
+                  )}
+                </button>
+                {expanded === order.id && (
+                  <div className="mt-4 space-y-3 border-t border-[#c9a84c]/10 pt-4">
+                    {order.items.map((item) => (
+                      <div key={item.id} className="flex gap-3">
+                        <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-black/20">
+                          {item.product_image && (
+                            <Image
+                              src={item.product_image}
+                              alt={item.product_name}
+                              fill
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-gilland text-base text-[#f8c56c]">
+                            {item.product_name}
+                          </h3>
+                          <p className="text-xs text-[#c9b99a]/55">
+                            {item.product_size} · Qty {item.quantity}
+                          </p>
+                          <p className="text-xs">
+                            {currency.format(Number(item.subtotal))}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    <p className="text-xs leading-relaxed text-[#c9b99a]/60">
+                      {order.address}, {order.city}, {order.province}{" "}
+                      {order.postal_code}
+                    </p>
+                  </div>
+                )}
+              </article>
+            ))}
         </div>
 
         <footer className="flex h-[54px] shrink-0 items-center justify-between border-t border-[#c9a84c]/10 px-5 text-[9px] text-[#c9b99a]/70 sm:px-7 sm:text-[10px]">
-          <span>{displayedOrders.length} pesanan total</span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex items-center gap-3 font-montserrat text-[8px] tracking-[2.5px] text-[#f8c56c] transition-opacity hover:opacity-75 sm:text-[9px]"
-          >
-            <ShoppingBag size={14} />
-            LANJUT BELANJA
-          </button>
+          <span>{counts.all} pesanan total</span>
+          <div className="flex items-center gap-4">
+            {meta && meta.last_page > 1 && (
+              <>
+                <button
+                  type="button"
+                  disabled={page <= 1}
+                  onClick={() => setPage((value) => value - 1)}
+                  className="disabled:opacity-30"
+                >
+                  SEBELUMNYA
+                </button>
+                <span>
+                  {page} / {meta.last_page}
+                </span>
+                <button
+                  type="button"
+                  disabled={page >= meta.last_page}
+                  onClick={() => setPage((value) => value + 1)}
+                  className="disabled:opacity-30"
+                >
+                  BERIKUTNYA
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex items-center gap-3 font-montserrat text-[8px] tracking-[2.5px] text-[#f8c56c] transition-opacity hover:opacity-75 sm:text-[9px]"
+            >
+              <ShoppingBag size={14} />
+              LANJUT BELANJA
+            </button>
+          </div>
         </footer>
       </section>
     </div>
   );
-};
-
-export default OrdersModal;
+}

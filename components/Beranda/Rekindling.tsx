@@ -2,8 +2,11 @@
 
 import React from "react";
 import { motion } from "framer-motion";
+import { useSiteContent } from "@/contexts/SiteContentContext";
 
 export default function Rekindling() {
+  const { section } = useSiteContent();
+  const content = section<{ title?: string; description?: string; background_image?: string; product_image?: string }>("rekindling");
   return (
     <section className="rekindling-section relative flex w-full items-center overflow-hidden bg-[#012320]">
       <div
@@ -11,7 +14,7 @@ export default function Rekindling() {
         style={{
           backgroundImage: `
             linear-gradient(to bottom, rgba(0, 15, 14, 0.42), rgba(0, 12, 11, 0.62)),
-            url('/gambar/seksi%201/bg.jpg')
+            url('${content.background_image ?? "/gambar/seksi%201/bg.jpg"}')
           `,
           backgroundSize: "cover",
           backgroundPosition: "center",
@@ -29,7 +32,7 @@ export default function Rekindling() {
           backgroundImage: `
             radial-gradient(ellipse 95% 90% at 62% 48%, transparent 25%, rgba(0, 22, 20, 0.28) 72%, rgba(0, 12, 11, 0.68) 100%),
             linear-gradient(to bottom, rgba(0, 13, 12, 0.35), transparent 24%, transparent 72%, rgba(0, 10, 9, 0.72)),
-            url('/gambar/seksi%202/produk.png')
+            url('${content.product_image ?? "/gambar/seksi%202/produk.png"}')
           `,
           backgroundRepeat: "no-repeat",
         }}
@@ -50,7 +53,7 @@ export default function Rekindling() {
           }}
           className="font-gilland whitespace-pre-line font-normal"
         >
-          {"Arcanisia \nRekindling Love \nfor Indonesia"}
+          {content.title ?? "Arcanisia \nRekindling Love \nfor Indonesia"}
         </motion.h2>
 
         <motion.p
@@ -64,8 +67,7 @@ export default function Rekindling() {
             transformOrigin: "center left",
           }}
         >
-          A fragrance brand that reignites the flame of love for Indonesia,
-          where every scent breathes the soul of the Nusantara.
+          {content.description}
         </motion.p>
       </div>
     </section>

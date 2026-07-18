@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSiteContent } from "@/contexts/SiteContentContext";
+import SafeImage from "@/components/ui/SafeImage";
 
 const essenceData = [
   {
@@ -46,13 +48,41 @@ const goldText = {
 };
 
 export default function Honesty() {
+  const { section } = useSiteContent();
+  const content = section<{
+    eyebrow?: string;
+    title?: string;
+    background_image?: string;
+    items?: Array<{
+      id?: number;
+      imgSrc?: string;
+      image?: string;
+      icon?: string;
+      topTitle?: string;
+      eyebrow?: string;
+      mainTitle?: string;
+      title?: string;
+      description: string;
+    }>;
+  }>("values");
+  const items: Array<{
+    id?: number;
+    imgSrc?: string;
+    image?: string;
+    icon?: string;
+    topTitle?: string;
+    eyebrow?: string;
+    mainTitle?: string;
+    title?: string;
+    description: string;
+  }> = content.items?.length ? content.items : essenceData;
   return (
     <section className="w-full overflow-hidden bg-[#012421] text-center">
       <header
         className="relative flex h-[86px] w-full flex-col items-center bg-cover bg-center px-6 pt-3 md:h-[377px] md:justify-center md:pt-0"
         style={{
           backgroundImage:
-            "linear-gradient(180deg, rgba(1,36,33,0.76), rgba(1,36,33,0.84) 45%, #012421 100%), url('/gambar/seksi%206/bg.png')",
+            `linear-gradient(180deg, rgba(1,36,33,0.76), rgba(1,36,33,0.84) 45%, #012421 100%), url('${content.background_image ?? "/gambar/seksi%206/bg.png"}')`,
         }}
       >
         <motion.p
@@ -62,7 +92,7 @@ export default function Honesty() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="font-graziemille text-[5px] leading-none tracking-[3px] text-[#F5EDD6CC] md:text-[12px] md:tracking-[5px]"
         >
-          THE ESSENCE
+          {content.eyebrow ?? "THE ESSENCE"}
         </motion.p>
 
         <motion.h2
@@ -73,7 +103,7 @@ export default function Honesty() {
           className="mt-2 font-gilland text-[16px] leading-tight md:mt-4 md:text-[43px]"
           style={goldText}
         >
-          Honesty of Nusantara
+          {content.title ?? "Honesty of Nusantara"}
         </motion.h2>
 
         <motion.div
@@ -94,9 +124,9 @@ export default function Honesty() {
       </header>
 
       <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 px-6 pb-8 pt-14 md:grid-cols-2 md:gap-x-10 md:gap-y-14 md:px-12 md:py-20 xl:grid-cols-4 xl:gap-x-6">
-        {essenceData.map((item, index) => (
+        {items.map((item, index) => (
           <motion.article
-            key={item.id}
+            key={`${item.id ?? "item"}-${item.mainTitle ?? item.title ?? item.topTitle ?? item.eyebrow ?? "value"}-${index}`}
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
@@ -107,8 +137,8 @@ export default function Honesty() {
             }}
             className="mx-auto flex w-full max-w-[170px] flex-col items-center pb-3 md:max-w-[260px] md:pb-0"
           >
-            <Image
-              src={item.imgSrc}
+            <SafeImage
+              src={item.imgSrc ?? item.icon ?? item.image ?? "/gambar/seksi%206/1.svg"}
               width={74}
               height={74}
               className="h-[48px] w-[48px] object-contain md:h-[74px] md:w-[74px]"
@@ -118,11 +148,11 @@ export default function Honesty() {
 
             <div className="mt-5 flex w-full flex-col items-center md:mt-8">
               <p className="font-graziemille text-[5px] font-medium leading-none tracking-[2px] text-[#C9A84C] md:text-[9px] md:tracking-[2.2px]">
-                {item.topTitle}
+                {item.topTitle ?? item.eyebrow}
               </p>
 
               <h3 className="mt-1.5 font-gilland text-[12px] leading-tight text-[#F5EDD6] md:text-[19px]">
-                {item.mainTitle}
+                {item.mainTitle ?? item.title}
               </h3>
 
               <p className="mt-3 font-graziemille text-[7.5px] font-light leading-[1.55] text-[#C9B99AB3] md:mt-4 md:text-[11px] md:leading-[1.6]">

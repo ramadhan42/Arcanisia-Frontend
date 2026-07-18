@@ -2,44 +2,18 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-const footerGroups = [
-  {
-    title: "COLLECTION",
-    links: [
-      "Secret of Buton",
-      "Whisper of Raja Ampat",
-      "Mystique of Komodo",
-      "Emerald of Borneo",
-      "Soul of Lombok",
-      "Glow of Borobudur",
-    ],
-  },
-  {
-    title: "COMPANY",
-    links: [
-      "About Arcanisia",
-      "Our Mission",
-      "Brand Values",
-      "Logo Story",
-      "Sustainability",
-    ],
-  },
-  {
-    title: "SUPPORT",
-    links: [
-      "FAQ",
-      "Shipping Info",
-      "Returns Policy",
-      "Track Order",
-      "Contact Us",
-    ],
-  },
-];
-
-const legalLinks = ["Privacy Policy", "Terms of Service", "Cookie Policy"];
+import { useSiteContent } from "@/contexts/SiteContentContext";
+import SafeImage from "@/components/ui/SafeImage";
 
 export default function Footer() {
+  const { section } = useSiteContent();
+  const footer = section<{
+    logo?: string;
+    description?: string;
+    copyright?: string;
+    groups?: Array<{ title: string; links: Array<{ label: string; href: string } | string> }>;
+  }>("footer");
+  const legal = section<{ links?: Array<{ label: string; slug?: string; href?: string }> }>("legal");
   return (
     <footer className="relative w-full overflow-hidden bg-[#061716] font-graziemille text-[#F8C56C]">
       <div className="pointer-events-none absolute inset-0 bg-white/[0.02]" />
@@ -53,18 +27,16 @@ export default function Footer() {
             transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
             className="flex max-w-[465px] flex-col items-start"
           >
-            <Image
-              src="/gambar/footer/logo%20arca%20fix%201.svg"
+            <SafeImage
+              src={footer.logo ?? "/gambar/footer/logo%20arca%20fix%201.svg"}
               width={151}
               height={46}
-              className="h-auto w-[137px] md:w-[151px]"
+              className="h-auto w-[137px] object-contain md:w-[151px]"
               alt="Arcanisia"
             />
 
             <p className="mt-5 max-w-[215px] text-[8px] leading-4 text-[#C9B99A99] md:mt-6 md:max-w-[430px] md:text-[13px] md:leading-[1.7]">
-              A luxury fragrance house born from the heart of the Indonesian
-              archipelago. Six islands. Six stories. One nation breathed into
-              being through scent.
+              {footer.description}
             </p>
 
             <Image
@@ -76,7 +48,7 @@ export default function Footer() {
             />
           </motion.div>
 
-          {footerGroups.map((group, index) => (
+          {(footer.groups ?? []).map((group, index) => (
             <motion.nav
               key={group.title}
               initial={{ opacity: 0, y: 30 }}
@@ -94,16 +66,17 @@ export default function Footer() {
               </h2>
 
               <ul className="mt-5 flex flex-col gap-[13px] md:mt-6 md:gap-3">
-                {group.links.map((link) => (
-                  <li key={link}>
+                {group.links.map((link) => {
+                  const item = typeof link === "string" ? { label: link, href: "#" } : link;
+                  return <li key={item.label}>
                     <a
-                      href="#"
+                      href={item.href}
                       className="text-[8px] leading-4 text-[#C9B99A80] transition-colors hover:text-[#F8C56C] md:text-[12px]"
                     >
-                      {link}
+                      {item.label}
                     </a>
                   </li>
-                ))}
+                })}
               </ul>
             </motion.nav>
           ))}
@@ -118,21 +91,20 @@ export default function Footer() {
         >
           <div className="flex flex-col items-start justify-between gap-5 md:flex-row md:items-center">
             <p className="max-w-[155px] text-[7px] leading-[1.45] tracking-[0.5px] md:max-w-none md:text-[11px]">
-              © 2026 Arcanisia Scent. All rights reserved. Made with love for
-              Indonesia.
+              {footer.copyright}
             </p>
 
             <nav
               aria-label="Legal"
               className="flex flex-wrap items-center gap-x-5 gap-y-2"
             >
-              {legalLinks.map((link) => (
+              {(legal.links ?? []).map((link) => (
                 <a
-                  key={link}
-                  href="#"
+                  key={link.label}
+                  href={link.href ?? `/legal/${link.slug ?? "#"}`}
                   className="text-[6px] transition-colors hover:text-[#F8C56C] md:text-[10px]"
                 >
-                  {link}
+                  {link.label}
                 </a>
               ))}
             </nav>

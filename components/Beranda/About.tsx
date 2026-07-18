@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSiteContent } from "@/contexts/SiteContentContext";
+import SafeImage from "@/components/ui/SafeImage";
 
 const goldGradient = {
   background:
@@ -23,6 +25,16 @@ const statistics = [
 ];
 
 export default function About() {
+  const { section } = useSiteContent();
+  const content = section<{
+    eyebrow?: string;
+    title?: string;
+    image?: string;
+    quote?: string;
+    paragraphs?: string[];
+    statistics?: Array<{ value: string; label: string }>;
+  }>("about");
+  const renderedStatistics = content.statistics?.length ? content.statistics : statistics;
   return (
     <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#00221f,#022421_50%,#00221f)] px-10 py-8 text-center text-[#C9B99A] md:py-20 lg:py-24">
       <div className="mx-auto flex w-full max-w-[1100px] flex-col items-center">
@@ -31,7 +43,7 @@ export default function About() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="font-graziemille text-[7px] tracking-[5px] text-[#F5EDD6CC] sm:text-[9px] sm:tracking-[7px] md:text-[11px] md:tracking-[8px]"
         >
-          ABOUT ARCANISIA
+          {content.eyebrow ?? "ABOUT ARCANISIA"}
         </motion.p>
 
         <motion.h2
@@ -40,7 +52,7 @@ export default function About() {
           className="mt-2 font-gilland text-[26px] leading-tight sm:text-[31px] md:mt-3 md:text-[42px]"
           style={goldGradient}
         >
-          More Than a Fragrance
+          {content.title ?? "More Than a Fragrance"}
         </motion.h2>
 
         <motion.div
@@ -64,8 +76,8 @@ export default function About() {
           transition={{ duration: 1, delay: 0.35, ease: "easeOut" }}
           className="relative mt-8 aspect-[1.91/1] w-full max-w-[912px] overflow-hidden md:mt-12 md:aspect-[1.75/1]"
         >
-          <Image
-            src="/gambar/seksi%203/borneo2.jpg"
+          <SafeImage
+            src={content.image ?? "/gambar/seksi%203/borneo2.jpg"}
             alt="Pegunungan hijau Nusantara"
             fill
             className="object-cover"
@@ -90,8 +102,7 @@ export default function About() {
           className="mt-7 max-w-[340px] font-graziemille text-[19px] leading-[1.65] italic sm:max-w-[440px] sm:text-[22px] md:mt-10 md:max-w-[650px] md:text-[28px] md:leading-[1.45]"
           style={goldGradient}
         >
-          &quot;Born to reignite national pride through the art of scent the
-          leading narrator of the Nusantara.&quot;
+          &quot;{content.quote ?? "Born to reignite national pride through the art of scent the leading narrator of the Nusantara."}&quot;
         </motion.blockquote>
 
         <div className="mt-6 flex max-w-[320px] flex-col gap-5 font-graziemille text-[14px] leading-[1.55] sm:max-w-[430px] sm:text-[15px] md:mt-8 md:max-w-[580px] md:text-[17px] md:leading-[1.6]">
@@ -100,10 +111,7 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
             className="text-[#C9B99A]"
           >
-            Arcanisia was born not merely to present fragrance, but to reignite
-            national pride for Indonesia — from its uncharted islands to its
-            rarely uncovered cultural riches — through the fusion of visual art
-            and storytelling aromas.
+            {content.paragraphs?.[0] ?? "Arcanisia was born not merely to present fragrance, but to reignite national pride for Indonesia — from its uncharted islands to its rarely uncovered cultural riches — through the fusion of visual art and storytelling aromas."}
           </motion.p>
 
           <motion.p
@@ -111,9 +119,7 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.95, ease: "easeOut" }}
             className="text-[#C9B99A99]"
           >
-            Every bottle is an educational medium and sensory experience that
-            brings the story of Indonesia into everyday life — committed to
-            sustainability and environmental preservation.
+            {content.paragraphs?.[1] ?? "Every bottle is an educational medium and sensory experience that brings the story of Indonesia into everyday life — committed to sustainability and environmental preservation."}
           </motion.p>
         </div>
 
@@ -122,7 +128,7 @@ export default function About() {
           transition={{ duration: 0.9, delay: 1.05, ease: "easeOut" }}
           className="mt-8 grid w-full max-w-[310px] grid-cols-3 md:mt-12 md:max-w-[440px]"
         >
-          {statistics.map((stat, index) => (
+          {renderedStatistics.map((stat, index) => (
             <div
               key={stat.label}
               className={`relative flex min-w-0 flex-col items-center ${

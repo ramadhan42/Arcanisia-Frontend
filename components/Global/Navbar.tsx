@@ -15,55 +15,36 @@ import {
   User,
   ChevronDown,
   ShoppingBag,
+  Package,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
-import LoginModal from "../Auth/LoginModal";
-import RegisterModal from "../Auth/RegisterModal";
 import OrdersModal from "../Modals/Orders";
+import ProfileModal from "../Modals/Profile";
+import { useAuth } from "@/contexts/AuthContext";
+import { useAuthDialog } from "@/contexts/AuthDialogContext";
+import { useCart } from "@/contexts/CartContext";
+import Link from "next/link";
 
 export default function Navbar() {
   const { scrollY } = useScroll();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { openLogin } = useAuthDialog();
+  const { cart, openCart } = useCart();
 
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // State untuk mengontrol kemunculan Modal[cite: 13]
-  const [activeModal, setActiveModal] = useState<"login" | "register" | null>(
-    null,
-  );
-
-  // State untuk status Login & Nama User
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State baru untuk dropdown
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const userName = user?.name ?? "";
+  const userEmail = user?.email ?? "";
 
-  // Fungsi Logout
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUserName("");
-    setUserEmail("");
+  const handleLogout = async () => {
     setIsDropdownOpen(false);
-  };
-
-  // Fungsi untuk mengganti modal yang aktif[cite: 13]
-  const handleSwitchModal = (modalName: "login" | "register") => {
-    setActiveModal(modalName);
-  };
-
-  const closeModal = () => {
-    setActiveModal(null);
-  };
-
-  // Fungsi saat login berhasil
-  const handleLoginSuccess = (name: string, email: string) => {
-    setUserName(name);
-    setUserEmail(email);
-    setIsLoggedIn(true);
-    closeModal();
+    await logout();
   };
 
   // Detect scroll direction[cite: 13]
@@ -112,11 +93,25 @@ export default function Navbar() {
     }
   };
 
+  const handleShopNow = () => {
+    setIsMobileMenuOpen(false);
+    if (window.location.pathname !== "/") {
+      window.location.assign("/#collection");
+      return;
+    }
+    document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <>
       {/* // Tambahkan di dalam return: */}
       <AnimatePresence>
         {isOrdersOpen && <OrdersModal onClose={() => setIsOrdersOpen(false)} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {isProfileOpen && user && (
+          <ProfileModal user={user} onClose={() => setIsProfileOpen(false)} />
+        )}
       </AnimatePresence>
       <motion.nav
         initial={{ y: -100, opacity: 0 }}
@@ -186,6 +181,7 @@ export default function Navbar() {
             <button
               type="button"
               aria-label="Shop now"
+              onClick={handleShopNow}
               className="flex h-[42px] items-center gap-3 rounded-md border border-[#F8C56C] px-4 transition-all duration-300 hover:bg-[#F8C56C]/10 xl:gap-4 xl:px-6"
             >
               <Image
@@ -201,7 +197,7 @@ export default function Navbar() {
           </motion.div>
 
           {/* LOGIC UNTUK MENU MASUK ATAU USER MENU */}
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <div className="relative hidden lg:block">
               {/* Trigger Dropdown */}
               <button
@@ -253,10 +249,20 @@ export default function Navbar() {
                   </div>
 
                   <div className="border-y border-[#7c7135]/35">
+                    {user?.is_admin && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#f8c56c] transition-colors hover:bg-[#F8C56C]/8"
+                      >
+                        <ShieldCheck size={18} strokeWidth={1.7} />
+                        <span>Dashboard Admin</span>
+                      </Link>
+                    )}
                     <button
                       type="button"
                       onClick={() => {
-                        setIsOrdersOpen(true);
+                        setIsProfileOpen(true);
                         setIsDropdownOpen(false);
                       }}
                       className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
@@ -273,14 +279,31 @@ export default function Navbar() {
                       }}
                       className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
                     >
-                      <ShoppingBag size={18} strokeWidth={1.7} />
+                      <Package size={18} strokeWidth={1.7} />
                       <span>Pesanan Saya</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        openCart();
+                        setIsDropdownOpen(false);
+                      }}
+                      className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                    >
+                      <ShoppingBag size={18} strokeWidth={1.7} />
+                      <span className="flex-1">Keranjang</span>
+                      {!!cart?.items_count && (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F8C56C] px-1.5 text-[10px] font-bold text-[#012421]">
+                          {cart.items_count}
+                        </span>
+                      )}
                     </button>
                   </div>
 
                   <button
                     type="button"
-                    onClick={handleLogout}
+                    onClick={() => void handleLogout()}
                     className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#ff6673] transition-colors hover:bg-[#ff6673]/8"
                   >
                     <LogOut size={18} strokeWidth={1.8} />
@@ -293,7 +316,7 @@ export default function Navbar() {
             // Tampilan Menu Masuk (Sebelum Login)
             <button
               type="button"
-              onClick={() => setActiveModal("login")}
+              onClick={() => openLogin()}
               aria-label="Masuk"
               className="group hidden h-[42px] items-center justify-center gap-2 rounded-md px-2 transition-colors hover:bg-white/5 lg:flex xl:px-4"
             >
@@ -397,10 +420,7 @@ export default function Navbar() {
               <div className="mt-16 flex flex-col items-center">
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    setIsMobileMenuOpen(false);
-                  }}
+                  onClick={handleShopNow}
                   className="flex h-[57px] w-[222px] items-center justify-center gap-7 rounded-xl border border-[#F8C56C] font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
                 >
                   <Image
@@ -413,7 +433,7 @@ export default function Navbar() {
                   SHOP NOW
                 </button>
 
-                {isLoggedIn ? (
+                {isAuthenticated ? (
                   <>
                     <button
                       type="button"
@@ -467,7 +487,7 @@ export default function Navbar() {
                             <button
                               type="button"
                               onClick={() => {
-                                setIsOrdersOpen(true);
+                                setIsProfileOpen(true);
                                 setIsDropdownOpen(false);
                                 setIsMobileMenuOpen(false);
                               }}
@@ -486,15 +506,33 @@ export default function Navbar() {
                               }}
                               className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
                             >
-                              <ShoppingBag size={18} strokeWidth={1.7} />
+                              <Package size={18} strokeWidth={1.7} />
                               <span>Pesanan Saya</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                openCart();
+                                setIsDropdownOpen(false);
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                            >
+                              <ShoppingBag size={18} strokeWidth={1.7} />
+                              <span className="flex-1">Keranjang</span>
+                              {!!cart?.items_count && (
+                                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F8C56C] px-1.5 text-[10px] font-bold text-[#012421]">
+                                  {cart.items_count}
+                                </span>
+                              )}
                             </button>
                           </div>
 
                           <button
                             type="button"
                             onClick={() => {
-                              handleLogout();
+                              void handleLogout();
                               setIsMobileMenuOpen(false);
                             }}
                             className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#ff6673] transition-colors hover:bg-[#ff6673]/8"
@@ -510,7 +548,7 @@ export default function Navbar() {
                   <button
                     type="button"
                     onClick={() => {
-                      setActiveModal("login");
+                      openLogin();
                       setIsMobileMenuOpen(false);
                     }}
                     className="mt-14 flex items-center gap-6 font-graziemille text-[15px] tracking-[4px] text-[#F8C56C]"
@@ -525,26 +563,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* MODAL RENDER[cite: 13] */}
-      <AnimatePresence>
-        {activeModal === "login" && (
-          <LoginModal
-            isOpen={true}
-            onClose={closeModal}
-            onSwitchToRegister={() => handleSwitchModal("register")}
-            onLogin={handleLoginSuccess} // Melempar fungsi handleLoginSuccess ke modal
-          />
-        )}
-      </AnimatePresence>
-      <AnimatePresence>
-        {activeModal === "register" && (
-          <RegisterModal
-            isOpen={true}
-            onClose={closeModal}
-            onSwitchToLogin={() => handleSwitchModal("login")}
-          />
-        )}
-      </AnimatePresence>
     </>
   );
 }

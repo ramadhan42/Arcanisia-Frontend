@@ -1,29 +1,4 @@
-import React from "react";
-
 export default function MapIndonesiaPage() {
-  // Fungsi helper agar styling tidak berulang-ulang
-  // Menggunakan mask-image untuk mewarnai PNG transparan menjadi warna solid #1e6055
-  const islandStyle = (
-    src: string,
-    left: string | number,
-    top: string | number,
-    width: string | number,
-    height: string | number
-  ): React.CSSProperties => ({
-    position: "absolute" as React.CSSProperties["position"],
-    left: left,
-    top: top,
-    width: width,
-    height: height,
-    backgroundColor: "#1e6055", // Warna yang diminta untuk semua pulau
-    WebkitMaskImage: `url('${src}')`,
-    WebkitMaskSize: "contain",
-    WebkitMaskRepeat: "no-repeat",
-    maskImage: `url('${src}')`,
-    maskSize: "contain",
-    maskRepeat: "no-repeat",
-  });
-
   return (
     // Wrapper utama halaman agar peta berada di tengah (Center)
     <div className="div">

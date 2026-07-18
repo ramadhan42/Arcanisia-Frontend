@@ -1,84 +1,123 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductDetail from "../Modals/ProductDetail";
+import { productService } from "@/services/api";
+import { useSiteContent } from "@/contexts/SiteContentContext";
 
-// 1. Data Sementara (MOCK DATA)
-// Menambahkan properti "badge" untuk Secret of Buton, Breeze of Alor, dan Warmth of Papua
-const productsData = [
-  {
-    id: 1,
-    image: "/gambar/seksi%204/button.jpg",
-    topTitle: "BUTON ISLAND · SOUTHEAST SULAWESI",
-    name: "Secret of Buton",
-    bgColor: "#134b46",
-    size: "15 ml Parfum",
-    price: "Rp 120.000",
-    badge: "BEST SELLER",
-  },
-  {
-    id: 2,
-    image: "/gambar/seksi%204/sumba.jpg",
-    topTitle: "SUMBA ISLAND · EAST NUSA TENGGARA",
-    name: "Reverie of Sumba",
-    bgColor: "#994121",
-    size: "15 ml Parfum",
-    price: "Rp 120.000",
-  },
-  {
-    id: 3,
-    image: "/gambar/seksi%204/nias.jpg",
-    topTitle: "NIAS ISLAND · NORTH SUMATRA",
-    name: "Charm of Nias",
-    bgColor: "#A71F24",
-    size: "15 ml Parfum",
-    price: "Rp 120.000",
-  },
-  {
-    id: 4,
-    image: "/gambar/seksi%204/komodo.jpg",
-    topTitle: "KOMODO ISLAND · EAST NUSA TENGGARA",
-    name: "Apex of Komodo",
-    bgColor: "#333333",
-    size: "15 ml Parfum",
-    price: "Rp 120.000",
-  },
-  {
-    id: 5,
-    image: "/gambar/seksi%204/alor.jpg",
-    topTitle: "ALOR ISLAND · EAST NUSA TENGGARA",
-    name: "Breeze of Alor",
-    bgColor: "#193B63",
-    size: "15 ml Parfum",
-    price: "Rp 120.000",
-    badge: "COMING SOON",
-  },
-  {
-    id: 6,
-    image: "/gambar/seksi%204/papua.jpg",
-    topTitle: "PAPUA ISLAND · NORTH OF AUSTRALIA",
-    name: "Warmth of Papua",
-    bgColor: "#3F281B",
-    size: "15 ml Parfum",
-    price: "Rp 120.000",
-    badge: "COMING SOON",
-  },
-];
+export interface CollectionProduct {
+  id: number;
+  slug: string;
+  sku: string;
+  image: string;
+  topTitle: string;
+  name: string;
+  description: string | null;
+  scentNotes: string[];
+  bgColor: string;
+  size: string;
+  price: string;
+  rawPrice: string;
+  stock: number;
+  badge?: string;
+}
+
+const formatPrice = new Intl.NumberFormat("id-ID", {
+  style: "currency",
+  currency: "IDR",
+  maximumFractionDigits: 0,
+});
 
 const Collections = () => {
-  const [selectedProduct, setSelectedProduct] = useState<
-    (typeof productsData)[number] | null
-  >(null);
+  const { section } = useSiteContent();
+  const content = section<{
+    eyebrow?: string;
+    title?: string;
+    description?: string;
+    cta?: string;
+  }>("collection");
+  const [products, setProducts] = useState<CollectionProduct[]>([]);
+  const [selectedProduct, setSelectedProduct] =
+    useState<CollectionProduct | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const goldGradient =
     "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
 
-  const handleDiscoverClick = (product: (typeof productsData)[number]) => {
+  useEffect(() => {
+    let isActive = true;
+
+    productService.list({ per_page: 100 })
+      .then((response) => {
+        if (!isActive) return;
+
+        const collectionProducts = response.data
+          .sort((first, second) => first.id - second.id)
+          .map((product) => ({
+            id: product.id,
+            slug: product.slug,
+            sku: product.sku,
+            image: product.image ?? "/gambar/seksi%204/button.jpg",
+            topTitle: product.top_title ?? "",
+            name: product.name,
+            description: product.description,
+            scentNotes: product.scent_notes ?? [],
+            bgColor: product.bg_color ?? "#134b46",
+            size: product.size ?? "",
+            price: formatPrice.format(Number(product.price)),
+            rawPrice: product.price,
+            stock: product.stock,
+            badge: product.badge ?? undefined,
+          }));
+
+        setProducts(collectionProducts);
+      })
+      .catch((error) => {
+        if (!isActive) return;
+
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Koleksi produk gagal dimuat.",
+        );
+      })
+      .finally(() => {
+        if (isActive) setIsLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const handleDiscoverClick = async (product: CollectionProduct) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
+    try {
+      const { data } = await productService.show(product.slug);
+      setSelectedProduct({
+        id: data.id,
+        slug: data.slug,
+        sku: data.sku,
+        image: data.image ?? product.image,
+        topTitle: data.top_title ?? "",
+        name: data.name,
+        description: data.description,
+        scentNotes: data.scent_notes ?? [],
+        bgColor: data.bg_color ?? "#134b46",
+        size: data.size ?? "",
+        price: formatPrice.format(Number(data.price)),
+        rawPrice: data.price,
+        stock: data.stock,
+        badge: data.badge ?? undefined,
+      });
+    } catch {
+      // The collection response remains a controlled detail fallback.
+    }
   };
 
   return (
@@ -96,7 +135,7 @@ const Collections = () => {
         className="mb-3 font-medium uppercase text-[#F5EDD6CC] text-[9px] tracking-[3px] sm:text-[10px]"
         style={{ fontFamily: "'Grazie mille', serif" }}
       >
-        THE COLLECTION
+        {content.eyebrow ?? "THE COLLECTION"}
       </motion.p>
 
       <motion.h2
@@ -110,7 +149,7 @@ const Collections = () => {
           fontFamily: "'Gilland', sans-serif",
         }}
       >
-        Six Islands, Six Stories
+        {content.title ?? "Six Islands, Six Stories"}
       </motion.h2>
 
       <motion.div
@@ -137,13 +176,32 @@ const Collections = () => {
         className="mb-10 max-w-[650px] px-4 text-center text-[13px] leading-relaxed text-[#C9B99A] sm:text-[14px] md:mb-14 md:text-[15px]"
         style={{ fontFamily: "'Grazie mille', serif", fontWeight: "normal" }}
       >
-        Each fragrance is an olfactory journey through the soul of the
-        Indonesian archipelago — six islands, six stories, one nation breathed
-        into being.
+        {content.description}
       </motion.p>
 
       <div className="mx-auto mb-12 grid w-full max-w-[1160px] grid-cols-1 gap-5 px-2 sm:grid-cols-2 sm:px-0 lg:grid-cols-3 lg:gap-7">
-        {productsData.map((product, index) => (
+        {isLoading && (
+          <p className="col-span-full py-12 text-center font-graziemille text-[#C9B99A]">
+            Memuat koleksi produk...
+          </p>
+        )}
+
+        {!isLoading && errorMessage && (
+          <p
+            role="alert"
+            className="col-span-full py-12 text-center font-graziemille text-[#ff7b86]"
+          >
+            {errorMessage}
+          </p>
+        )}
+
+        {!isLoading && !errorMessage && products.length === 0 && (
+          <p className="col-span-full py-12 text-center font-graziemille text-[#C9B99A]">
+            Belum ada produk yang tersedia.
+          </p>
+        )}
+
+        {products.map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 50 }}
@@ -208,7 +266,7 @@ const Collections = () => {
 
                 <button
                   type="button"
-                  onClick={() => handleDiscoverClick(product)}
+                  onClick={() => void handleDiscoverClick(product)}
                   className="flex shrink-0 flex-row items-center gap-1 transition-opacity hover:opacity-80"
                   style={{
                     color: "#F5EDD6CC",
@@ -247,7 +305,7 @@ const Collections = () => {
         className="flex h-10 w-full max-w-[260px] items-center justify-center gap-3 rounded-sm font-gilland text-[10px] font-normal tracking-[1px] text-[#124B46] transition-opacity hover:opacity-90 sm:text-[11px]"
         style={{ background: goldGradient }}
       >
-        VIEW COMPLETE COLLECTION
+        {content.cta ?? "VIEW COMPLETE COLLECTION"}
         <svg
           width="18"
           height="18"

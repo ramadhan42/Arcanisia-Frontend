@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSiteContent } from "@/contexts/SiteContentContext";
 
 const missionData = [
   {
@@ -44,13 +45,16 @@ const goldText = {
 };
 
 export default function Missions() {
+  const { section } = useSiteContent();
+  const content = section<{ eyebrow?: string; title?: string; background_image?: string; items?: typeof missionData }>("missions");
+  const items = content.items?.length ? content.items : missionData;
   return (
     <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#00221f,#012421)]">
       <header
         className="relative flex h-[112px] w-full flex-col items-center bg-cover bg-center px-6 pt-4 text-center md:h-[413px] md:justify-center md:pt-0"
         style={{
           backgroundImage:
-            "linear-gradient(180deg, rgba(0,34,31,0.58), #012421), url('/gambar/seksi%205/bg.png')",
+            `linear-gradient(180deg, rgba(0,34,31,0.58), #012421), url('${content.background_image ?? "/gambar/seksi%205/bg.png"}')`,
         }}
       >
         <motion.p
@@ -60,7 +64,7 @@ export default function Missions() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="font-graziemille text-[6px] leading-none tracking-[3px] text-[#F5EDD6CC] md:text-[13px] md:tracking-[5px]"
         >
-          OUR MISSION
+          {content.eyebrow ?? "OUR MISSION"}
         </motion.p>
 
         <motion.h2
@@ -71,7 +75,7 @@ export default function Missions() {
           className="mt-2 font-gilland text-[20px] leading-tight md:mt-4 md:text-[43px]"
           style={goldText}
         >
-          Guided by Purpose
+          {content.title ?? "Guided by Purpose"}
         </motion.h2>
 
         <motion.div
@@ -92,9 +96,9 @@ export default function Missions() {
       </header>
 
       <div className="mx-auto w-full max-w-[762px] px-[22px] pb-10 pt-8 md:px-[18px] md:pb-12 md:pt-12">
-        {missionData.map((item, index) => (
+        {items.map((item, index) => (
           <motion.article
-            key={item.id}
+            key={`${item.id ?? "mission"}-${item.title ?? "item"}-${index}`}
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.3 }}
@@ -109,7 +113,7 @@ export default function Missions() {
               className="text-right font-gilland text-[31px] leading-none md:text-[48px]"
               style={goldText}
             >
-              {item.id}
+              {item.id ?? String(index + 1).padStart(2, "0")}
             </span>
 
             <span className="flex h-full min-h-[52px] flex-col items-center pt-1 md:min-h-[70px] md:pt-1.5">

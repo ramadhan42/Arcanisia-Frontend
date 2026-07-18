@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSiteContent } from "@/contexts/SiteContentContext";
 
-type Category = "produk" | "pengiriman" | "retur" | "keamanan";
+type Category = string;
 
 const faqData = [
   {
@@ -100,17 +101,34 @@ function ToggleIcon({ open }: { open: boolean }) {
 }
 
 export default function FAQPage() {
-  const [activeCategory, setActiveCategory] = useState<Category>("produk");
-  const [activeId, setActiveId] = useState<number | null>(1);
+  const { section } = useSiteContent();
+  const content = section<{
+    eyebrow?: string;
+    title?: string;
+    description?: string;
+    support_email?: string;
+    categories?: Array<{ id: string; label: string }>;
+    items?: Array<{ id: number | string; category: string; question: string; answer: string }>;
+  }>("faq");
+  const renderedFaqs = (content.items?.length ? content.items : faqData).map(
+    (faq, index) => ({ ...faq, uid: `${faq.id ?? "faq"}-${index}` }),
+  );
+  const renderedCategories = content.categories?.length ? content.categories : categories;
+  const [activeCategory, setActiveCategory] = useState<Category>(
+    renderedCategories[0]?.id ?? "produk",
+  );
+  const [activeUid, setActiveUid] = useState<string | null>(
+    renderedFaqs[0]?.uid ?? null,
+  );
 
-  const visibleFaqs = faqData.filter(
+  const visibleFaqs = renderedFaqs.filter(
     (faq) => faq.category === activeCategory,
   );
 
   const changeCategory = (category: Category) => {
     setActiveCategory(category);
-    setActiveId(
-      faqData.find((faq) => faq.category === category)?.id ?? null,
+    setActiveUid(
+      renderedFaqs.find((faq) => faq.category === category)?.uid ?? null,
     );
   };
 
@@ -126,23 +144,20 @@ export default function FAQPage() {
         >
           <div>
             <p className="font-graziemille text-[8px] tracking-[4px] text-[#C9A84C] md:text-[10px] md:tracking-[5px]">
-              PUSAT BANTUAN
+              {content.eyebrow ?? "PUSAT BANTUAN"}
             </p>
             <h2
               className="mt-3 font-gilland text-[34px] leading-[1.25] md:text-[53px] md:leading-[1.3]"
               style={goldText}
             >
-              Pertanyaan yang
-              <br />
-              Sering Diajukan
+              {content.title ?? "Pertanyaan yang Sering Diajukan"}
             </h2>
           </div>
 
           <p className="max-w-[560px] font-graziemille text-[12px] leading-[1.8] text-[#C9B99A99] md:text-[14px] md:leading-[1.85]">
-            Tidak menemukan jawaban yang Anda cari? Tim kami siap membantu
-            melalui live chat atau email{" "}
-            <a href="mailto:hello@arcanisia.id" className="text-[#C9A84C]">
-              hello@arcanisia.id
+            {content.description}{" "}
+            <a href={`mailto:${content.support_email ?? "hello@arcanisia.id"}`} className="text-[#C9A84C]">
+              {content.support_email ?? "hello@arcanisia.id"}
             </a>
             .
           </p>
@@ -156,9 +171,9 @@ export default function FAQPage() {
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           >
             <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
-              {categories.map((category) => {
+              {renderedCategories.map((category) => {
                 const active = category.id === activeCategory;
-                const count = faqData.filter(
+                const count = renderedFaqs.filter(
                   (faq) => faq.category === category.id,
                 ).length;
 
@@ -196,7 +211,7 @@ export default function FAQPage() {
                 MASIH BUTUH BANTUAN?
               </p>
               <a
-                href="mailto:hello@arcanisia.id"
+                href={`mailto:${content.support_email ?? "hello@arcanisia.id"}`}
                 className="mt-3 inline-flex items-center gap-2 font-graziemille text-[10px] tracking-[1.5px] text-[#C9A84CB3]"
               >
                 ✉ HUBUNGI KAMI
@@ -220,18 +235,18 @@ export default function FAQPage() {
                 transition={{ duration: 0.3 }}
               >
                 {visibleFaqs.map((faq, index) => {
-                  const open = faq.id === activeId;
+                  const open = faq.uid === activeUid;
 
                   return (
                     <article
-                      key={faq.id}
+                      key={faq.uid}
                       className={`border-b border-[#C9A84C]/15 last:border-b-0 ${
                         open ? "bg-[#C9A84C]/5" : ""
                       }`}
                     >
                       <button
                         type="button"
-                        onClick={() => setActiveId(open ? null : faq.id)}
+                        onClick={() => setActiveUid(open ? null : faq.uid)}
                         className="flex w-full items-start justify-between gap-3 p-4 text-left sm:p-5 md:p-6"
                       >
                         <span className="flex min-w-0 gap-3 md:gap-4">
