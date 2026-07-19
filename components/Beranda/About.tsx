@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import SafeImage from "@/components/ui/SafeImage";
 
@@ -30,11 +32,26 @@ export default function About() {
     eyebrow?: string;
     title?: string;
     image?: string;
+    images?: string[];
     quote?: string;
     paragraphs?: string[];
     statistics?: Array<{ value: string; label: string }>;
   }>("about");
   const renderedStatistics = content.statistics?.length ? content.statistics : statistics;
+
+  const baseImage = content.image ?? "/gambar/seksi%203/borneo2.jpg";
+  const galleryImages = content.images?.length
+    ? content.images
+    : Array.from({ length: 6 }, () => baseImage);
+  const totalSlides = galleryImages.length;
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const goToSlide = (nextIndex: number, dir: number) => {
+    setDirection(dir);
+    setActiveSlide((nextIndex + totalSlides) % totalSlides);
+  };
+  const goPrev = () => goToSlide(activeSlide - 1, -1);
+  const goNext = () => goToSlide(activeSlide + 1, 1);
   return (
     <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#00221f,#022421_50%,#00221f)] px-10 py-8 text-center text-[#C9B99A] md:py-20 lg:py-24">
       <div className="mx-auto flex w-full max-w-[1100px] flex-col items-center">
@@ -74,34 +91,74 @@ export default function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.25 }}
           transition={{ duration: 1, delay: 0.35, ease: "easeOut" }}
-          className="relative mt-8 aspect-[1.91/1] w-full max-w-[912px] overflow-hidden md:mt-12 md:aspect-[1.75/1]"
+          className="group relative mt-8 aspect-[1.91/1] w-full max-w-[912px] md:mt-12 md:aspect-[1.75/1]"
         >
-          <SafeImage
-            src={content.image ?? "/gambar/seksi%203/borneo2.jpg"}
-            alt="Pegunungan hijau Nusantara"
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) calc(100vw - 80px), 912px"
-          />
+          <div className="absolute inset-0 overflow-hidden">
+          <AnimatePresence initial={false} custom={direction} mode="popLayout">
+            <motion.div
+              key={activeSlide}
+              custom={direction}
+              initial={{ opacity: 0, x: direction >= 0 ? 60 : -60, scale: 1.04 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: direction >= 0 ? -60 : 60, scale: 1.04 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="absolute inset-0"
+            >
+              <SafeImage
+                src={galleryImages[activeSlide]}
+                alt={`Pegunungan hijau Nusantara ${activeSlide + 1}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) calc(100vw - 80px), 912px"
+              />
+            </motion.div>
+          </AnimatePresence>
+
           {/* Fade all four edges (top, bottom, left, right) into the section color, keeping the center visible. */}
           <div
-            className="pointer-events-none absolute inset-0"
+            className="pointer-events-none absolute inset-0 z-10"
             style={{
               background:
                 "linear-gradient(to right, #00221f 0%, rgba(0,34,31,0) 14%, rgba(0,34,31,0) 86%, #00221f 100%), linear-gradient(to bottom, #00221f 0%, rgba(0,34,31,0) 16%, rgba(0,34,31,0) 84%, #00221f 100%)",
             }}
           />
-        </motion.div>
+          </div>
 
-        <div
-          className="mt-5 flex items-center justify-center gap-[7px] md:mt-7"
-          aria-hidden="true"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#8B7440]/60" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#8B7440]/60" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#8B7440]/60" />
-          <span className="h-1.5 w-6 rounded-full bg-[#D6AD55]" />
-        </div>
+          {/* Slider controls */}
+          <button
+            type="button"
+            onClick={goPrev}
+            aria-label="Gambar sebelumnya"
+            className="group/nav absolute left-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#C9A84C]/70 bg-[#00221f]/85 text-[#F8C56C] shadow-[0_8px_24px_-8px_rgba(0,0,0,0.7)] ring-1 ring-black/10 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-[#F8C56C] hover:bg-[#F8C56C] hover:text-[#00221f] hover:shadow-[0_10px_28px_-6px_rgba(201,168,76,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F8C56C] active:scale-95 md:-left-4 md:h-12 md:w-12 lg:-left-7"
+          >
+            <ChevronLeft size={22} strokeWidth={2.75} className="-ml-0.5 transition-transform duration-300 group-hover/nav:-translate-x-0.5" />
+          </button>
+          <button
+            type="button"
+            onClick={goNext}
+            aria-label="Gambar berikutnya"
+            className="group/nav absolute right-1 top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#C9A84C]/70 bg-[#00221f]/85 text-[#F8C56C] shadow-[0_8px_24px_-8px_rgba(0,0,0,0.7)] ring-1 ring-black/10 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-[#F8C56C] hover:bg-[#F8C56C] hover:text-[#00221f] hover:shadow-[0_10px_28px_-6px_rgba(201,168,76,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F8C56C] active:scale-95 md:-right-4 md:h-12 md:w-12 lg:-right-7"
+          >
+            <ChevronRight size={22} strokeWidth={2.75} className="-mr-0.5 transition-transform duration-300 group-hover/nav:translate-x-0.5" />
+          </button>
+
+          {/* Slide indicators */}
+          <div className="absolute inset-x-0 bottom-3 z-20 flex items-center justify-center gap-2 md:bottom-4">
+            {galleryImages.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => goToSlide(index, index > activeSlide ? 1 : -1)}
+                aria-label={`Ke gambar ${index + 1}`}
+                className={`h-1.5 rounded-full transition-all ${
+                  index === activeSlide
+                    ? "w-5 bg-[#F8C56C]"
+                    : "w-1.5 bg-[#F8C56C]/40 hover:bg-[#F8C56C]/70"
+                }`}
+              />
+            ))}
+          </div>
+        </motion.div>
 
         <motion.blockquote
           {...reveal}
