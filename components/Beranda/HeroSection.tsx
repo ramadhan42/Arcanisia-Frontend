@@ -81,6 +81,16 @@ export default function HeroSection() {
         />
       </motion.div>
 
+      {/* Fade bagian atas dan bawah hero agar menyatu dengan navbar & section berikutnya. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{
+          background:
+            "linear-gradient(to bottom, #012320 0%, rgba(1,35,32,0) 14%, rgba(1,35,32,0) 82%, #012320 100%)",
+        }}
+      />
+
       <div className="relative z-10 mx-auto flex w-full max-w-md flex-col items-center px-5 text-center md:mt-12 md:px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}

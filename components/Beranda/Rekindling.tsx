@@ -13,7 +13,7 @@ export default function Rekindling() {
         className="pointer-events-none absolute inset-0 z-0"
         style={{
           backgroundImage: `
-            linear-gradient(to bottom, rgba(0, 15, 14, 0.42), rgba(0, 12, 11, 0.62)),
+            linear-gradient(to bottom, #012320 0%, rgba(1, 35, 32, 0.6) 12%, rgba(1, 35, 32, 0.5) 50%, rgba(1, 35, 32, 0.6) 88%, #012320 100%),
             url('${content.background_image ?? "/gambar/seksi%201/bg.jpg"}')
           `,
           backgroundSize: "cover",
@@ -31,7 +31,7 @@ export default function Rekindling() {
         style={{
           backgroundImage: `
             radial-gradient(ellipse 95% 90% at 62% 48%, transparent 25%, rgba(0, 22, 20, 0.28) 72%, rgba(0, 12, 11, 0.68) 100%),
-            linear-gradient(to bottom, rgba(0, 13, 12, 0.35), transparent 24%, transparent 72%, rgba(0, 10, 9, 0.72)),
+            linear-gradient(to bottom, #012320 0%, rgba(1, 35, 32, 0.5) 14%, rgba(1, 35, 32, 0.12) 40%, rgba(1, 35, 32, 0.12) 60%, rgba(1, 35, 32, 0.5) 86%, #012320 100%),
             url('${content.product_image ?? "/gambar/seksi%202/produk.png"}')
           `,
           backgroundRepeat: "no-repeat",

@@ -83,7 +83,14 @@ export default function About() {
             className="object-cover"
             sizes="(max-width: 768px) calc(100vw - 80px), 912px"
           />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,transparent_48%,rgba(0,34,31,0.32)_100%)]" />
+          {/* Fade all four edges (top, bottom, left, right) into the section color, keeping the center visible. */}
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to right, #00221f 0%, rgba(0,34,31,0) 14%, rgba(0,34,31,0) 86%, #00221f 100%), linear-gradient(to bottom, #00221f 0%, rgba(0,34,31,0) 16%, rgba(0,34,31,0) 84%, #00221f 100%)",
+            }}
+          />
         </motion.div>
 
         <div

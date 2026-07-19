@@ -54,7 +54,7 @@ export default function Missions() {
         className="relative flex h-[112px] w-full flex-col items-center bg-cover bg-center px-6 pt-4 text-center md:h-[413px] md:justify-center md:pt-0"
         style={{
           backgroundImage:
-            `linear-gradient(180deg, rgba(0,34,31,0.58), #012421), url('${content.background_image ?? "/gambar/seksi%205/bg.png"}')`,
+            `linear-gradient(180deg, #00221f 0%, rgba(0,34,31,0.88) 14%, rgba(0,34,31,0.42) 40%, rgba(1,36,33,0.42) 58%, rgba(1,36,33,0.88) 84%, #012421 100%), url('${content.background_image ?? "/gambar/seksi%205/bg.png"}')`,
         }}
       >
         <motion.p
