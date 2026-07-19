@@ -1,12 +1,74 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import SafeImage from "@/components/ui/SafeImage";
 
+type LinkClassName = string;
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Maps footer link labels (by slug) to their on-page section id.
+const SECTION_BY_LABEL: Record<string, string> = {
+  "about-arcanisia": "about",
+  "our-mission": "mission",
+  "brand-values": "values",
+  "logo-story": "about",
+  sustainability: "mission",
+  faq: "faq",
+  "shipping-info": "faq",
+  "returns-policy": "faq",
+  "track-order": "contact",
+  "contact-us": "contact",
+};
+
+// Resolves the effective destination for a footer link based on its group and
+// label, so links work even when the CMS stores placeholder hrefs like "#".
+function resolveHref(groupTitle: string, label: string, rawHref?: string): string {
+  const group = (groupTitle ?? "").trim().toUpperCase();
+  const raw = (rawHref ?? "").trim();
+
+  // COLLECTION group → open the matching product modal via deep link.
+  if (group === "COLLECTION") {
+    if (raw.includes("product-")) return raw;
+    return `/#product-${slugify(label)}`;
+  }
+
+  // A meaningful, explicit href always wins (admin-configured routes/anchors).
+  if (raw && raw !== "#" && raw !== "/#" && raw !== "/") return raw;
+
+  // Otherwise infer the section from the label.
+  const mapped = SECTION_BY_LABEL[slugify(label)];
+  if (mapped) return `/#${mapped}`;
+
+  return raw || "#";
+}
+
+function getHashId(href: string): string | null {
+  if (!href) return null;
+  const index = href.indexOf("#");
+  if (index < 0) return null;
+  const id = href.slice(index + 1).trim();
+  return id.length ? id : null;
+}
+
+function isExternal(href: string): boolean {
+  return /^(https?:)?\/\//i.test(href) || href.startsWith("mailto:") || href.startsWith("tel:");
+}
+
 export default function Footer() {
   const { section } = useSiteContent();
+  const router = useRouter();
+  const pathname = usePathname();
   const footer = section<{
     logo?: string;
     description?: string;
@@ -14,6 +76,90 @@ export default function Footer() {
     groups?: Array<{ title: string; links: Array<{ label: string; href: string } | string> }>;
   }>("footer");
   const legal = section<{ links?: Array<{ label: string; slug?: string; href?: string }> }>("legal");
+
+  const goToHash = (hashId: string) => {
+    // Deep link to a specific product modal (e.g. "product-secret-of-buton").
+    const isProduct = hashId.startsWith("product-");
+
+    if (pathname !== "/") {
+      router.push(`/#${hashId}`);
+      return;
+    }
+
+    if (isProduct) {
+      document
+        .getElementById("collection")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (window.location.hash === `#${hashId}`) {
+        // Same hash: re-trigger so Collections can reopen the modal.
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
+      } else {
+        window.location.hash = hashId;
+      }
+      return;
+    }
+
+    const element = document.getElementById(hashId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", `/#${hashId}`);
+    }
+  };
+
+  const renderLink = (
+    label: string,
+    href: string,
+    className: LinkClassName,
+  ) => {
+    const safeHref = href || "#";
+    const hashId = getHashId(safeHref);
+
+    // Same-page section anchor (e.g. "/#about", "#collection") or a product
+    // deep link (e.g. "/#product-secret-of-buton"): handle in-app.
+    if (hashId) {
+      return (
+        <a
+          href={`/#${hashId}`}
+          onClick={(event) => {
+            event.preventDefault();
+            goToHash(hashId);
+          }}
+          className={className}
+        >
+          {label}
+        </a>
+      );
+    }
+
+    // External links / mail / tel: open normally.
+    if (isExternal(safeHref)) {
+      return (
+        <a
+          href={safeHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={className}
+        >
+          {label}
+        </a>
+      );
+    }
+
+    // Internal route (e.g. "/legal/privacy-policy"): client-side navigation.
+    if (safeHref.startsWith("/")) {
+      return (
+        <Link href={safeHref} className={className}>
+          {label}
+        </Link>
+      );
+    }
+
+    // Fallback: inert placeholder link.
+    return (
+      <span className={`${className} cursor-default opacity-70`}>{label}</span>
+    );
+  };
+
   return (
     <footer className="relative w-full overflow-hidden bg-[#061716] font-graziemille text-[#F8C56C]">
       <div className="pointer-events-none absolute inset-0 bg-white/[0.02]" />
@@ -68,14 +214,16 @@ export default function Footer() {
               <ul className="mt-5 flex flex-col gap-[13px] md:mt-6 md:gap-3">
                 {group.links.map((link) => {
                   const item = typeof link === "string" ? { label: link, href: "#" } : link;
-                  return <li key={item.label}>
-                    <a
-                      href={item.href}
-                      className="text-[8px] leading-4 text-[#C9B99A80] transition-colors hover:text-[#F8C56C] md:text-[12px]"
-                    >
-                      {item.label}
-                    </a>
-                  </li>
+                  const href = resolveHref(group.title, item.label, item.href);
+                  return (
+                    <li key={item.label}>
+                      {renderLink(
+                        item.label,
+                        href,
+                        "text-[8px] leading-4 text-[#C9B99A80] transition-colors hover:text-[#F8C56C] md:text-[12px]",
+                      )}
+                    </li>
+                  );
                 })}
               </ul>
             </motion.nav>
@@ -99,13 +247,13 @@ export default function Footer() {
               className="flex flex-wrap items-center gap-x-5 gap-y-2"
             >
               {(legal.links ?? []).map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href ?? `/legal/${link.slug ?? "#"}`}
-                  className="text-[6px] transition-colors hover:text-[#F8C56C] md:text-[10px]"
-                >
-                  {link.label}
-                </a>
+                <span key={link.label}>
+                  {renderLink(
+                    link.label,
+                    link.href ?? `/legal/${link.slug ?? ""}`,
+                    "text-[6px] transition-colors hover:text-[#F8C56C] md:text-[10px]",
+                  )}
+                </span>
               ))}
             </nav>
           </div>

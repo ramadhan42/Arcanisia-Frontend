@@ -97,6 +97,7 @@ const Collections = () => {
   const handleDiscoverClick = async (product: CollectionProduct) => {
     setSelectedProduct(product);
     setIsModalOpen(true);
+    window.history.replaceState(null, "", `/#product-${product.slug}`);
     try {
       const { data } = await productService.show(product.slug);
       setSelectedProduct({
@@ -117,6 +118,37 @@ const Collections = () => {
       });
     } catch {
       // The collection response remains a controlled detail fallback.
+    }
+  };
+
+  // Open a specific product when the URL hash is "#product-<slug>"
+  // (e.g. deep links from the footer). Runs once products are available and
+  // whenever the hash changes.
+  useEffect(() => {
+    if (!products.length) return;
+
+    const openFromHash = () => {
+      const match = window.location.hash.match(/^#product-(.+)$/);
+      if (!match) return;
+      const slug = decodeURIComponent(match[1]);
+      const product = products.find((item) => item.slug === slug);
+      if (!product) return;
+      document
+        .getElementById("collection")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      void handleDiscoverClick(product);
+    };
+
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    if (window.location.hash.startsWith("#product-")) {
+      window.history.replaceState(null, "", "/#collection");
     }
   };
 
@@ -329,7 +361,7 @@ const Collections = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            onClick={() => setIsModalOpen(false)}
+            onClick={closeModal}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
           >
             {/* Modal Container */}
@@ -343,7 +375,7 @@ const Collections = () => {
             >
               <ProductDetail
                 product={selectedProduct}
-                onClose={() => setIsModalOpen(false)}
+                onClose={closeModal}
               />
             </motion.div>
           </motion.div>

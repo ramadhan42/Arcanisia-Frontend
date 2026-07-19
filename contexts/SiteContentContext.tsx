@@ -68,9 +68,9 @@ const fallbackContent: SiteContent = {
       {
         title: "COLLECTION",
         links: [
-          { label: "Secret of Buton", href: "/#collection" },
-          { label: "Whisper of Raja Ampat", href: "/#collection" },
-          { label: "Mystique of Komodo", href: "/#collection" },
+          { label: "Secret of Buton", href: "/#product-secret-of-buton" },
+          { label: "Whisper of Raja Ampat", href: "/#product-whisper-of-raja-ampat" },
+          { label: "Mystique of Komodo", href: "/#product-mystique-of-komodo" },
         ],
       },
       {
