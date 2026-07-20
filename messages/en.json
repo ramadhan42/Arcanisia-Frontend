@@ -107,6 +107,7 @@
         "subtitle": "Spirit of Nias",
         "description": "A sanctuary of rolling waves and ancient megaliths, echoing the fierce and beautiful spirit of the ocean.",
         "notes": ["Sea Salt", "Coconut Water", "Oceanic Breeze", "Sun-baked Sand"],
+        "productSlug": "charm-of-nias",
         "labelPosition": { "top": "32.26%", "left": "0.77%" }
       },
       {
@@ -116,6 +117,7 @@
         "subtitle": "Heritage of Buton",
         "description": "The land of asphalt and ancient fortresses, surrounded by deep blue seas and whispered histories.",
         "notes": ["Exotic Spices", "Warm Amber", "Deep Woods", "Golden Resin"],
+        "productSlug": "secret-of-buton",
         "labelPosition": { "top": "68.59%", "left": "60.84%" }
       },
       {
@@ -125,6 +127,7 @@
         "subtitle": "Soul of Sumba",
         "description": "Vast savannas and untamed horses, a rustic paradise where the earth meets endless horizons.",
         "notes": ["Sandalwood", "Dry Savanna", "Leather", "Wild Vetiver"],
+        "productSlug": "reverie-of-sumba",
         "labelPosition": { "top": "93.58%", "left": "45.37%" }
       },
       {
@@ -134,6 +137,7 @@
         "subtitle": "Mystique of Komodo",
         "description": "Volcanic, primal, untamed — the realm of ancient dragons and crystal-clear waters where worlds of fire and sea collide.",
         "notes": ["Wild Grass", "Volcanic Earth", "Warm Musk", "Dried Herbs"],
+        "productSlug": "apex-of-komodo",
         "labelPosition": { "top": "74.11%", "left": "43.69%" }
       },
       {
@@ -143,6 +147,7 @@
         "subtitle": "Whispers of Alor",
         "description": "Hidden gems of the archipelago, boasting pristine coral reefs and a rich tapestry of tribal culture.",
         "notes": ["Coral Reef", "Sea Breeze", "Vanilla", "White Pepper"],
+        "productSlug": "breeze-of-alor",
         "labelPosition": { "top": "84.86%", "left": "66.83%" }
       },
       {
@@ -152,6 +157,7 @@
         "subtitle": "Heart of Papua",
         "description": "A majestic expanse of untouched rainforests and towering peaks, breathing with raw, vibrant life.",
         "notes": ["Oud Wood", "Rainforest Dew", "Earthy Patchouli", "Green Leaves"],
+        "productSlug": "warmth-of-papua",
         "labelPosition": { "top": "31.1%", "left": "91.24%" }
       }
     ]

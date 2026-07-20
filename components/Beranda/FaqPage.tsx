@@ -198,13 +198,13 @@ export default function FAQPage() {
                     className="flex w-full items-start gap-4 px-4 py-4 text-left md:gap-5 md:px-6 md:py-5"
                   >
                     <span
-                      className="mt-0.5 font-graziemille text-[13px] tracking-[2px] text-[#C9A84C] md:text-[15px]"
+                      className="mt-0.5 font-graziemille text-[16px] tracking-[2px] text-[#C9A84C] md:text-[19px]"
                       data-locale-fade="ignore"
                     >
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <span
-                      className="flex-1 font-gilland text-[15px] leading-[1.35] text-[#F5EDD6] md:text-[18px]"
+                      className="flex-1 font-gilland text-[16px] leading-[1.35] text-[#F5EDD6] md:text-[19px]"
                       data-locale-text="true"
                     >
                       {faq.question}
@@ -227,7 +227,7 @@ export default function FAQPage() {
                         className="overflow-hidden"
                       >
                         <p
-                          className="px-4 pb-5 pl-[3.25rem] font-graziemille text-[12px] leading-[1.8] text-[#C9B99A99] md:px-6 md:pb-6 md:pl-[4.25rem] md:text-[13px]"
+                          className="px-4 pb-5 pl-[3.25rem] font-graziemille text-[13px] leading-[1.8] text-[#C9B99A99] md:px-6 md:pb-6 md:pl-[4.25rem] md:text-[14px]"
                           data-locale-text="true"
                         >
                           {faq.answer}

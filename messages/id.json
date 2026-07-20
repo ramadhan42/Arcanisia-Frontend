@@ -107,6 +107,7 @@
         "subtitle": "Jiwa Nias",
         "description": "Suaka ombak bergulung dan megalit kuno, menggema semangat laut yang garang dan indah.",
         "notes": ["Garam Laut", "Air Kelapa", "Angin Samudra", "Pasir Hangat"],
+        "productSlug": "charm-of-nias",
         "labelPosition": { "top": "32.26%", "left": "0.77%" }
       },
       {
@@ -116,6 +117,7 @@
         "subtitle": "Warisan Buton",
         "description": "Tanah aspal dan benteng kuno, dikelilingi laut biru dalam dan sejarah yang berbisik.",
         "notes": ["Rempah Eksotis", "Amber Hangat", "Kayu Dalam", "Resin Emas"],
+        "productSlug": "secret-of-buton",
         "labelPosition": { "top": "68.59%", "left": "60.84%" }
       },
       {
@@ -125,6 +127,7 @@
         "subtitle": "Jiwa Sumba",
         "description": "Savana luas dan kuda liar, surga pedesaan di mana bumi bertemu cakrawala tak berujung.",
         "notes": ["Cendana", "Savana Kering", "Kulit", "Vetiver Liar"],
+        "productSlug": "reverie-of-sumba",
         "labelPosition": { "top": "93.58%", "left": "45.37%" }
       },
       {
@@ -134,6 +137,7 @@
         "subtitle": "Misteri Komodo",
         "description": "Vulkanik, primal, liar — kerajaan naga purba dan perairan jernih tempat api dan laut bertemu.",
         "notes": ["Rumput Liar", "Tanah Vulkanik", "Musk Hangat", "Herba Kering"],
+        "productSlug": "apex-of-komodo",
         "labelPosition": { "top": "74.11%", "left": "43.69%" }
       },
       {
@@ -143,6 +147,7 @@
         "subtitle": "Bisikan Alor",
         "description": "Permata tersembunyi Nusantara, dengan terumbu karang murni dan kekayaan budaya suku yang mendalam.",
         "notes": ["Karang", "Angin Laut", "Vanila", "Lada Putih"],
+        "productSlug": "breeze-of-alor",
         "labelPosition": { "top": "84.86%", "left": "66.83%" }
       },
       {
@@ -152,6 +157,7 @@
         "subtitle": "Jantung Papua",
         "description": "Hamparan hutan hujan tak tersentuh dan puncak menjulang, bernapas dengan kehidupan liar yang penuh warna.",
         "notes": ["Kayu Gaharu", "Embun Hutan", "Patchouli Tanah", "Daun Hijau"],
+        "productSlug": "warmth-of-papua",
         "labelPosition": { "top": "31.1%", "left": "91.24%" }
       }
     ]

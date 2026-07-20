@@ -1,36 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import ProductDetail from "../Modals/ProductDetail";
+import { motion } from "framer-motion";
 import { productService } from "@/services/api";
 import { useSiteContent } from "@/contexts/SiteContentContext";
+import {
+  mapApiProductToDetail,
+  useProductDetail,
+  type ProductDetailProduct,
+} from "@/contexts/ProductDetailContext";
 import { useTranslation } from "@/contexts/LocaleContext";
 import ProductImage from "@/components/ui/ProductImage";
 import SafeImage from "@/components/ui/SafeImage";
 
-export interface CollectionProduct {
-  id: number;
-  slug: string;
-  sku: string;
-  image: string;
-  topTitle: string;
-  name: string;
-  description: string | null;
-  scentNotes: string[];
-  bgColor: string;
-  size: string;
-  price: string;
-  rawPrice: string;
-  stock: number;
-  badge?: string;
-}
-
-const formatPrice = new Intl.NumberFormat("id-ID", {
-  style: "currency",
-  currency: "IDR",
-  maximumFractionDigits: 0,
-});
+export type CollectionProduct = ProductDetailProduct;
 
 function translateBadge(
   badge: string | undefined,
@@ -49,6 +32,7 @@ function translateBadge(
 const Collections = () => {
   const { t } = useTranslation();
   const { section } = useSiteContent();
+  const { openProduct } = useProductDetail();
   const content = section<{
     eyebrow?: string;
     title?: string;
@@ -57,9 +41,6 @@ const Collections = () => {
     cta_label?: string;
   }>("collection");
   const [products, setProducts] = useState<CollectionProduct[]>([]);
-  const [selectedProduct, setSelectedProduct] =
-    useState<CollectionProduct | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -69,28 +50,14 @@ const Collections = () => {
   useEffect(() => {
     let isActive = true;
 
-    productService.list({ per_page: 100 })
+    productService
+      .list({ per_page: 100 })
       .then((response) => {
         if (!isActive) return;
 
         const collectionProducts = response.data
           .sort((first, second) => first.id - second.id)
-          .map((product) => ({
-            id: product.id,
-            slug: product.slug,
-            sku: product.sku,
-            image: product.image ?? "/gambar/seksi%204/button.jpg",
-            topTitle: product.top_title ?? "",
-            name: product.name,
-            description: product.description,
-            scentNotes: product.scent_notes ?? [],
-            bgColor: product.bg_color ?? "#134b46",
-            size: product.size ?? "",
-            price: formatPrice.format(Number(product.price)),
-            rawPrice: product.price,
-            stock: product.stock,
-            badge: product.badge ?? undefined,
-          }));
+          .map((product) => mapApiProductToDetail(product));
 
         setProducts(collectionProducts);
       })
@@ -98,9 +65,7 @@ const Collections = () => {
         if (!isActive) return;
 
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : t("collection.failed"),
+          error instanceof Error ? error.message : t("collection.failed"),
         );
       })
       .finally(() => {
@@ -113,62 +78,29 @@ const Collections = () => {
   }, [t]);
 
   const handleDiscoverClick = async (product: CollectionProduct) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-    window.history.replaceState(null, "", `/#product-${product.slug}`);
+    openProduct(product);
     try {
       const { data } = await productService.show(product.slug);
-      setSelectedProduct({
-        id: data.id,
-        slug: data.slug,
-        sku: data.sku,
-        image: data.image ?? product.image,
-        topTitle: data.top_title ?? "",
-        name: data.name,
-        description: data.description,
-        scentNotes: data.scent_notes ?? [],
-        bgColor: data.bg_color ?? "#134b46",
-        size: data.size ?? "",
-        price: formatPrice.format(Number(data.price)),
-        rawPrice: data.price,
-        stock: data.stock,
-        badge: data.badge ?? undefined,
-      });
+      openProduct(mapApiProductToDetail(data, product));
     } catch {
       // The collection response remains a controlled detail fallback.
     }
   };
 
-  // Open a specific product when the URL hash is "#product-<slug>"
-  // (e.g. deep links from the footer). Runs once products are available and
-  // whenever the hash changes.
+  // Deep-link scroll for `#product-<slug>` (footer / shared URLs).
+  // Uses hashchange only — replaceState from Islands CTA must not scroll away.
   useEffect(() => {
-    if (!products.length) return;
-
-    const openFromHash = () => {
-      const match = window.location.hash.match(/^#product-(.+)$/);
-      if (!match) return;
-      const slug = decodeURIComponent(match[1]);
-      const product = products.find((item) => item.slug === slug);
-      if (!product) return;
+    const scrollFromHash = () => {
+      if (!window.location.hash.startsWith("#product-")) return;
       document
         .getElementById("collection")
         ?.scrollIntoView({ behavior: "auto", block: "start" });
-      void handleDiscoverClick(product);
     };
 
-    openFromHash();
-    window.addEventListener("hashchange", openFromHash);
-    return () => window.removeEventListener("hashchange", openFromHash);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products]);
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    if (window.location.hash.startsWith("#product-")) {
-      window.history.replaceState(null, "", "/#collection");
-    }
-  };
+    scrollFromHash();
+    window.addEventListener("hashchange", scrollFromHash);
+    return () => window.removeEventListener("hashchange", scrollFromHash);
+  }, []);
 
   return (
     <section
@@ -369,35 +301,6 @@ const Collections = () => {
           <path d="m12 5 7 7-7 7"></path>
         </svg>
       </motion.button>
-
-      {/* MODAL OVERLAY */}
-      <AnimatePresence>
-        {isModalOpen && selectedProduct && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            onClick={closeModal}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-          >
-            {/* Modal Container */}
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 30 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              onClick={(e) => e.stopPropagation()} // Hindari modal tertutup saat konten diklik
-              className="relative shadow-2xl rounded-sm"
-            >
-              <ProductDetail
-                product={selectedProduct}
-                onClose={closeModal}
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };

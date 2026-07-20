@@ -1,11 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { NextPage } from "next";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Islands.module.css";
-import { useSiteContent } from "@/contexts/SiteContentContext";
 import { useTranslation } from "@/contexts/LocaleContext";
+import { useSiteContent } from "@/contexts/SiteContentContext";
+import {
+  mapApiProductToDetail,
+  useProductDetail,
+} from "@/contexts/ProductDetailContext";
+import { productService } from "@/services/api";
 import SafeImage from "@/components/ui/SafeImage";
 import enMessages from "@/messages/en.json";
 import idMessages from "@/messages/id.json";
@@ -18,6 +23,7 @@ type IslandItem = {
   subtitle: string;
   description: string;
   notes: string[];
+  productSlug?: string;
   labelPosition: { top: string; left: string };
 };
 
@@ -26,61 +32,127 @@ const islandCatalogs: Record<Locale, IslandItem[]> = {
   en: enMessages.islands.items,
 };
 
+/** Auto-advance island slider every 2.5s */
+const ISLAND_AUTO_SLIDE_MS = 2500;
+
 const MapSection: NextPage = () => {
   const { locale, t } = useTranslation();
   const { section } = useSiteContent();
-  const catalog = islandCatalogs[locale];
-  const content = section<{
-    eyebrow?: string;
-    title?: string;
-    islands?: Array<Partial<IslandItem> & { id: string }>;
-    items?: Array<Partial<IslandItem> & { id: string }>;
+  const { openBySlug, openProduct, isOpen } = useProductDetail();
+  const cmsIslands = section<{
+    items?: Array<{ id?: string; product_slug?: string }>;
   }>("islands");
-  const cmsIslands = content.islands?.length
-    ? content.islands
-    : content.items?.length
-      ? content.items
-      : null;
-  const renderedIslands = (cmsIslands ?? catalog)
-    .filter((island): island is NonNullable<typeof island> => Boolean(island))
-    .map((island) => {
-      const raw = island as Partial<IslandItem> & {
-        id?: string;
-        label_position?: { top?: string; left?: string };
-      };
-      const fallback =
-        catalog.find(
-          (item) =>
-            item.id.toUpperCase() === String(raw.id ?? "").toUpperCase(),
-        ) ?? catalog[0];
-      const position = raw.labelPosition ?? raw.label_position;
-
-      return {
-        ...fallback,
-        ...raw,
-        id: String(raw.id ?? fallback.id).toUpperCase(),
-        name: raw.name ?? fallback.name,
-        region: raw.region ?? fallback.region,
-        subtitle: raw.subtitle ?? fallback.subtitle,
-        description: raw.description ?? fallback.description,
-        notes: raw.notes?.length ? raw.notes : fallback.notes,
-        labelPosition: {
-          top: position?.top ?? fallback.labelPosition.top,
-          left: position?.left ?? fallback.labelPosition.left,
-        },
-      };
-    });
-  // State untuk menyimpan pulau yang sedang aktif[cite: 23]
+  const renderedIslands = useMemo(
+    () =>
+      islandCatalogs[locale].map((island) => ({
+        ...island,
+        id: island.id.toUpperCase(),
+      })),
+    [locale],
+  );
   const [activeIsland, setActiveIsland] = useState(
     () => renderedIslands[0]?.id ?? "NIAS",
   );
+  const [isPaused, setIsPaused] = useState(false);
+  const [isDiscovering, setIsDiscovering] = useState(false);
   const activeIslandIndex = renderedIslands.findIndex(
     (island) => island.id === activeIsland,
   );
+  const pauseTimeoutRef = useRef<number | null>(null);
 
-  const selectIsland = (islandId: string) => {
-    setActiveIsland(islandId);
+  const resolveProductSlug = (islandId: string): string | undefined => {
+    const cmsSlug = cmsIslands.items?.find(
+      (item) => item.id?.toUpperCase() === islandId,
+    )?.product_slug;
+    if (cmsSlug?.trim()) return cmsSlug.trim();
+
+    return renderedIslands.find((island) => island.id === islandId)?.productSlug;
   };
+
+  const handleDiscoverFragrance = async (islandId: string) => {
+    if (isDiscovering) return;
+    setIsDiscovering(true);
+
+    try {
+      const slug = resolveProductSlug(islandId);
+      if (slug && (await openBySlug(slug))) return;
+
+      // Last resort: match island name/id in the catalog — never silently
+      // open an unrelated "first" product (was always Nias via list latest).
+      const response = await productService.list({ per_page: 100 });
+      const islandKey = islandId.toLowerCase();
+      const match = response.data.find((product) => {
+        const haystack = [
+          product.slug,
+          product.name,
+          product.top_title ?? "",
+          product.sku,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(islandKey);
+      });
+      if (match) openProduct(mapApiProductToDetail(match));
+    } catch {
+      // Keep Islands interactive even if product fetch fails.
+    } finally {
+      setIsDiscovering(false);
+    }
+  };
+
+  // Pause island autoplay while the shared product modal is open.
+  useEffect(() => {
+    if (!isOpen) return;
+    setIsPaused(true);
+    return () => setIsPaused(false);
+  }, [isOpen]);
+
+  const selectIsland = (islandId: string, pauseAuto = true) => {
+    setActiveIsland(islandId);
+    if (!pauseAuto) return;
+
+    // Briefly pause autoplay after manual selection so the user can read.
+    setIsPaused(true);
+    if (pauseTimeoutRef.current !== null) {
+      window.clearTimeout(pauseTimeoutRef.current);
+    }
+    pauseTimeoutRef.current = window.setTimeout(() => {
+      setIsPaused(false);
+      pauseTimeoutRef.current = null;
+    }, ISLAND_AUTO_SLIDE_MS * 2);
+  };
+
+  useEffect(() => {
+    // Keep selection valid when locale catalog changes.
+    if (!renderedIslands.some((island) => island.id === activeIsland)) {
+      setActiveIsland(renderedIslands[0]?.id ?? "NIAS");
+    }
+  }, [activeIsland, renderedIslands]);
+
+  useEffect(() => {
+    if (isPaused || renderedIslands.length <= 1) return;
+
+    const timer = window.setInterval(() => {
+      setActiveIsland((current) => {
+        const currentIndex = renderedIslands.findIndex(
+          (island) => island.id === current,
+        );
+        const nextIndex =
+          currentIndex < 0 ? 0 : (currentIndex + 1) % renderedIslands.length;
+        return renderedIslands[nextIndex]?.id ?? current;
+      });
+    }, ISLAND_AUTO_SLIDE_MS);
+
+    return () => window.clearInterval(timer);
+  }, [isPaused, renderedIslands]);
+
+  useEffect(() => {
+    return () => {
+      if (pauseTimeoutRef.current !== null) {
+        window.clearTimeout(pauseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleIslandKeyDown = (
     event: React.KeyboardEvent<SVGSVGElement>,
@@ -183,7 +255,7 @@ const MapSection: NextPage = () => {
               marginBottom: "16px",
             }}
           >
-            {content.eyebrow ?? t("islands.eyebrow")}
+            {t("islands.eyebrow")}
           </motion.p>
 
           {/* Judul Utama */}
@@ -211,7 +283,7 @@ const MapSection: NextPage = () => {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              {content.title ?? t("islands.title")}
+              {t("islands.title")}
             </span>
           </motion.h2>
 
@@ -795,7 +867,13 @@ const MapSection: NextPage = () => {
                     </div>
                   ))}
                 </div>
-                <div
+                <button
+                  type="button"
+                  onClick={() =>
+                    void handleDiscoverFragrance(currentIslandData.id)
+                  }
+                  disabled={isDiscovering}
+                  aria-label={t("islands.discover")}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -803,7 +881,11 @@ const MapSection: NextPage = () => {
                     gap: "5.1px",
                     fontSize: "6.37px",
                     color: "#c9a84c",
-                    cursor: "pointer",
+                    cursor: isDiscovering ? "wait" : "pointer",
+                    background: "none",
+                    border: "none",
+                    font: "inherit",
+                    opacity: isDiscovering ? 0.7 : 1,
                   }}
                 >
                     <div
@@ -822,9 +904,9 @@ const MapSection: NextPage = () => {
                     width={8}
                     height={8}
                     sizes="8px"
-                    alt="Arrow Icon"
+                    alt=""
                   />
-                </div>
+                </button>
               </div>
             </motion.div>
           </AnimatePresence>

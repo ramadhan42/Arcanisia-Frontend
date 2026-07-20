@@ -3,7 +3,7 @@
 // ==========================================
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import SafeImage from "@/components/ui/SafeImage";
 import {
   motion,
@@ -24,6 +24,7 @@ import ProfileModal from "../Modals/Profile";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthDialog } from "@/contexts/AuthDialogContext";
 import { useCart } from "@/contexts/CartContext";
+import { orderService } from "@/services/api";
 import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "@/contexts/LocaleContext";
@@ -35,6 +36,19 @@ const navMenus = [
   { id: "mission", labelKey: "nav.mission" },
   { id: "values", labelKey: "nav.values" },
 ] as const;
+
+function DropdownCountBadge({ count }: { count: number }) {
+  if (!count) return null;
+
+  return (
+    <span
+      data-locale-fade="ignore"
+      className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F8C56C] px-1.5 text-[10px] font-bold text-[#012421]"
+    >
+      {count}
+    </span>
+  );
+}
 
 function AccountLanguageToggle() {
   const { locale, setLocale, t } = useTranslation();
@@ -78,7 +92,7 @@ function AccountLanguageToggle() {
 
 export default function Navbar() {
   const { scrollY } = useScroll();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, token } = useAuth();
   const { openLogin } = useAuthDialog();
   const { cart, openCart } = useCart();
   const { t, locale, setLocale } = useTranslation();
@@ -90,6 +104,7 @@ export default function Navbar() {
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [ordersCount, setOrdersCount] = useState(0);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const mobileAccountMenuRef = useRef<HTMLDivElement>(null);
   const userName = user?.name ?? "";
@@ -124,6 +139,29 @@ export default function Navbar() {
       document.removeEventListener("keydown", handleEscape);
     };
   }, [isDropdownOpen]);
+
+  const refreshOrdersCount = useCallback(async () => {
+    if (!token) {
+      setOrdersCount(0);
+      return;
+    }
+
+    try {
+      const response = await orderService.list(token, { page: 1, per_page: 1 });
+      setOrdersCount(response.meta?.total ?? response.data.length);
+    } catch {
+      setOrdersCount(0);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !token) {
+      setOrdersCount(0);
+      return;
+    }
+
+    void refreshOrdersCount();
+  }, [isAuthenticated, token, isDropdownOpen, isOrdersOpen, refreshOrdersCount]);
 
   const handleLogout = async () => {
     setIsDropdownOpen(false);
@@ -369,7 +407,8 @@ export default function Navbar() {
                         className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
                       >
                         <Package size={18} strokeWidth={1.7} data-locale-fade="ignore" />
-                        <span data-locale-text="true">{t("nav.myOrders")}</span>
+                        <span data-locale-text="true" className="flex-1">{t("nav.myOrders")}</span>
+                        <DropdownCountBadge count={ordersCount} />
                       </button>
 
                       <button
@@ -382,14 +421,7 @@ export default function Navbar() {
                       >
                         <ShoppingBag size={18} strokeWidth={1.7} data-locale-fade="ignore" />
                         <span data-locale-text="true" className="flex-1">{t("nav.cart")}</span>
-                        {!!cart?.items_count && (
-                          <span
-                            data-locale-fade="ignore"
-                            className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F8C56C] px-1.5 text-[10px] font-bold text-[#012421]"
-                          >
-                            {cart.items_count}
-                          </span>
-                        )}
+                        <DropdownCountBadge count={cart?.items_count ?? 0} />
                       </button>
 
                       <AccountLanguageToggle />
@@ -632,7 +664,8 @@ export default function Navbar() {
                               className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
                             >
                               <Package size={18} strokeWidth={1.7} data-locale-fade="ignore" />
-                              <span data-locale-text="true">{t("nav.myOrders")}</span>
+                              <span data-locale-text="true" className="flex-1">{t("nav.myOrders")}</span>
+                              <DropdownCountBadge count={ordersCount} />
                             </button>
 
                             <button
@@ -646,14 +679,7 @@ export default function Navbar() {
                             >
                               <ShoppingBag size={18} strokeWidth={1.7} data-locale-fade="ignore" />
                               <span data-locale-text="true" className="flex-1">{t("nav.cart")}</span>
-                              {!!cart?.items_count && (
-                                <span
-                                  data-locale-fade="ignore"
-                                  className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F8C56C] px-1.5 text-[10px] font-bold text-[#012421]"
-                                >
-                                  {cart.items_count}
-                                </span>
-                              )}
+                              <DropdownCountBadge count={cart?.items_count ?? 0} />
                             </button>
 
                             <AccountLanguageToggle />

@@ -4,6 +4,7 @@ import { AuthDialogProvider } from "@/contexts/AuthDialogContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
+import { ProductDetailProvider } from "@/contexts/ProductDetailContext";
 import { SiteContentProvider } from "@/contexts/SiteContentContext";
 import type { Locale } from "@/lib/locale";
 import LocaleTextTransition from "./Global/LocaleTextTransition";
@@ -23,10 +24,12 @@ export default function Providers({
         <AuthProvider>
           <AuthDialogProvider>
             <CartProvider>
-              <LocaleTextTransition />
-              <LocaleSkeletonLayer />
-              {children}
-              <CartDrawer />
+              <ProductDetailProvider>
+                <LocaleTextTransition />
+                <LocaleSkeletonLayer />
+                {children}
+                <CartDrawer />
+              </ProductDetailProvider>
             </CartProvider>
           </AuthDialogProvider>
         </AuthProvider>

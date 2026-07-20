@@ -16,7 +16,10 @@ export default function Home() {
   return (
     <div>
       {error && (
-        <div role="status" className="fixed inset-x-0 bottom-0 z-40 bg-[#7d2f37] px-4 py-2 text-center font-graziemille text-xs text-white">
+        <div
+          role="status"
+          className="fixed inset-x-0 bottom-0 z-40 bg-[#7d2f37] px-4 py-2 text-center font-graziemille text-xs text-white"
+        >
           Konten terbaru belum tersedia. Menampilkan konten cadangan.
         </div>
       )}
@@ -24,22 +27,18 @@ export default function Home() {
 
       <Rekindling />
 
-      {/* Tambahkan id="about" agar terhubung dengan menu ABOUT */}
       <section id="about">
         <About />
       </section>
 
-      {/* Tambahkan id="collection" agar terhubung dengan menu COLLECTION */}
       <section id="collection">
         <Collections />
       </section>
 
-      {/* Tambahkan id="mission" agar terhubung dengan menu MISSION */}
       <section id="mission">
         <Missions />
       </section>
 
-      {/* Tambahkan id="values" agar terhubung dengan menu VALUES (menggunakan komponen Honesty) */}
       <section id="values">
         <Honesty />
       </section>

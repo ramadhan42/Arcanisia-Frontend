@@ -36,28 +36,12 @@ export default function Honesty() {
   const { locale, t } = useTranslation();
   const { section } = useSiteContent();
   const content = section<{
-    eyebrow?: string;
-    title?: string;
     background_image?: string;
-    items?: ValueItem[];
   }>("values");
 
-  const catalog = valueCatalogs[locale];
-  const cmsItems = content.items?.length ? content.items : null;
-  const items: ValueItem[] = (cmsItems ?? catalog).map((item, index) => {
-    const fallback = catalog[index] ?? catalog[0];
-    return {
-      id: item.id ?? fallback?.id,
-      imgSrc: item.imgSrc ?? item.icon ?? item.image ?? fallback?.imgSrc,
-      topTitle:
-        item.topTitle ??
-        item.eyebrow ??
-        fallback?.topTitle ??
-        (item.title ? item.title.toUpperCase() : undefined),
-      mainTitle: item.mainTitle ?? item.title ?? fallback?.mainTitle,
-      description: item.description || fallback?.description || "",
-    };
-  });
+  // Locale catalog is the source of truth so English/Indonesian toggle
+  // is never overridden by stale CMS copy.
+  const items: ValueItem[] = valueCatalogs[locale];
 
   return (
     <section className="relative w-full overflow-hidden bg-[#012421] text-center">
@@ -90,7 +74,7 @@ export default function Honesty() {
           className="relative z-10 font-graziemille text-[8px] leading-none tracking-[3px] text-[#F5EDD6CC] sm:text-[9px] md:text-[12px] md:tracking-[5px]"
           data-locale-text="true"
         >
-          {content.eyebrow ?? t("values.eyebrow")}
+          {t("values.eyebrow")}
         </motion.p>
 
         <motion.h2
@@ -102,7 +86,7 @@ export default function Honesty() {
           style={goldText}
           data-locale-text="true"
         >
-          {content.title ?? t("values.title")}
+          {t("values.title")}
         </motion.h2>
 
         <motion.div
