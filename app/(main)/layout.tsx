@@ -14,11 +14,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main>
-      {/* 2. Tambahkan komponen Navbar di sini agar dirender di atas konten halaman */}
+    <main className="page-view min-h-svh bg-[#012320] text-[#f5edd6]">
       <Navbar />
-      <main>{children}</main>
-      <Footer />
+      <div className="page-content bg-[#012320]">
+        <main className="bg-[#012320]">{children}</main>
+        <Footer />
+      </div>
     </main>
   );
 }

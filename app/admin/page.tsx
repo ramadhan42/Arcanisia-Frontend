@@ -21,6 +21,7 @@ import type {
   User,
   ValidationErrors,
 } from "@/types/api";
+import type { Locale } from "@/lib/locale";
 
 type Tab = "overview" | "users" | "products" | "orders" | "payments" | "subscribers" | "cms";
 type RecordValue = User | Product | Order | Payment | NewsletterSubscriber;
@@ -75,6 +76,7 @@ export default function AdminPage() {
   const [formErrors, setFormErrors] = useState<ValidationErrors>();
   const [isSaving, setIsSaving] = useState(false);
   const [cmsKey, setCmsKey] = useState<SiteContentKey>("hero");
+  const [cmsLocale, setCmsLocale] = useState<Locale>("id");
   const [cmsPayload, setCmsPayload] = useState<Record<string, unknown>>({});
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
@@ -107,7 +109,7 @@ export default function AdminPage() {
         return;
       }
       if (tab === "cms") {
-        const response = await adminService.getContent(token, cmsKey);
+        const response = await adminService.getContent(token, cmsKey, cmsLocale);
         setCmsPayload(
           (response.data.payload ?? {}) as Record<string, unknown>,
         );
@@ -125,7 +127,7 @@ export default function AdminPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [cmsKey, search, tab, token, user?.is_admin]);
+  }, [cmsKey, cmsLocale, search, tab, token, user?.is_admin]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => void loadResource(), search ? 300 : 0);
@@ -215,7 +217,7 @@ export default function AdminPage() {
     setIsSaving(true);
     setError("");
     try {
-      await adminService.updateContent(token, cmsKey, cmsPayload);
+      await adminService.updateContent(token, cmsKey, cmsPayload, cmsLocale);
       await refreshContent();
       notify("success", `Konten "${cmsKey}" berhasil disimpan.`);
     } catch (requestError) {
@@ -268,7 +270,7 @@ export default function AdminPage() {
   const activeTabLabel = tabs.find((item) => item.id === tab)?.label;
 
   return (
-    <main className={`min-h-screen overflow-auto bg-[radial-gradient(1200px_600px_at_80%_-10%,rgba(201,168,76,0.08),transparent),linear-gradient(180deg,#071d1b,#04120f)] font-graziemille text-[#d8d0bd] ${hideScrollbar}`}>
+    <main className={`page-content min-h-screen overflow-auto bg-[radial-gradient(1200px_600px_at_80%_-10%,rgba(201,168,76,0.08),transparent),linear-gradient(180deg,#071d1b,#04120f)] font-graziemille text-[#d8d0bd] ${hideScrollbar}`}>
       <motion.header
         initial={{ opacity: 0, y: -24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -377,6 +379,23 @@ export default function AdminPage() {
                 ))}
               </div>
               <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs uppercase tracking-[2px] text-[#c9b99a]/50">Bahasa konten</span>
+                  {(["id", "en"] as Locale[]).map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => setCmsLocale(option)}
+                      className={`px-3 py-1.5 text-xs uppercase tracking-[2px] transition-colors ${
+                        cmsLocale === option
+                          ? "bg-[#f8c56c] text-[#012421]"
+                          : "border border-[#c9a84c]/20 text-[#c9b99a]/70 hover:border-[#c9a84c]/40 hover:text-[#f8c56c]"
+                      }`}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
                 <p className="text-xs text-[#c9b99a]/50">
                   Edit konten section lewat form. Data tetap disimpan sebagai payload ke API.
                 </p>

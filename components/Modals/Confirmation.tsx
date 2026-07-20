@@ -1,8 +1,8 @@
 import React from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { CheckCircle, X, Package } from "lucide-react";
 import type { Order } from "@/types/api";
+import ProductImage from "@/components/ui/ProductImage";
 
 interface ConfirmationModalProps {
   order: Order;
@@ -77,11 +77,12 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           {/* Sisi Kiri: Gambar Produk */}
           <div className="relative w-[180px] h-full shrink-0 bg-black/10 flex items-center justify-center">
             {firstItem?.product_image ? (
-              <Image
+              <ProductImage
                 src={firstItem.product_image}
                 alt={firstItem.product_name || "Product image"}
                 fill
                 className="object-cover"
+                sizes="360px"
               />
             ) : (
               // Fallback Icon jika gambar hilang

@@ -2,100 +2,57 @@
 
 import React, { useState } from "react";
 import type { NextPage } from "next";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Islands.module.css";
 import { useSiteContent } from "@/contexts/SiteContentContext";
+import { useTranslation } from "@/contexts/LocaleContext";
+import SafeImage from "@/components/ui/SafeImage";
+import enMessages from "@/messages/en.json";
+import idMessages from "@/messages/id.json";
+import type { Locale } from "@/lib/locale";
 
-// --- DATA DINAMIS PULAU ---[cite: 23]
-const islandsData = [
-  {
-    id: "NIAS",
-    region: "NORTH SUMATRA",
-    name: "Nias",
-    subtitle: "Spirit of Nias",
-    description:
-      "A sanctuary of rolling waves and ancient megaliths, echoing the fierce and beautiful spirit of the ocean.",
-    notes: ["Sea Salt", "Coconut Water", "Oceanic Breeze", "Sun-baked Sand"],
-    labelPosition: { top: "32.26%", left: "0.77%" },
-  },
-  {
-    id: "BUTON",
-    region: "SOUTHEAST SULAWESI",
-    name: "Buton",
-    subtitle: "Heritage of Buton",
-    description:
-      "The land of asphalt and ancient fortresses, surrounded by deep blue seas and whispered histories.",
-    notes: ["Exotic Spices", "Warm Amber", "Deep Woods", "Golden Resin"],
-    labelPosition: { top: "68.59%", left: "60.84%" },
-  },
-  {
-    id: "SUMBA",
-    region: "EAST NUSA TENGGARA",
-    name: "Sumba",
-    subtitle: "Soul of Sumba",
-    description:
-      "Vast savannas and untamed horses, a rustic paradise where the earth meets endless horizons.",
-    notes: ["Sandalwood", "Dry Savanna", "Leather", "Wild Vetiver"],
-    labelPosition: { top: "93.58%", left: "45.37%" },
-  },
-  {
-    id: "KOMODO",
-    region: "EAST NUSA TENGGARA",
-    name: "Komodo",
-    subtitle: "Mystique of Komodo",
-    description:
-      "Volcanic, primal, untamed — the realm of ancient dragons and crystal-clear waters where worlds of fire and sea collide.",
-    notes: ["Wild Grass", "Volcanic Earth", "Warm Musk", "Dried Herbs"],
-    labelPosition: { top: "74.11%", left: "43.69%" },
-  },
-  {
-    id: "ALOR",
-    region: "EAST NUSA TENGGARA",
-    name: "Alor",
-    subtitle: "Whispers of Alor",
-    description:
-      "Hidden gems of the archipelago, boasting pristine coral reefs and a rich tapestry of tribal culture.",
-    notes: ["Coral Reef", "Sea Breeze", "Vanilla", "White Pepper"],
-    labelPosition: { top: "84.86%", left: "66.83%" },
-  },
-  {
-    id: "PAPUA",
-    region: "PAPUA",
-    name: "Papua",
-    subtitle: "Heart of Papua",
-    description:
-      "A majestic expanse of untouched rainforests and towering peaks, breathing with raw, vibrant life.",
-    notes: ["Oud Wood", "Rainforest Dew", "Earthy Patchouli", "Green Leaves"],
-    labelPosition: { top: "31.1%", left: "91.24%" },
-  },
-];
+type IslandItem = {
+  id: string;
+  region: string;
+  name: string;
+  subtitle: string;
+  description: string;
+  notes: string[];
+  labelPosition: { top: string; left: string };
+};
+
+const islandCatalogs: Record<Locale, IslandItem[]> = {
+  id: idMessages.islands.items,
+  en: enMessages.islands.items,
+};
 
 const MapSection: NextPage = () => {
+  const { locale, t } = useTranslation();
   const { section } = useSiteContent();
+  const catalog = islandCatalogs[locale];
   const content = section<{
     eyebrow?: string;
     title?: string;
-    islands?: Array<Partial<(typeof islandsData)[number]> & { id: string }>;
-    items?: Array<Partial<(typeof islandsData)[number]> & { id: string }>;
+    islands?: Array<Partial<IslandItem> & { id: string }>;
+    items?: Array<Partial<IslandItem> & { id: string }>;
   }>("islands");
   const cmsIslands = content.islands?.length
     ? content.islands
     : content.items?.length
       ? content.items
       : null;
-  const renderedIslands = (cmsIslands ?? islandsData)
+  const renderedIslands = (cmsIslands ?? catalog)
     .filter((island): island is NonNullable<typeof island> => Boolean(island))
     .map((island) => {
-      const raw = island as Partial<(typeof islandsData)[number]> & {
+      const raw = island as Partial<IslandItem> & {
         id?: string;
         label_position?: { top?: string; left?: string };
       };
       const fallback =
-        islandsData.find(
+        catalog.find(
           (item) =>
             item.id.toUpperCase() === String(raw.id ?? "").toUpperCase(),
-        ) ?? islandsData[0];
+        ) ?? catalog[0];
       const position = raw.labelPosition ?? raw.label_position;
 
       return {
@@ -211,13 +168,14 @@ const MapSection: NextPage = () => {
             marginBottom: "40px",
           }}
         >
-          {/* Subtitle "JELAJAH NUSANTARA" - Animasi membesar dari tengah berurutan */}
-          <motion.div
+          {/* Subtitle "JELAJAH NUSANTARA" */}
+          <motion.p
             className={styles.eyebrow}
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            data-locale-text="true"
             style={{
               letterSpacing: "5px",
               lineHeight: "15px",
@@ -225,11 +183,11 @@ const MapSection: NextPage = () => {
               marginBottom: "16px",
             }}
           >
-            {content.eyebrow ?? "JELAJAH NUSANTARA"}
-          </motion.div>
+            {content.eyebrow ?? t("islands.eyebrow")}
+          </motion.p>
 
-          {/* Judul Utama "Six Islands, One Soul" - Animasi membesar dari tengah berurutan */}
-          <motion.div
+          {/* Judul Utama */}
+          <motion.h2
             className={styles.title}
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
@@ -241,9 +199,11 @@ const MapSection: NextPage = () => {
               marginBottom: "20px",
             }}
           >
-            <div
+            <span
               className={styles.titleText}
+              data-locale-text="true"
               style={{
+                display: "inline-block",
                 lineHeight: "74.4px",
                 background:
                   "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
@@ -251,9 +211,9 @@ const MapSection: NextPage = () => {
                 WebkitTextFillColor: "transparent",
               }}
             >
-              {content.title ?? "Six Islands, One Soul"}
-            </div>
-          </motion.div>
+              {content.title ?? t("islands.title")}
+            </span>
+          </motion.h2>
 
           {/* Ornamen - Animasi membesar dari tengah berurutan */}
           <motion.div
@@ -263,7 +223,7 @@ const MapSection: NextPage = () => {
             transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
             style={{ display: "flex", justifyContent: "center" }}
           >
-            <Image
+            <SafeImage
               src="/gambar/seksi%207/ornamen.svg"
               style={{
                 height: "15.3px",
@@ -272,7 +232,7 @@ const MapSection: NextPage = () => {
               }}
               width={213}
               height={15}
-              sizes="100vw"
+              sizes="213px"
               alt="Ornamen"
             />
           </motion.div>
@@ -312,7 +272,7 @@ const MapSection: NextPage = () => {
           />
 
           {/* Pulau Utama[cite: 23] */}
-          <Image
+          <SafeImage
             src="/gambar/seksi%207/sumatera.svg"
             width={300}
             height={300}
@@ -325,7 +285,7 @@ const MapSection: NextPage = () => {
               height: "auto",
             }}
           />
-          <Image
+          <SafeImage
             src="/gambar/seksi%207/jawa.svg"
             width={300}
             height={300}
@@ -338,7 +298,7 @@ const MapSection: NextPage = () => {
               height: "auto",
             }}
           />
-          <Image
+          <SafeImage
             src="/gambar/seksi%207/kalimantan.svg"
             width={300}
             height={300}
@@ -351,7 +311,7 @@ const MapSection: NextPage = () => {
               height: "auto",
             }}
           />
-          <Image
+          <SafeImage
             src="/gambar/seksi%207/sulawesi.svg"
             width={300}
             height={300}
@@ -846,21 +806,22 @@ const MapSection: NextPage = () => {
                     cursor: "pointer",
                   }}
                 >
-                  <div
-                    style={{
+                    <div
+                      data-locale-text="true"
+                      style={{
                       letterSpacing: "1.59px",
                       lineHeight: "9.55px",
                       fontWeight: "500",
                     }}
                   >
-                    DISCOVER FRAGRANCE
+                    {t("islands.discover")}
                   </div>
-                  <Image
+                  <SafeImage
                     src="/gambar/seksi%207/Icon.svg"
                     style={{ height: "8.3px", width: "8.3px" }}
                     width={8}
                     height={8}
-                    sizes="100vw"
+                    sizes="8px"
                     alt="Arrow Icon"
                   />
                 </div>

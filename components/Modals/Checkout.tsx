@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowLeft, X } from "lucide-react";
 import { ApiError, fieldError } from "@/lib/api";
@@ -16,6 +15,7 @@ import type {
 } from "@/types/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSiteContent } from "@/contexts/SiteContentContext";
+import ProductImage from "@/components/ui/ProductImage";
 
 interface CheckoutModalProps {
   items: Array<{ product: Product; quantity: number }>;
@@ -191,11 +191,12 @@ export default function CheckoutModal({
               >
                 <div className="relative h-[75px] w-[120px] shrink-0 overflow-hidden rounded-sm">
                   {product.image && (
-                    <Image
+                    <ProductImage
                       src={product.image}
                       alt={product.name}
                       fill
-                      style={{ objectFit: "cover" }}
+                      className="object-cover"
+                      sizes="240px"
                     />
                   )}
                   <div

@@ -159,10 +159,10 @@ function normalizeSiteContent(
 }
 
 export const siteContentService = {
-  get: async () => {
+  get: async (locale = "id") => {
     const response = await apiRequest<
       ApiEnvelope<SiteContent | SiteContentRecord[] | { sections?: SiteContentRecord[] }>
-    >("site-content");
+    >(`site-content${query({ locale })}`);
     return normalizeSiteContent(response.data);
   },
 };
@@ -216,18 +216,19 @@ export const adminService = {
       token,
       body: JSON.stringify({ status }),
     }),
-  getContent: (token: string, key: SiteContentKey) =>
+  getContent: (token: string, key: SiteContentKey, locale = "id") =>
     apiRequest<ApiEnvelope<SiteContentRecord>>(
-      `admin/site-content/${key}`,
+      `admin/site-content/${key}${query({ locale })}`,
       { token },
     ),
   updateContent: (
     token: string,
     key: SiteContentKey,
     payload: Record<string, unknown>,
+    locale = "id",
   ) =>
     apiRequest<ApiEnvelope<SiteContentRecord>>(
-      `admin/site-content/${key}`,
+      `admin/site-content/${key}${query({ locale })}`,
       {
         method: "PATCH",
         token,

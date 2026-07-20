@@ -5,107 +5,19 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { siteContentService } from "@/services/api";
+import { useLocale } from "@/contexts/LocaleContext";
+import { getSiteContentFallback } from "@/lib/siteContentFallback";
 import type {
   ContentPayload,
   SiteContent,
   SiteContentKey,
 } from "@/types/api";
-
-const fallbackContent: SiteContent = {
-  hero: {
-    eyebrow: "A Journey Through the Archipelago",
-    title: "Where Every Island Tells Its Fragrance",
-    description:
-      "Discover the soul of Indonesia through a collection of fragrances inspired by its islands.",
-  },
-  collection: {
-    eyebrow: "THE COLLECTION",
-    title: "Six Islands, Six Stories",
-    description:
-      "Each fragrance is an olfactory journey through the soul of the Indonesian archipelago — six islands, six stories, one nation breathed into being.",
-  },
-  faq: {
-    eyebrow: "PUSAT BANTUAN",
-    title: "Pertanyaan yang Sering Diajukan",
-    description:
-      "Tidak menemukan jawaban yang Anda cari? Tim kami siap membantu melalui email.",
-    categories: [],
-    items: [],
-  },
-  newsletter: {
-    eyebrow: "STAY CONNECTED",
-    title: "Join the Journey of the Nusantara",
-    description:
-      "Subscribe to receive exclusive launches, island stories, and first access to limited edition fragrances.",
-  },
-  contact: {
-    items: [
-      {
-        title: "LOCATION",
-        icon: "/gambar/seksi%208/location.svg",
-        lines: ["Jl. Sudirman No. 88", "Jakarta Pusat, Indonesia 10220"],
-      },
-      {
-        title: "EMAIL",
-        icon: "/gambar/seksi%208/email.svg",
-        lines: ["hello@arcanisia.com", "support@arcanisia.com"],
-      },
-      {
-        title: "FOLLOW US",
-        icon: "/gambar/seksi%208/ig.svg",
-        lines: ["@arcanisia.scent", "@arcanisia_official"],
-      },
-    ],
-  },
-  footer: {
-    description:
-      "A luxury fragrance house born from the heart of the Indonesian archipelago. Six islands. Six stories. One nation breathed into being through scent.",
-    groups: [
-      {
-        title: "COLLECTION",
-        links: [
-          { label: "Secret of Buton", href: "/#product-secret-of-buton" },
-          { label: "Whisper of Raja Ampat", href: "/#product-whisper-of-raja-ampat" },
-          { label: "Mystique of Komodo", href: "/#product-mystique-of-komodo" },
-        ],
-      },
-      {
-        title: "COMPANY",
-        links: [
-          { label: "About Arcanisia", href: "/#about" },
-          { label: "Our Mission", href: "/#mission" },
-          { label: "Brand Values", href: "/#values" },
-        ],
-      },
-      {
-        title: "SUPPORT",
-        links: [
-          { label: "FAQ", href: "/#faq" },
-          { label: "Contact Us", href: "/#contact" },
-        ],
-      },
-    ],
-    copyright:
-      "© 2026 Arcanisia Scent. All rights reserved. Made with love for Indonesia.",
-  },
-  legal: {
-    links: [
-      { label: "Privacy Policy", slug: "privacy-policy" },
-      { label: "Terms of Service", slug: "terms-of-service" },
-      { label: "Cookie Policy", slug: "cookie-policy" },
-    ],
-  },
-  checkout: {
-    shipping_label: "GRATIS",
-    shipping_note:
-      "Pengiriman menggunakan kemasan premium Arcanisia. Estimasi tiba 2–4 hari kerja.",
-    payment_methods: ["bank_transfer", "qris", "card"],
-  },
-};
 
 interface SiteContentContextValue {
   content: SiteContent;
@@ -120,27 +32,75 @@ const SiteContentContext = createContext<SiteContentContextValue | undefined>(
 );
 
 export function SiteContentProvider({ children }: { children: React.ReactNode }) {
-  const [content, setContent] = useState<SiteContent>(fallbackContent);
+  const { locale, phase } = useLocale();
+  const fallback = useMemo(() => getSiteContentFallback(locale), [locale]);
+  const [content, setContent] = useState<SiteContent>(() =>
+    getSiteContentFallback(locale),
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const hasLoadedOnce = useRef(false);
+  const requestId = useRef(0);
+  const pendingRemote = useRef<SiteContent | null>(null);
+  const phaseRef = useRef(phase);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
+
+  const applyRemote = useCallback(
+    (remoteContent: SiteContent) => {
+      setContent({ ...getSiteContentFallback(locale), ...remoteContent });
+      hasLoadedOnce.current = true;
+      setIsLoading(false);
+    },
+    [locale],
+  );
 
   const refresh = useCallback(async () => {
+    const currentRequest = ++requestId.current;
     setIsLoading(true);
     setError("");
     try {
-      const remoteContent = await siteContentService.get();
-      setContent({ ...fallbackContent, ...remoteContent });
+      const remoteContent = await siteContentService.get(locale);
+      if (currentRequest !== requestId.current) return;
+
+      // Don't swap copy mid fade-out — wait until shimmer/loading phase.
+      if (phaseRef.current === "out") {
+        pendingRemote.current = remoteContent;
+        return;
+      }
+
+      pendingRemote.current = null;
+      applyRemote(remoteContent);
     } catch (requestError) {
-      setContent(fallbackContent);
+      if (currentRequest !== requestId.current) return;
+      pendingRemote.current = null;
+      setContent(getSiteContentFallback(locale));
       setError(
         requestError instanceof Error
           ? requestError.message
           : "Konten situs gagal dimuat.",
       );
-    } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [applyRemote, locale]);
+
+  // Apply buffered CMS payload once fade-out finished (phase → loading).
+  useEffect(() => {
+    if (phase !== "loading" && phase !== "in" && phase !== "idle") return;
+    if (!pendingRemote.current) return;
+    const remote = pendingRemote.current;
+    pendingRemote.current = null;
+    applyRemote(remote);
+  }, [applyRemote, phase]);
+
+  // Always swap to the active locale fallback immediately so old-language CMS
+  // copy cannot override the new language while the request is in flight.
+  useLayoutEffect(() => {
+    setContent(fallback);
+    setIsLoading(true);
+  }, [fallback, locale]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => void refresh(), 0);
@@ -156,11 +116,11 @@ export function SiteContentProvider({ children }: { children: React.ReactNode })
       refresh,
       section: <T extends ContentPayload>(key: SiteContentKey) =>
         ({
-          ...(fallbackContent[key] ?? {}),
+          ...(fallback[key] ?? {}),
           ...(content[key] ?? {}),
         }) as T,
     }),
-    [content, error, isLoading, refresh],
+    [content, error, fallback, isLoading, refresh],
   );
 
   return (

@@ -1,8 +1,12 @@
 import localFont from 'next/font/local';
-import './globals.css'; // 1. Pastikan path import ini sesuai dengan lokasi file Navbar.tsx Anda
+import type { Metadata, Viewport } from 'next';
+import { cookies } from 'next/headers';
+import './globals.css';
 import Providers from "@/components/Providers";
+import { LOCALE_COOKIE, resolveLocale } from "@/lib/locale";
 
-// 1. Konfigurasi Font Gilland[cite: 2]
+const BRAND_BG = '#012320';
+
 const gilland = localFont({
   src: [
     {
@@ -20,7 +24,6 @@ const gilland = localFont({
   display: 'swap',
 });
 
-// 2. Konfigurasi Font Grazie Mille[cite: 2]
 const grazieMille = localFont({
   src: [
     { path: './fonts/ttf/GrazieMille-News.ttf', weight: '300', style: 'normal' },
@@ -37,21 +40,48 @@ const grazieMille = localFont({
   display: 'swap',
 });
 
-export const metadata = {
-  title: 'Arcaisia Fragrance', //[cite: 2]
-  description: 'Where Every Island Tells Its fragrance', //[cite: 2]
+export const metadata: Metadata = {
+  title: 'Arcanisia Fragrance',
+  description: 'Where Every Island Tells Its Fragrance',
 };
 
-export default function RootLayout({
+export const viewport: Viewport = {
+  themeColor: BRAND_BG,
+  // Do NOT set colorScheme: 'dark' — browsers paint a pure black canvas on refresh.
+};
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const initialLocale = resolveLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+
   return (
-    // Memasukkan variabel CSS font ke dalam tag HTML[cite: 2]
-    <html lang="en" className={`${gilland.variable} ${grazieMille.variable}`}>
-      <body>
-        <Providers>{children}</Providers>
+    <html
+      lang={initialLocale}
+      className={`${gilland.variable} ${grazieMille.variable}`}
+      style={{ backgroundColor: BRAND_BG }}
+      data-locale-phase="idle"
+    >
+      <head>
+        {/* Earliest paint: brand green before CSS/JS — prevents black canvas flash */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `html,body{background:${BRAND_BG}!important;background-color:${BRAND_BG}!important;margin:0;min-height:100%}html{color-scheme:normal}`,
+          }}
+        />
+      </head>
+      <body
+        style={{
+          backgroundColor: BRAND_BG,
+          color: '#f5edd6',
+          margin: 0,
+          minHeight: '100svh',
+        }}
+      >
+        <Providers initialLocale={initialLocale}>{children}</Providers>
       </body>
     </html>
   );

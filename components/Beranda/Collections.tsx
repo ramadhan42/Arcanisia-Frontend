@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductDetail from "../Modals/ProductDetail";
 import { productService } from "@/services/api";
 import { useSiteContent } from "@/contexts/SiteContentContext";
+import { useTranslation } from "@/contexts/LocaleContext";
+import ProductImage from "@/components/ui/ProductImage";
+import SafeImage from "@/components/ui/SafeImage";
 
 export interface CollectionProduct {
   id: number;
@@ -30,13 +32,29 @@ const formatPrice = new Intl.NumberFormat("id-ID", {
   maximumFractionDigits: 0,
 });
 
+function translateBadge(
+  badge: string | undefined,
+  t: (key: string) => string,
+): string | undefined {
+  if (!badge) return undefined;
+  const normalized = badge.toUpperCase();
+  if (normalized.includes("BEST")) return t("collection.badgeBestSeller");
+  if (normalized.includes("COMING") || normalized.includes("SEGERA")) {
+    return t("collection.badgeComingSoon");
+  }
+  if (normalized.includes("TERLARIS")) return t("collection.badgeBestSeller");
+  return badge;
+}
+
 const Collections = () => {
+  const { t } = useTranslation();
   const { section } = useSiteContent();
   const content = section<{
     eyebrow?: string;
     title?: string;
     description?: string;
     cta?: string;
+    cta_label?: string;
   }>("collection");
   const [products, setProducts] = useState<CollectionProduct[]>([]);
   const [selectedProduct, setSelectedProduct] =
@@ -82,7 +100,7 @@ const Collections = () => {
         setErrorMessage(
           error instanceof Error
             ? error.message
-            : "Koleksi produk gagal dimuat.",
+            : t("collection.failed"),
         );
       })
       .finally(() => {
@@ -92,7 +110,7 @@ const Collections = () => {
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [t]);
 
   const handleDiscoverClick = async (product: CollectionProduct) => {
     setSelectedProduct(product);
@@ -135,7 +153,7 @@ const Collections = () => {
       if (!product) return;
       document
         .getElementById("collection")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        ?.scrollIntoView({ behavior: "auto", block: "start" });
       void handleDiscoverClick(product);
     };
 
@@ -167,7 +185,7 @@ const Collections = () => {
         className="mb-3 font-medium uppercase text-[#F5EDD6CC] text-[9px] tracking-[3px] sm:text-[10px]"
         style={{ fontFamily: "'Grazie mille', serif" }}
       >
-        {content.eyebrow ?? "THE COLLECTION"}
+        {content.eyebrow ?? t("collection.eyebrow")}
       </motion.p>
 
       <motion.h2
@@ -181,7 +199,7 @@ const Collections = () => {
           fontFamily: "'Gilland', sans-serif",
         }}
       >
-        {content.title ?? "Six Islands, Six Stories"}
+        {content.title ?? t("collection.title")}
       </motion.h2>
 
       <motion.div
@@ -191,7 +209,7 @@ const Collections = () => {
         transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
         className="relative mb-5 h-[13px] w-[165px] sm:h-[15px] sm:w-[190px] md:mb-6 md:w-[213px]"
       >
-        <Image
+        <SafeImage
           src="/gambar/seksi%204/ornamen.svg"
           alt="Ornament line"
           fill
@@ -208,13 +226,13 @@ const Collections = () => {
         className="mb-10 max-w-[650px] px-4 text-center text-[13px] leading-relaxed text-[#C9B99A] sm:text-[14px] md:mb-14 md:text-[15px]"
         style={{ fontFamily: "'Grazie mille', serif", fontWeight: "normal" }}
       >
-        {content.description}
+        {content.description ?? t("collection.description")}
       </motion.p>
 
       <div className="mx-auto mb-12 grid w-full max-w-[1160px] grid-cols-1 gap-5 px-2 sm:grid-cols-2 sm:px-0 lg:grid-cols-3 lg:gap-7">
         {isLoading && (
           <p className="col-span-full py-12 text-center font-graziemille text-[#C9B99A]">
-            Memuat koleksi produk...
+            {t("collection.loading")}
           </p>
         )}
 
@@ -229,7 +247,7 @@ const Collections = () => {
 
         {!isLoading && !errorMessage && products.length === 0 && (
           <p className="col-span-full py-12 text-center font-graziemille text-[#C9B99A]">
-            Belum ada produk yang tersedia.
+            {t("collection.empty")}
           </p>
         )}
 
@@ -248,18 +266,17 @@ const Collections = () => {
                 className="absolute left-3 top-3 z-10 px-2 py-1 text-[8px] font-bold tracking-wider text-[#091812] shadow-md sm:left-4 sm:top-4 sm:text-[9px]"
                 style={{ background: goldGradient }}
               >
-                {product.badge}
+                {translateBadge(product.badge, t)}
               </div>
             )}
 
             <div className="relative aspect-[1.1/1] w-full overflow-hidden">
-              <Image
+              <ProductImage
                 src={product.image}
                 alt={product.name}
                 fill
-                quality={100}
-                className="scale-105 object-cover transition-transform duration-500 hover:scale-110"
-                sizes="(max-width: 640px) calc(100vw - 48px), (max-width: 1279px) 50vw, 370px"
+                className="object-cover transition-transform duration-500 hover:scale-[1.03]"
+                sizes="(max-width: 640px) 100vw, (max-width: 1279px) 50vw, 800px"
               />
             </div>
 
@@ -307,7 +324,7 @@ const Collections = () => {
                     fontWeight: "500",
                   }}
                 >
-                  DISCOVER
+                  {t("collection.discover")}
                   <svg
                     width="14"
                     height="14"
@@ -337,7 +354,7 @@ const Collections = () => {
         className="flex h-10 w-full max-w-[260px] items-center justify-center gap-3 rounded-sm font-gilland text-[10px] font-normal tracking-[1px] text-[#124B46] transition-opacity hover:opacity-90 sm:text-[11px]"
         style={{ background: goldGradient }}
       >
-        {content.cta ?? "VIEW COMPLETE COLLECTION"}
+        {content.cta_label ?? content.cta ?? t("collection.cta")}
         <svg
           width="18"
           height="18"

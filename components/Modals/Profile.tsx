@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Mail, ShieldCheck, Trash2, User, X } from "lucide-react";
 import { ApiError, fieldError } from "@/lib/api";
 import { useAuth, type AuthUser } from "@/contexts/AuthContext";
+import { useTranslation } from "@/contexts/LocaleContext";
 import type { ValidationErrors } from "@/types/api";
 
 export default function ProfileModal({
@@ -14,6 +15,7 @@ export default function ProfileModal({
   onClose: () => void;
 }) {
   const { updateProfile, deleteAccount } = useAuth();
+  const { t } = useTranslation();
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -69,19 +71,19 @@ export default function ProfileModal({
   };
 
   const fields = [
-    { key: "name", label: "NAMA", value: name, set: setName, type: "text", icon: User },
-    { key: "email", label: "EMAIL", value: email, set: setEmail, type: "email", icon: Mail },
-    { key: "current_password", label: "PASSWORD SAAT INI", value: currentPassword, set: setCurrentPassword, type: "password", icon: ShieldCheck },
-    { key: "password", label: "PASSWORD BARU (OPSIONAL)", value: password, set: setPassword, type: "password", icon: ShieldCheck },
-    { key: "password_confirmation", label: "KONFIRMASI PASSWORD BARU", value: passwordConfirmation, set: setPasswordConfirmation, type: "password", icon: ShieldCheck },
+    { key: "name", label: t("auth.name"), value: name, set: setName, type: "text", icon: User },
+    { key: "email", label: t("auth.email"), value: email, set: setEmail, type: "email", icon: Mail },
+    { key: "current_password", label: t("profile.currentPassword"), value: currentPassword, set: setCurrentPassword, type: "password", icon: ShieldCheck },
+    { key: "password", label: t("profile.newPassword"), value: password, set: setPassword, type: "password", icon: ShieldCheck },
+    { key: "password_confirmation", label: t("profile.confirmNewPassword"), value: passwordConfirmation, set: setPasswordConfirmation, type: "password", icon: ShieldCheck },
   ];
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm" onClick={onClose}>
       <section role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()} className="max-h-[calc(100svh-24px)] w-full max-w-lg overflow-y-auto rounded-lg border border-[#c9a84c]/30 bg-[#012f2b] font-graziemille text-[#c9b99a] shadow-2xl">
         <header className="flex items-center justify-between border-b border-[#c9a84c]/20 px-6 py-5">
-          <div><h2 className="font-gilland text-2xl text-[#f8c56c]">Profil Saya</h2><p className="mt-1 text-xs text-[#c9b99a]/45">{user.is_admin ? "Administrator" : "Pelanggan"}</p></div>
-          <button type="button" onClick={onClose} aria-label="Tutup profil"><X /></button>
+          <div><h2 className="font-gilland text-2xl text-[#f8c56c]">{t("profile.title")}</h2><p className="mt-1 text-xs text-[#c9b99a]/45">{user.is_admin ? t("profile.administrator") : t("profile.customer")}</p></div>
+          <button type="button" onClick={onClose} aria-label={t("common.close")}><X /></button>
         </header>
         <form className="space-y-4 p-6" onSubmit={(event) => { event.preventDefault(); void save(); }}>
           {fields.map(({ key, label, value, set, type, icon: Icon }) => (
@@ -95,7 +97,7 @@ export default function ProfileModal({
             </label>
           ))}
           {message && <p role="status" className={`text-sm ${message.includes("berhasil") ? "text-[#f8c56c]" : "text-[#ff7b86]"}`}>{message}</p>}
-          <button disabled={isSubmitting} className="w-full bg-[#f8c56c] py-3 text-xs font-bold tracking-[3px] text-[#012421] disabled:opacity-60">{isSubmitting ? "MEMPROSES..." : "SIMPAN PROFIL"}</button>
+          <button disabled={isSubmitting} className="w-full bg-[#f8c56c] py-3 text-xs font-bold tracking-[3px] text-[#012421] disabled:opacity-60">{isSubmitting ? t("profile.processing") : t("profile.save")}</button>
           <button type="button" disabled={isSubmitting} onClick={() => void remove()} className="flex w-full items-center justify-center gap-2 border border-[#ff6673]/40 py-3 text-xs tracking-[2px] text-[#ff6673]"><Trash2 size={15} /> HAPUS AKUN</button>
         </form>
       </section>

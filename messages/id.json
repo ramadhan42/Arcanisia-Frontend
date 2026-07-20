@@ -1,0 +1,253 @@
+{
+  "nav": {
+    "about": "TENTANG",
+    "collection": "KOLEKSI",
+    "mission": "MISI",
+    "values": "NILAI",
+    "shopNow": "BELI SEKARANG",
+    "login": "MASUK",
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu",
+    "openAccountMenu": "Buka menu akun {name}",
+    "adminDashboard": "Dashboard Admin",
+    "myProfile": "Profil Saya",
+    "myOrders": "Pesanan Saya",
+    "cart": "Keranjang",
+    "logout": "Keluar",
+    "language": "Bahasa",
+    "languageId": "Indonesia",
+    "languageEn": "Inggris"
+  },
+  "collection": {
+    "eyebrow": "KOLEKSI KAMI",
+    "title": "Enam Pulau, Enam Kisah",
+    "description": "Setiap wewangian adalah perjalanan olfaktori melintasi jiwa Nusantara — enam pulau, enam kisah, satu bangsa yang dihidupkan melalui aroma.",
+    "discover": "JELAJAHI",
+    "cta": "LIHAT KOLEKSI LENGKAP",
+    "loading": "Memuat koleksi produk...",
+    "empty": "Belum ada produk yang tersedia.",
+    "failed": "Koleksi produk gagal dimuat.",
+    "badgeBestSeller": "TERLARIS",
+    "badgeComingSoon": "SEGERA HADIR"
+  },
+  "missions": {
+    "eyebrow": "MISI KAMI",
+    "title": "Dipandu oleh Tujuan",
+    "items": [
+      {
+        "id": "01",
+        "title": "Cerita Budaya",
+        "description": "Menyampaikan keindahan budaya dan pulau-pulau Indonesia melalui seni wewangian dan desain parfum artistik."
+      },
+      {
+        "id": "02",
+        "title": "Kemewahan Terjangkau",
+        "description": "Menghadirkan parfum berkualitas tinggi dengan harga terjangkau, agar lebih banyak orang dapat merasakan kemegahan Nusantara."
+      },
+      {
+        "id": "03",
+        "title": "Estetika Indonesia",
+        "description": "Menggunakan desain dan kemasan yang merepresentasikan nilai estetika dan karakter unik Indonesia."
+      },
+      {
+        "id": "04",
+        "title": "Pelestarian Lingkungan",
+        "description": "Berkontribusi pada keberlanjutan lingkungan dengan mendukung organisasi yang berdedikasi pada pelestarian alam Indonesia."
+      },
+      {
+        "id": "05",
+        "title": "Edukasi & Kebanggaan",
+        "description": "Menjadi medium edukasi yang menumbuhkan kebanggaan dan cinta terhadap keindahan serta kekayaan warisan budaya Indonesia."
+      }
+    ]
+  },
+  "values": {
+    "eyebrow": "ESENSI KAMI",
+    "title": "Kejujuran Nusantara",
+    "items": [
+      {
+        "id": 3,
+        "imgSrc": "/gambar/seksi%206/3.svg",
+        "topTitle": "ESTETIKA & SENI",
+        "mainTitle": "Estetika & Seni",
+        "description": "Produk dengan desain visual kuat yang berakar pada warisan artistik dan kerajinan lokal Indonesia."
+      },
+      {
+        "id": 4,
+        "imgSrc": "/gambar/seksi%206/4.svg",
+        "topTitle": "EDUKASI & KESADARAN",
+        "mainTitle": "Edukasi & Kesadaran",
+        "description": "Melalui parfum, Arcanisia menyoroti kekayaan budaya Indonesia dan keindahan lanskap visualnya yang luar biasa."
+      },
+      {
+        "id": 2,
+        "imgSrc": "/gambar/seksi%206/2.svg",
+        "topTitle": "KEBERLANJUTAN",
+        "mainTitle": "Keberlanjutan",
+        "description": "Menciptakan produk ramah lingkungan dengan bahan yang dapat dikelola secara berkelanjutan."
+      },
+      {
+        "id": 1,
+        "imgSrc": "/gambar/seksi%206/1.svg",
+        "topTitle": "KEBANGGAAN LOKAL",
+        "mainTitle": "Kebanggaan Lokal",
+        "description": "Rasa bangga mendalam terhadap identitas lokal, produk, dan kerajinan yang mencerminkan nilai dan seni unik setiap daerah."
+      }
+    ]
+  },
+  "islands": {
+    "eyebrow": "JELAJAH NUSANTARA",
+    "title": "Enam Pulau, Satu Jiwa",
+    "discover": "JELAJAHI WEWANGIAN",
+    "items": [
+      {
+        "id": "NIAS",
+        "region": "SUMATERA UTARA",
+        "name": "Nias",
+        "subtitle": "Jiwa Nias",
+        "description": "Suaka ombak bergulung dan megalit kuno, menggema semangat laut yang garang dan indah.",
+        "notes": ["Garam Laut", "Air Kelapa", "Angin Samudra", "Pasir Hangat"],
+        "labelPosition": { "top": "32.26%", "left": "0.77%" }
+      },
+      {
+        "id": "BUTON",
+        "region": "SULAWESI TENGGARA",
+        "name": "Buton",
+        "subtitle": "Warisan Buton",
+        "description": "Tanah aspal dan benteng kuno, dikelilingi laut biru dalam dan sejarah yang berbisik.",
+        "notes": ["Rempah Eksotis", "Amber Hangat", "Kayu Dalam", "Resin Emas"],
+        "labelPosition": { "top": "68.59%", "left": "60.84%" }
+      },
+      {
+        "id": "SUMBA",
+        "region": "NUSA TENGGARA TIMUR",
+        "name": "Sumba",
+        "subtitle": "Jiwa Sumba",
+        "description": "Savana luas dan kuda liar, surga pedesaan di mana bumi bertemu cakrawala tak berujung.",
+        "notes": ["Cendana", "Savana Kering", "Kulit", "Vetiver Liar"],
+        "labelPosition": { "top": "93.58%", "left": "45.37%" }
+      },
+      {
+        "id": "KOMODO",
+        "region": "NUSA TENGGARA TIMUR",
+        "name": "Komodo",
+        "subtitle": "Misteri Komodo",
+        "description": "Vulkanik, primal, liar — kerajaan naga purba dan perairan jernih tempat api dan laut bertemu.",
+        "notes": ["Rumput Liar", "Tanah Vulkanik", "Musk Hangat", "Herba Kering"],
+        "labelPosition": { "top": "74.11%", "left": "43.69%" }
+      },
+      {
+        "id": "ALOR",
+        "region": "NUSA TENGGARA TIMUR",
+        "name": "Alor",
+        "subtitle": "Bisikan Alor",
+        "description": "Permata tersembunyi Nusantara, dengan terumbu karang murni dan kekayaan budaya suku yang mendalam.",
+        "notes": ["Karang", "Angin Laut", "Vanila", "Lada Putih"],
+        "labelPosition": { "top": "84.86%", "left": "66.83%" }
+      },
+      {
+        "id": "PAPUA",
+        "region": "PAPUA",
+        "name": "Papua",
+        "subtitle": "Jantung Papua",
+        "description": "Hamparan hutan hujan tak tersentuh dan puncak menjulang, bernapas dengan kehidupan liar yang penuh warna.",
+        "notes": ["Kayu Gaharu", "Embun Hutan", "Patchouli Tanah", "Daun Hijau"],
+        "labelPosition": { "top": "31.1%", "left": "91.24%" }
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "PUSAT BANTUAN",
+    "title": "Pertanyaan yang Sering Diajukan",
+    "description": "Tidak menemukan jawaban yang Anda cari? Tim kami siap membantu melalui email.",
+    "categories": [
+      { "id": "produk", "label": "PRODUK" },
+      { "id": "pengiriman", "label": "PENGIRIMAN" },
+      { "id": "retur", "label": "RETUR & PENGEMBALIAN" },
+      { "id": "keamanan", "label": "KEASLIAN & KEAMANAN" }
+    ],
+    "items": [
+      {
+        "id": 1,
+        "category": "produk",
+        "question": "Apa yang membedakan Arcanisia dari parfum merek lain?",
+        "answer": "Arcanisia lahir dari jiwa Nusantara — setiap botol adalah narasi budaya, bukan sekadar wewangian. Kami menggabungkan bahan-bahan alami khas kepulauan Indonesia yang jarang ditemukan di parfum komersial global, dikurasi oleh maestro parfumer lokal yang berdedikasi pada autentisitas dan keberlanjutan."
+      },
+      {
+        "id": 2,
+        "category": "produk",
+        "question": "Berapa lama ketahanan (longevity) setiap wewangian Arcanisia?",
+        "answer": "Ketahanan wewangian Arcanisia bervariasi antara 8 hingga 12 jam, tergantung pada jenis kulit dan kondisi lingkungan. Formula Extrait de Parfum kami dirancang untuk memberikan daya tahan maksimal sepanjang hari."
+      },
+      {
+        "id": 3,
+        "category": "produk",
+        "question": "Apakah bahan baku Arcanisia 100% alami dan aman?",
+        "answer": "Kami menggunakan perpaduan bahan alami berkualitas tinggi dan bahan sintetis yang 100% aman sesuai standar IFRA. Hal ini memastikan konsistensi aroma, keamanan kulit, dan pelestarian alam yang berkelanjutan."
+      },
+      {
+        "id": 4,
+        "category": "produk",
+        "question": "Apakah Arcanisia tersedia dalam ukuran travel size?",
+        "answer": "Ya, kami menyediakan ukuran travel size 15ml untuk beberapa koleksi unggulan kami, sehingga Anda dapat membawa aroma favorit ke mana pun Anda pergi."
+      },
+      {
+        "id": 5,
+        "category": "pengiriman",
+        "question": "Berapa lama waktu pengiriman pesanan saya?",
+        "answer": "Estimasi waktu pengiriman standar adalah 2–5 hari kerja untuk Jabodetabek dan 3–7 hari kerja untuk luar Jabodetabek. Opsi ekspres juga tersedia untuk beberapa wilayah."
+      },
+      {
+        "id": 6,
+        "category": "pengiriman",
+        "question": "Apakah pengiriman bisa dikirim ke seluruh Indonesia?",
+        "answer": "Ya, kami melayani pengiriman ke seluruh pelosok Indonesia menggunakan berbagai mitra logistik terpercaya."
+      },
+      {
+        "id": 7,
+        "category": "retur",
+        "question": "Apakah saya bisa menukar atau mengembalikan produk yang sudah dibeli?",
+        "answer": "Produk dapat ditukar atau dikembalikan maksimal 7 hari setelah diterima, selama belum dibuka, segel masih utuh, dan disertai video unboxing."
+      },
+      {
+        "id": 8,
+        "category": "keamanan",
+        "question": "Apakah produk Arcanisia aman untuk kulit sensitif?",
+        "answer": "Semua produk diformulasikan dengan hati-hati dan telah melalui pengujian. Jika memiliki riwayat alergi tertentu, kami menyarankan patch test terlebih dahulu."
+      }
+    ]
+  },
+  "auth": {
+    "processing": "MEMPROSES...",
+    "login": "MASUK",
+    "register": "DAFTAR",
+    "email": "EMAIL",
+    "password": "PASSWORD",
+    "name": "NAMA",
+    "confirmPassword": "KONFIRMASI PASSWORD"
+  },
+  "profile": {
+    "title": "Profil Saya",
+    "administrator": "Administrator",
+    "customer": "Pelanggan",
+    "currentPassword": "PASSWORD SAAT INI",
+    "newPassword": "PASSWORD BARU",
+    "confirmNewPassword": "KONFIRMASI PASSWORD BARU",
+    "save": "SIMPAN PROFIL",
+    "processing": "MEMPROSES..."
+  },
+  "cart": {
+    "title": "Keranjang",
+    "empty": "Keranjang Anda masih kosong.",
+    "checkout": "CHECKOUT",
+    "continueShopping": "LANJUT BELANJA",
+    "remove": "Hapus",
+    "total": "Total"
+  },
+  "common": {
+    "close": "Tutup",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "loading": "Memuat..."
+  }
+}

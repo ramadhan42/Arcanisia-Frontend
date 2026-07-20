@@ -1,44 +1,29 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
+import { useTranslation } from "@/contexts/LocaleContext";
 import SafeImage from "@/components/ui/SafeImage";
+import enMessages from "@/messages/en.json";
+import idMessages from "@/messages/id.json";
+import type { Locale } from "@/lib/locale";
 
-const essenceData = [
-  {
-    id: 3,
-    imgSrc: "/gambar/seksi%206/3.svg",
-    topTitle: "AESTHETICS & ART",
-    mainTitle: "Estetika & Seni",
-    description:
-      "Products with strong visual design rooted in inspiration from the artistic heritage and local craftsmanship of Indonesia.",
-  },
-  {
-    id: 4,
-    imgSrc: "/gambar/seksi%206/4.svg",
-    topTitle: "EDUCATION & AWARENESS",
-    mainTitle: "Edukasi & Kesadaran",
-    description:
-      "Through perfume, Arcanisia highlights Indonesia's cultural richness, and the extraordinary beauty of its visual landscapes.",
-  },
-  {
-    id: 2,
-    imgSrc: "/gambar/seksi%206/2.svg",
-    topTitle: "SUSTAINABILITY",
-    mainTitle: "Keberlanjutan",
-    description:
-      "Creating products that are environmentally friendly, using materials that can be managed and maintained in a sustainable manner.",
-  },
-  {
-    id: 1,
-    imgSrc: "/gambar/seksi%206/1.svg",
-    topTitle: "LOCAL PRIDE",
-    mainTitle: "Kebanggaan Lokal",
-    description:
-      "A deep sense of pride for local identity, products, and craftsmanship that reflects the unique values and artistry of each region.",
-  },
-];
+type ValueItem = {
+  id?: number;
+  imgSrc?: string;
+  image?: string;
+  icon?: string;
+  topTitle?: string;
+  eyebrow?: string;
+  mainTitle?: string;
+  title?: string;
+  description: string;
+};
+
+const valueCatalogs: Record<Locale, ValueItem[]> = {
+  id: idMessages.values.items,
+  en: enMessages.values.items,
+};
 
 const goldText = {
   background:
@@ -48,49 +33,53 @@ const goldText = {
 };
 
 export default function Honesty() {
+  const { locale, t } = useTranslation();
   const { section } = useSiteContent();
   const content = section<{
     eyebrow?: string;
     title?: string;
     background_image?: string;
-    items?: Array<{
-      id?: number;
-      imgSrc?: string;
-      image?: string;
-      icon?: string;
-      topTitle?: string;
-      eyebrow?: string;
-      mainTitle?: string;
-      title?: string;
-      description: string;
-    }>;
+    items?: ValueItem[];
   }>("values");
-  const items: Array<{
-    id?: number;
-    imgSrc?: string;
-    image?: string;
-    icon?: string;
-    topTitle?: string;
-    eyebrow?: string;
-    mainTitle?: string;
-    title?: string;
-    description: string;
-  }> = content.items?.length ? content.items : essenceData;
+
+  const catalog = valueCatalogs[locale];
+  const cmsItems = content.items?.length ? content.items : null;
+  const items: ValueItem[] = (cmsItems ?? catalog).map((item, index) => {
+    const fallback = catalog[index] ?? catalog[0];
+    return {
+      id: item.id ?? fallback?.id,
+      imgSrc: item.imgSrc ?? item.icon ?? item.image ?? fallback?.imgSrc,
+      topTitle:
+        item.topTitle ??
+        item.eyebrow ??
+        fallback?.topTitle ??
+        (item.title ? item.title.toUpperCase() : undefined),
+      mainTitle: item.mainTitle ?? item.title ?? fallback?.mainTitle,
+      description: item.description || fallback?.description || "",
+    };
+  });
+
   return (
     <section className="relative w-full overflow-hidden bg-[#012421] text-center">
-      {/*
-        One continuous background layer that sits BEHIND the content and extends
-        past the header, fading into the exact section color (#012421). This
-        avoids any element-boundary sub-pixel seam/line under the header.
-      */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[260px] bg-cover bg-center sm:h-[310px] md:h-[440px] lg:h-[480px]"
-        style={{
-          backgroundImage:
-            `linear-gradient(180deg, #012421 0%, rgba(1,36,33,0.88) 14%, rgba(1,36,33,0.42) 40%, rgba(1,36,33,0.42) 58%, rgba(1,36,33,0.88) 84%, #012421 100%), url('${content.background_image ?? "/gambar/seksi%206/bg.png"}')`,
-        }}
-      />
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[260px] overflow-hidden sm:h-[310px] md:h-[440px] lg:h-[480px]"
+      >
+        <SafeImage
+          src={content.background_image ?? "/gambar/seksi%206/bg.png"}
+          alt=""
+          fill
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, #012421 0%, rgba(1,36,33,0.88) 14%, rgba(1,36,33,0.42) 40%, rgba(1,36,33,0.42) 58%, rgba(1,36,33,0.88) 84%, #012421 100%)",
+          }}
+        />
+      </div>
 
       <header className="relative z-10 flex min-h-[150px] w-full flex-col items-center justify-center px-6 py-9 sm:min-h-[200px] md:min-h-[340px] md:py-16 lg:min-h-[377px]">
         <motion.p
@@ -99,8 +88,9 @@ export default function Honesty() {
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="relative z-10 font-graziemille text-[8px] leading-none tracking-[3px] text-[#F5EDD6CC] sm:text-[9px] md:text-[12px] md:tracking-[5px]"
+          data-locale-text="true"
         >
-          {content.eyebrow ?? "THE ESSENCE"}
+          {content.eyebrow ?? t("values.eyebrow")}
         </motion.p>
 
         <motion.h2
@@ -110,8 +100,9 @@ export default function Honesty() {
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
           className="relative z-10 mt-2 font-gilland text-[24px] leading-tight sm:text-[30px] md:mt-4 md:text-[43px]"
           style={goldText}
+          data-locale-text="true"
         >
-          {content.title ?? "Honesty of Nusantara"}
+          {content.title ?? t("values.title")}
         </motion.h2>
 
         <motion.div
@@ -121,7 +112,7 @@ export default function Honesty() {
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
           className="relative z-10 mt-3 h-3 w-[120px] md:mt-5 md:h-4 md:w-[213px]"
         >
-          <Image
+          <SafeImage
             src="/gambar/seksi%206/ornamen.svg"
             alt=""
             fill
@@ -134,7 +125,7 @@ export default function Honesty() {
       <div className="relative z-10 mx-auto grid w-full max-w-[1180px] grid-cols-2 gap-x-6 gap-y-10 px-6 pb-12 pt-10 sm:gap-x-10 md:gap-y-14 md:px-12 md:py-20 xl:grid-cols-4 xl:gap-x-6">
         {items.map((item, index) => (
           <motion.article
-            key={`${item.id ?? "item"}-${item.mainTitle ?? item.title ?? item.topTitle ?? item.eyebrow ?? "value"}-${index}`}
+            key={`${item.id ?? "item"}-${item.mainTitle ?? item.title ?? item.topTitle ?? "value"}-${index}`}
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
@@ -155,15 +146,24 @@ export default function Honesty() {
             />
 
             <div className="mt-5 flex w-full flex-col items-center md:mt-8">
-              <p className="font-graziemille text-[8px] font-medium leading-none tracking-[2px] text-[#C9A84C] md:text-[9px] md:tracking-[2.2px]">
+              <p
+                className="font-graziemille text-[8px] font-medium leading-none tracking-[2px] text-[#C9A84C] md:text-[9px] md:tracking-[2.2px]"
+                data-locale-text="true"
+              >
                 {item.topTitle ?? item.eyebrow}
               </p>
 
-              <h3 className="mt-2 font-gilland text-[15px] leading-tight text-[#F5EDD6] md:text-[19px]">
+              <h3
+                className="mt-2 font-gilland text-[15px] leading-tight text-[#F5EDD6] md:text-[19px]"
+                data-locale-text="true"
+              >
                 {item.mainTitle ?? item.title}
               </h3>
 
-              <p className="mt-3 font-graziemille text-[10px] font-light leading-[1.6] text-[#C9B99AB3] md:mt-4 md:text-[11px] md:leading-[1.6]">
+              <p
+                className="mt-3 font-graziemille text-[10px] font-light leading-[1.6] text-[#C9B99AB3] md:mt-4 md:text-[11px] md:leading-[1.6]"
+                data-locale-text="true"
+              >
                 {item.description}
               </p>
 

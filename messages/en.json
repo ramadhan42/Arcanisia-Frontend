@@ -1,0 +1,253 @@
+{
+  "nav": {
+    "about": "ABOUT",
+    "collection": "COLLECTION",
+    "mission": "MISSION",
+    "values": "VALUES",
+    "shopNow": "SHOP NOW",
+    "login": "LOGIN",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "openAccountMenu": "Open account menu for {name}",
+    "adminDashboard": "Admin Dashboard",
+    "myProfile": "My Profile",
+    "myOrders": "My Orders",
+    "cart": "Cart",
+    "logout": "Log Out",
+    "language": "Language",
+    "languageId": "Indonesian",
+    "languageEn": "English"
+  },
+  "collection": {
+    "eyebrow": "THE COLLECTION",
+    "title": "Six Islands, Six Stories",
+    "description": "Each fragrance is an olfactory journey through the soul of the Indonesian archipelago — six islands, six stories, one nation breathed into being.",
+    "discover": "DISCOVER",
+    "cta": "VIEW COMPLETE COLLECTION",
+    "loading": "Loading product collection...",
+    "empty": "No products available yet.",
+    "failed": "Failed to load product collection.",
+    "badgeBestSeller": "BEST SELLER",
+    "badgeComingSoon": "COMING SOON"
+  },
+  "missions": {
+    "eyebrow": "OUR MISSION",
+    "title": "Guided by Purpose",
+    "items": [
+      {
+        "id": "01",
+        "title": "Cultural Storytelling",
+        "description": "Telling the beauty of Indonesian culture and islands through the art of fragrance and artistic perfume design."
+      },
+      {
+        "id": "02",
+        "title": "Accessible Luxury",
+        "description": "Presenting high-quality perfumes at accessible prices, so that more people can experience the splendor of the Nusantara."
+      },
+      {
+        "id": "03",
+        "title": "Indonesian Aesthetic",
+        "description": "Using designs and packaging that represent the aesthetic values and unique character of Indonesia."
+      },
+      {
+        "id": "04",
+        "title": "Environmental Stewardship",
+        "description": "Contributing to environmental sustainability by supporting organizations dedicated to the preservation of Indonesia's nature."
+      },
+      {
+        "id": "05",
+        "title": "Education & Pride",
+        "description": "Becoming an educational medium that cultivates pride and love for the beauty and richness of Indonesia's cultural heritage."
+      }
+    ]
+  },
+  "values": {
+    "eyebrow": "THE ESSENCE",
+    "title": "Honesty of Nusantara",
+    "items": [
+      {
+        "id": 3,
+        "imgSrc": "/gambar/seksi%206/3.svg",
+        "topTitle": "AESTHETICS & ART",
+        "mainTitle": "Aesthetics & Art",
+        "description": "Products with strong visual design rooted in inspiration from the artistic heritage and local craftsmanship of Indonesia."
+      },
+      {
+        "id": 4,
+        "imgSrc": "/gambar/seksi%206/4.svg",
+        "topTitle": "EDUCATION & AWARENESS",
+        "mainTitle": "Education & Awareness",
+        "description": "Through perfume, Arcanisia highlights Indonesia's cultural richness, and the extraordinary beauty of its visual landscapes."
+      },
+      {
+        "id": 2,
+        "imgSrc": "/gambar/seksi%206/2.svg",
+        "topTitle": "SUSTAINABILITY",
+        "mainTitle": "Sustainability",
+        "description": "Creating products that are environmentally friendly, using materials that can be managed and maintained in a sustainable manner."
+      },
+      {
+        "id": 1,
+        "imgSrc": "/gambar/seksi%206/1.svg",
+        "topTitle": "LOCAL PRIDE",
+        "mainTitle": "Local Pride",
+        "description": "A deep sense of pride for local identity, products, and craftsmanship that reflects the unique values and artistry of each region."
+      }
+    ]
+  },
+  "islands": {
+    "eyebrow": "EXPLORE THE ARCHIPELAGO",
+    "title": "Six Islands, One Soul",
+    "discover": "DISCOVER FRAGRANCE",
+    "items": [
+      {
+        "id": "NIAS",
+        "region": "NORTH SUMATRA",
+        "name": "Nias",
+        "subtitle": "Spirit of Nias",
+        "description": "A sanctuary of rolling waves and ancient megaliths, echoing the fierce and beautiful spirit of the ocean.",
+        "notes": ["Sea Salt", "Coconut Water", "Oceanic Breeze", "Sun-baked Sand"],
+        "labelPosition": { "top": "32.26%", "left": "0.77%" }
+      },
+      {
+        "id": "BUTON",
+        "region": "SOUTHEAST SULAWESI",
+        "name": "Buton",
+        "subtitle": "Heritage of Buton",
+        "description": "The land of asphalt and ancient fortresses, surrounded by deep blue seas and whispered histories.",
+        "notes": ["Exotic Spices", "Warm Amber", "Deep Woods", "Golden Resin"],
+        "labelPosition": { "top": "68.59%", "left": "60.84%" }
+      },
+      {
+        "id": "SUMBA",
+        "region": "EAST NUSA TENGGARA",
+        "name": "Sumba",
+        "subtitle": "Soul of Sumba",
+        "description": "Vast savannas and untamed horses, a rustic paradise where the earth meets endless horizons.",
+        "notes": ["Sandalwood", "Dry Savanna", "Leather", "Wild Vetiver"],
+        "labelPosition": { "top": "93.58%", "left": "45.37%" }
+      },
+      {
+        "id": "KOMODO",
+        "region": "EAST NUSA TENGGARA",
+        "name": "Komodo",
+        "subtitle": "Mystique of Komodo",
+        "description": "Volcanic, primal, untamed — the realm of ancient dragons and crystal-clear waters where worlds of fire and sea collide.",
+        "notes": ["Wild Grass", "Volcanic Earth", "Warm Musk", "Dried Herbs"],
+        "labelPosition": { "top": "74.11%", "left": "43.69%" }
+      },
+      {
+        "id": "ALOR",
+        "region": "EAST NUSA TENGGARA",
+        "name": "Alor",
+        "subtitle": "Whispers of Alor",
+        "description": "Hidden gems of the archipelago, boasting pristine coral reefs and a rich tapestry of tribal culture.",
+        "notes": ["Coral Reef", "Sea Breeze", "Vanilla", "White Pepper"],
+        "labelPosition": { "top": "84.86%", "left": "66.83%" }
+      },
+      {
+        "id": "PAPUA",
+        "region": "PAPUA",
+        "name": "Papua",
+        "subtitle": "Heart of Papua",
+        "description": "A majestic expanse of untouched rainforests and towering peaks, breathing with raw, vibrant life.",
+        "notes": ["Oud Wood", "Rainforest Dew", "Earthy Patchouli", "Green Leaves"],
+        "labelPosition": { "top": "31.1%", "left": "91.24%" }
+      }
+    ]
+  },
+  "faq": {
+    "eyebrow": "HELP CENTER",
+    "title": "Frequently Asked Questions",
+    "description": "Can't find the answer you're looking for? Our team is ready to help via email.",
+    "categories": [
+      { "id": "produk", "label": "PRODUCTS" },
+      { "id": "pengiriman", "label": "SHIPPING" },
+      { "id": "retur", "label": "RETURNS" },
+      { "id": "keamanan", "label": "AUTHENTICITY & SAFETY" }
+    ],
+    "items": [
+      {
+        "id": 1,
+        "category": "produk",
+        "question": "What makes Arcanisia different from other perfume brands?",
+        "answer": "Arcanisia is born from the soul of the Nusantara — each bottle is a cultural narrative, not just a fragrance. We blend natural ingredients unique to Indonesia's islands that are rarely found in global commercial perfumes, curated by local perfume masters dedicated to authenticity and sustainability."
+      },
+      {
+        "id": 2,
+        "category": "produk",
+        "question": "How long does each Arcanisia fragrance last?",
+        "answer": "Arcanisia fragrances typically last between 8 to 12 hours, depending on skin type and environmental conditions. Our Extrait de Parfum formula is designed for all-day longevity."
+      },
+      {
+        "id": 3,
+        "category": "produk",
+        "question": "Are Arcanisia ingredients natural and safe?",
+        "answer": "We use a blend of high-quality natural ingredients and safe synthetic materials that comply with IFRA standards, ensuring aroma consistency, skin safety, and sustainable practices."
+      },
+      {
+        "id": 4,
+        "category": "produk",
+        "question": "Is Arcanisia available in travel size?",
+        "answer": "Yes, we offer 15ml travel sizes for several of our signature collections, so you can take your favorite scent wherever you go."
+      },
+      {
+        "id": 5,
+        "category": "pengiriman",
+        "question": "How long does shipping take?",
+        "answer": "Standard delivery is estimated at 2–5 business days for Greater Jakarta and 3–7 business days for other regions. Express options are available in selected areas."
+      },
+      {
+        "id": 6,
+        "category": "pengiriman",
+        "question": "Do you ship across Indonesia?",
+        "answer": "Yes, we deliver nationwide through trusted logistics partners."
+      },
+      {
+        "id": 7,
+        "category": "retur",
+        "question": "Can I exchange or return a product?",
+        "answer": "Products may be exchanged or returned within 7 days of receipt, provided they are unopened, seals are intact, and an unboxing video is included."
+      },
+      {
+        "id": 8,
+        "category": "keamanan",
+        "question": "Is Arcanisia safe for sensitive skin?",
+        "answer": "All products are carefully formulated and tested. If you have a history of allergies, we recommend a patch test before full use."
+      }
+    ]
+  },
+  "auth": {
+    "processing": "PROCESSING...",
+    "login": "LOGIN",
+    "register": "REGISTER",
+    "email": "EMAIL",
+    "password": "PASSWORD",
+    "name": "NAME",
+    "confirmPassword": "CONFIRM PASSWORD"
+  },
+  "profile": {
+    "title": "My Profile",
+    "administrator": "Administrator",
+    "customer": "Customer",
+    "currentPassword": "CURRENT PASSWORD",
+    "newPassword": "NEW PASSWORD",
+    "confirmNewPassword": "CONFIRM NEW PASSWORD",
+    "save": "SAVE PROFILE",
+    "processing": "PROCESSING..."
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Your cart is empty.",
+    "checkout": "CHECKOUT",
+    "continueShopping": "CONTINUE SHOPPING",
+    "remove": "Remove",
+    "total": "Total"
+  },
+  "common": {
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading..."
+  }
+}

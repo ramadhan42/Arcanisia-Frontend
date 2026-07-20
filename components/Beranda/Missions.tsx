@@ -1,41 +1,23 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
+import { useTranslation } from "@/contexts/LocaleContext";
+import SafeImage from "@/components/ui/SafeImage";
+import enMessages from "@/messages/en.json";
+import idMessages from "@/messages/id.json";
+import type { Locale } from "@/lib/locale";
 
-const missionData = [
-  {
-    id: "01",
-    title: "Cultural Storytelling",
-    description:
-      "Telling the beauty of Indonesian culture and islands through the art of fragrance and artistic perfume design.",
-  },
-  {
-    id: "02",
-    title: "Accessible Luxury",
-    description:
-      "Presenting high-quality perfumes at accessible prices, so that more people can experience the splendor of the Nusantara.",
-  },
-  {
-    id: "03",
-    title: "Indonesian Aesthetic",
-    description:
-      "Using designs and packaging that represent the aesthetic values and unique character of Indonesia.",
-  },
-  {
-    id: "04",
-    title: "Environmental Stewardship",
-    description:
-      "Contributing to environmental sustainability by supporting organizations dedicated to the preservation of Indonesia's nature.",
-  },
-  {
-    id: "05",
-    title: "Education & Pride",
-    description:
-      "Becoming an educational medium that cultivates pride and love for the beauty and richness of Indonesia's cultural heritage.",
-  },
-];
+type MissionItem = {
+  id?: string;
+  title: string;
+  description: string;
+};
+
+const missionCatalogs: Record<Locale, MissionItem[]> = {
+  id: idMessages.missions.items,
+  en: enMessages.missions.items,
+};
 
 const goldText = {
   background:
@@ -45,26 +27,57 @@ const goldText = {
 };
 
 export default function Missions() {
+  const { locale, t } = useTranslation();
   const { section } = useSiteContent();
-  const content = section<{ eyebrow?: string; title?: string; background_image?: string; items?: typeof missionData }>("missions");
-  const items = content.items?.length ? content.items : missionData;
+  const content = section<{
+    eyebrow?: string;
+    title?: string;
+    background_image?: string;
+    items?: MissionItem[];
+    missions?: MissionItem[];
+  }>("missions");
+
+  const cmsItems =
+    content.items?.length
+      ? content.items
+      : content.missions?.length
+        ? content.missions
+        : null;
+
+  const items = (cmsItems ?? missionCatalogs[locale]).map((item, index) => ({
+    id: item.id ?? String(index + 1).padStart(2, "0"),
+    title: item.title,
+    description: item.description,
+  }));
+
   return (
     <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#00221f,#012421)]">
-      <header
-        className="relative flex h-[112px] w-full flex-col items-center bg-cover bg-center px-6 pt-4 text-center md:h-[413px] md:justify-center md:pt-0"
-        style={{
-          backgroundImage:
-            `linear-gradient(180deg, #00221f 0%, rgba(0,34,31,0.88) 14%, rgba(0,34,31,0.42) 40%, rgba(1,36,33,0.42) 58%, rgba(1,36,33,0.88) 84%, #012421 100%), url('${content.background_image ?? "/gambar/seksi%205/bg.png"}')`,
-        }}
-      >
+      <header className="relative flex h-[112px] w-full flex-col items-center overflow-hidden px-6 pt-4 text-center md:h-[413px] md:justify-center md:pt-0">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
+          <SafeImage
+            src={content.background_image ?? "/gambar/seksi%205/bg.png"}
+            alt=""
+            fill
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, #00221f 0%, rgba(0,34,31,0.88) 14%, rgba(0,34,31,0.42) 40%, rgba(1,36,33,0.42) 58%, rgba(1,36,33,0.88) 84%, #012421 100%)",
+            }}
+          />
+        </div>
+
         <motion.p
           initial={{ opacity: 0, scale: 0.85 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="font-graziemille text-[6px] leading-none tracking-[3px] text-[#F5EDD6CC] md:text-[13px] md:tracking-[5px]"
+          className="relative z-10 font-graziemille text-[6px] leading-none tracking-[3px] text-[#F5EDD6CC] md:text-[13px] md:tracking-[5px]"
         >
-          {content.eyebrow ?? "OUR MISSION"}
+          {content.eyebrow ?? t("missions.eyebrow")}
         </motion.p>
 
         <motion.h2
@@ -72,10 +85,10 @@ export default function Missions() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="mt-2 font-gilland text-[20px] leading-tight md:mt-4 md:text-[43px]"
+          className="relative z-10 mt-2 font-gilland text-[20px] leading-tight md:mt-4 md:text-[43px]"
           style={goldText}
         >
-          {content.title ?? "Guided by Purpose"}
+          {content.title ?? t("missions.title")}
         </motion.h2>
 
         <motion.div
@@ -83,9 +96,9 @@ export default function Missions() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-          className="relative mt-3 h-2 w-[100px] md:mt-5 md:h-4 md:w-[213px]"
+          className="relative z-10 mt-3 h-2 w-[100px] md:mt-5 md:h-4 md:w-[213px]"
         >
-          <Image
+          <SafeImage
             src="/gambar/seksi%205/ornamen.svg"
             alt=""
             fill
@@ -98,7 +111,7 @@ export default function Missions() {
       <div className="mx-auto w-full max-w-[762px] px-[22px] pb-10 pt-8 md:px-[18px] md:pb-12 md:pt-12">
         {items.map((item, index) => (
           <motion.article
-            key={`${item.id ?? "mission"}-${item.title ?? "item"}-${index}`}
+            key={`${item.id}-${item.title}-${index}`}
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.3 }}
@@ -113,7 +126,7 @@ export default function Missions() {
               className="text-right font-gilland text-[31px] leading-none md:text-[48px]"
               style={goldText}
             >
-              {item.id ?? String(index + 1).padStart(2, "0")}
+              {item.id}
             </span>
 
             <span className="flex h-full min-h-[52px] flex-col items-center pt-1 md:min-h-[70px] md:pt-1.5">

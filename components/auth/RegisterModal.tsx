@@ -2,9 +2,9 @@
 // 3. RegisterModal.tsx
 // ==========================================
 import type { NextPage } from "next";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface RegisterModalProps {
   isOpen: boolean;
@@ -201,7 +201,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                 }
                 className="absolute inset-y-0 right-0 flex w-14 items-center justify-center"
               >
-                <Image
+                <SafeImage
                   src="/gambar/login/eye.svg"
                   width={19}
                   height={19}
@@ -240,7 +240,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                 }
                 className="absolute inset-y-0 right-0 flex w-14 items-center justify-center"
               >
-                <Image
+                <SafeImage
                   src="/gambar/login/eye.svg"
                   width={19}
                   height={19}
@@ -355,7 +355,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
             flexShrink: "0",
           }}
         >
-          <Image
+          <SafeImage
             src="/gambar/login/bg.png"
             style={{
               position: "absolute",
@@ -396,7 +396,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
               flexShrink: "0",
             }}
           >
-            <Image
+            <SafeImage
               src="/gambar/login/logo-arca.svg"
               style={{ width: "100%", height: "43.7px", position: "relative" }}
               width={173}
@@ -937,7 +937,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     padding: 0,
                   }}
                 >
-                  <Image
+                  <SafeImage
                     src="/gambar/login/eye.svg"
                     width={15}
                     height={15}
@@ -1026,7 +1026,7 @@ const RegisterModal: NextPage<RegisterModalProps> = ({
                     padding: 0,
                   }}
                 >
-                  <Image
+                  <SafeImage
                     src="/gambar/login/eye.svg"
                     width={15}
                     height={15}

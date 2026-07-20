@@ -3,8 +3,8 @@
 // ==========================================
 import React, { useState } from "react";
 import type { NextPage } from "next";
-import Image from "next/image";
 import { motion } from "framer-motion";
+import SafeImage from "@/components/ui/SafeImage";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -146,7 +146,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
                 }
                 className="absolute inset-y-0 right-0 flex w-14 items-center justify-center"
               >
-                <Image
+                <SafeImage
                   src="/gambar/login/eye.svg"
                   width={19}
                   height={19}
@@ -201,7 +201,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
               className="flex h-[63px] w-full cursor-not-allowed items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a]/40"
             >
               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white">
-                <Image
+                <SafeImage
                   src="/gambar/login/google.svg"
                   width={18}
                   height={18}
@@ -217,7 +217,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
               title="Belum tersedia"
               className="flex h-[63px] w-full cursor-not-allowed items-center justify-center gap-4 border border-[#c9a84c]/20 text-[15px] text-[#c9b99a]/40"
             >
-              <Image
+              <SafeImage
                 src="/gambar/login/facebook.svg"
                 width={28}
                 height={28}
@@ -276,7 +276,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
             flexShrink: "0",
           }}
         >
-          <Image
+          <SafeImage
             src="/gambar/login/bg.png"
             style={{
               position: "absolute",
@@ -317,7 +317,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
               flexShrink: "0",
             }}
           >
-            <Image
+            <SafeImage
               src="/gambar/login/logo-arca.svg"
               style={{ width: "100%", height: "43.7px", position: "relative" }}
               width={173}
@@ -783,7 +783,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     padding: 0,
                   }}
                 >
-                  <Image
+                  <SafeImage
                     src="/gambar/login/eye.svg"
                     width={15}
                     height={15}
@@ -956,7 +956,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
                     justifyContent: "center",
                   }}
                 >
-                  <Image
+                  <SafeImage
                     src="/gambar/login/google.svg"
                     width={13}
                     height={13}
@@ -984,7 +984,7 @@ const LoginModal: NextPage<LoginModalProps> = ({
                   fontFamily: "'Grazie mille'",
                 }}
               >
-                <Image
+                <SafeImage
                   src="/gambar/login/facebook.svg"
                   width={21}
                   height={21}

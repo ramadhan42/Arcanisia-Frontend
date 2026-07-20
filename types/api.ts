@@ -181,6 +181,7 @@ export interface LegalContent extends ContentPayload {
 
 export interface SiteContentRecord {
   key: SiteContentKey;
+  locale?: "id" | "en";
   payload: ContentPayload;
   is_active: boolean;
   updated_at?: string;

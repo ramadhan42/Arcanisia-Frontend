@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #012320;
+  --foreground: #f5edd6;
+  --brand-bg: #012320;
+  --brand-bg-deep: #012421;
+  /* Avoid color-scheme: dark — it makes the browser flash pure black on refresh */
+  color-scheme: normal;
 }
 
 @theme inline {
@@ -12,11 +16,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background-color: #012320;
+  background-color: var(--brand-bg);
 }
 
 html,
@@ -28,9 +30,33 @@ body {
 }
 
 body {
+  background-color: #012320;
+  background-color: var(--brand-bg);
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  min-height: 100svh;
+}
+
+/* Soft settle on load — transform only, no opacity (opacity causes flicker) */
+@keyframes page-view-enter {
+  from {
+    transform: translateY(8px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.page-view {
+  background-color: #012320;
+  animation: page-view-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-view {
+    animation: none;
+  }
 }
 
 .font-graziemille {
@@ -49,11 +75,6 @@ body {
 .rekindling-content {
   width: min(46%, 520px);
   gap: clamp(1.25rem, 2.3vw, 2rem);
-}
-
-.rekindling-product {
-  background-position: 76% center;
-  background-size: cover;
 }
 
 .rekindling-content h2 {
@@ -83,8 +104,6 @@ body {
   }
 
   .rekindling-product {
-    background-position: 76% center;
-    background-size: cover;
     transform: scale(0.99);
     transform-origin: 76% center;
   }
@@ -107,5 +126,187 @@ body {
     height: 100svh;
     min-height: 100svh;
     padding: 2rem clamp(2rem, 9.8vw, 5.5rem);
+  }
+}
+
+/* Locale text transition: language switch + first-load EN→ID soft reveal */
+:root {
+  --locale-text-opacity: 1;
+  --locale-fade-ms: 320ms;
+}
+
+@keyframes locale-skeleton-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+html[data-locale-phase="out"] .page-content :is(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  label,
+  li,
+  td,
+  th,
+  blockquote,
+  figcaption,
+  a,
+  span,
+  button
+):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="out"] .page-content [data-locale-text],
+html[data-locale-phase="out"] nav :is(a, span, p, label, button):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="out"] nav [data-locale-text],
+html[data-locale-phase="out"] [data-locale-shimmer],
+html[data-locale-phase="loading"] .page-content :is(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  label,
+  li,
+  td,
+  th,
+  blockquote,
+  figcaption,
+  a,
+  span,
+  button
+):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="loading"] .page-content [data-locale-text],
+html[data-locale-phase="loading"] nav :is(a, span, p, label, button):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="loading"] nav [data-locale-text],
+html[data-locale-phase="loading"] [data-locale-shimmer],
+html[data-locale-phase="in"] .page-content :is(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  label,
+  li,
+  td,
+  th,
+  blockquote,
+  figcaption,
+  a,
+  span,
+  button
+):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="in"] .page-content [data-locale-text],
+html[data-locale-phase="in"] nav :is(a, span, p, label, button):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="in"] nav [data-locale-text],
+html[data-locale-phase="in"] [data-locale-shimmer] {
+  filter: opacity(var(--locale-text-opacity));
+  transition: filter var(--locale-fade-ms) ease;
+}
+
+html[data-locale-phase="out"] .page-content :is(img, video, canvas, iframe):not([data-locale-shimmer] img),
+html[data-locale-phase="loading"] .page-content :is(img, video, canvas, iframe):not([data-locale-shimmer] img),
+html[data-locale-phase="in"] .page-content :is(img, video, canvas, iframe):not([data-locale-shimmer] img) {
+  filter: none;
+}
+
+html[data-locale-phase="out"] [data-locale-shimmer] img,
+html[data-locale-phase="loading"] [data-locale-shimmer] img,
+html[data-locale-phase="in"] [data-locale-shimmer] img {
+  filter: inherit;
+}
+
+.locale-skeleton-bar {
+  position: absolute;
+  display: block;
+  border-radius: 0.3em;
+  background: linear-gradient(
+    90deg,
+    rgba(201, 168, 76, 0.16) 0%,
+    rgba(248, 197, 108, 0.42) 45%,
+    rgba(201, 168, 76, 0.16) 90%
+  );
+  background-size: 220% 100%;
+  animation: locale-skeleton-shimmer 1.05s ease-in-out infinite;
+  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-locale-phase="out"] .page-content :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    label,
+    li,
+    td,
+    th,
+    blockquote,
+    figcaption,
+    a,
+    span,
+    button
+  ),
+  html[data-locale-phase="out"] nav :is(a, span, p, label, button),
+  html[data-locale-phase="out"] [data-locale-shimmer],
+  html[data-locale-phase="loading"] .page-content :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    label,
+    li,
+    td,
+    th,
+    blockquote,
+    figcaption,
+    a,
+    span,
+    button
+  ),
+  html[data-locale-phase="loading"] nav :is(a, span, p, label, button),
+  html[data-locale-phase="loading"] [data-locale-shimmer],
+  html[data-locale-phase="in"] .page-content :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    label,
+    li,
+    td,
+    th,
+    blockquote,
+    figcaption,
+    a,
+    span,
+    button
+  ),
+  html[data-locale-phase="in"] nav :is(a, span, p, label, button),
+  html[data-locale-phase="in"] [data-locale-shimmer] {
+    transition: none;
+  }
+
+  .locale-skeleton-bar {
+    animation: none;
+    background: rgba(201, 168, 76, 0.22);
   }
 }

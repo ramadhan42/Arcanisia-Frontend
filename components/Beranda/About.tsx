@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSiteContent } from "@/contexts/SiteContentContext";
@@ -72,12 +71,13 @@ export default function About() {
           {content.title ?? "More Than a Fragrance"}
         </motion.h2>
 
+        {/* Ornament */}
         <motion.div
           {...reveal}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
           className="relative mt-4 h-[10px] w-[130px] md:mt-5 md:h-[15px] md:w-[204px]"
         >
-          <Image
+          <SafeImage
             src="/gambar/seksi%203/ornament.svg"
             alt=""
             fill
@@ -86,6 +86,7 @@ export default function About() {
           />
         </motion.div>
 
+        {/* Slider */}
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -160,16 +161,18 @@ export default function About() {
           </div>
         </motion.div>
 
+        {/* Quote */}
         <motion.blockquote
           {...reveal}
           transition={{ duration: 0.8, delay: 0.65, ease: "easeOut" }}
-          className="mt-7 max-w-[340px] font-graziemille text-[19px] leading-[1.65] italic sm:max-w-[440px] sm:text-[22px] md:mt-10 md:max-w-[650px] md:text-[28px] md:leading-[1.45]"
+          className="mt-10 max-w-[340px] font-graziemille text-[19px] leading-[1.65] italic sm:max-w-[440px] sm:text-[22px] md:mt-14 md:max-w-[650px] md:text-[28px] md:leading-[1.45]"
           style={goldGradient}
         >
           &quot;{content.quote ?? "Born to reignite national pride through the art of scent the leading narrator of the Nusantara."}&quot;
         </motion.blockquote>
 
-        <div className="mt-6 flex max-w-[320px] flex-col gap-5 font-graziemille text-[14px] leading-[1.55] sm:max-w-[430px] sm:text-[15px] md:mt-8 md:max-w-[580px] md:text-[17px] md:leading-[1.6]">
+        {/* Paragraphs */}
+        <div className="mt-9 flex max-w-[320px] flex-col gap-7 font-graziemille text-[14px] leading-[1.8] sm:max-w-[430px] sm:text-[15px] md:mt-12 md:max-w-[580px] md:gap-8 md:text-[17px] md:leading-[1.85]">
           <motion.p
             {...reveal}
             transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
@@ -187,27 +190,28 @@ export default function About() {
           </motion.p>
         </div>
 
+        {/* Statistics */}
         <motion.div
           {...reveal}
           transition={{ duration: 0.9, delay: 1.05, ease: "easeOut" }}
-          className="mt-8 grid w-full max-w-[310px] grid-cols-3 md:mt-12 md:max-w-[440px]"
+          className="mt-12 grid w-full max-w-[340px] grid-cols-3 md:mt-16 md:max-w-[500px]"
         >
           {renderedStatistics.map((stat, index) => (
             <div
               key={stat.label}
               className={`relative flex min-w-0 flex-col items-center ${
                 index > 0
-                  ? "before:absolute before:left-0 before:top-1 before:h-6 before:w-px before:bg-[#F8C56C]/70"
+                  ? "before:absolute before:left-0 before:top-1 before:h-8 before:w-px before:bg-[#F8C56C]/70 md:before:h-10"
                   : ""
               }`}
             >
               <span
-                className="font-gilland text-[28px] leading-none md:text-[36px]"
+                className="font-gilland text-[34px] leading-none md:text-[44px]"
                 style={goldGradient}
               >
                 {stat.value}
               </span>
-              <span className="mt-2 whitespace-nowrap font-graziemille text-[5px] tracking-[1.3px] text-[#F8C56C] sm:text-[6px] md:text-[8px] md:tracking-[1.6px]">
+              <span className="mt-2.5 whitespace-nowrap font-graziemille text-[7px] tracking-[1.5px] text-[#F8C56C] sm:text-[8px] md:mt-3 md:text-[11px] md:tracking-[2px]">
                 {stat.label}
               </span>
             </div>

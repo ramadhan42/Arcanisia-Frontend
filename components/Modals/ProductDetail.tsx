@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import CheckoutModal from "./Checkout";
@@ -8,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAuthDialog } from "@/contexts/AuthDialogContext";
 import { useCart } from "@/contexts/CartContext";
 import type { Order, Product } from "@/types/api";
+import ProductImage from "@/components/ui/ProductImage";
 
 // Kumpulan Icon SVG bawaan
 const CloseIcon = () => (
@@ -213,12 +213,12 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
           className="relative w-full md:w-[460px] h-[300px] md:h-full shrink-0"
           style={{ backgroundColor: product.bgColor }}
         >
-          <Image
+          <ProductImage
             src={product.image}
             alt={product.name}
             fill
-            style={{ objectFit: "cover" }}
-            sizes="(max-width: 768px) 100vw, 460px"
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 920px"
             priority
           />
           <div

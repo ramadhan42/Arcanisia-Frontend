@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -89,7 +88,7 @@ export default function Footer() {
     if (isProduct) {
       document
         .getElementById("collection")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        ?.scrollIntoView({ behavior: "auto", block: "start" });
       if (window.location.hash === `#${hashId}`) {
         // Same hash: re-trigger so Collections can reopen the modal.
         window.dispatchEvent(new HashChangeEvent("hashchange"));
@@ -101,7 +100,7 @@ export default function Footer() {
 
     const element = document.getElementById(hashId);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      element.scrollIntoView({ behavior: "auto", block: "start" });
       window.history.replaceState(null, "", `/#${hashId}`);
     }
   };
@@ -185,7 +184,7 @@ export default function Footer() {
               {footer.description}
             </p>
 
-            <Image
+            <SafeImage
               src="/gambar/footer/ornamen.svg"
               width={162}
               height={12}

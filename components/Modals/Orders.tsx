@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import {
   Box,
   ChevronDown,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { orderService } from "@/services/api";
+import ProductImage from "@/components/ui/ProductImage";
 import type { Order, OrderStatus, PaginationMeta } from "@/types/api";
 
 const labels: Record<OrderStatus, string> = {
@@ -281,11 +281,12 @@ export default function OrdersModal({ onClose }: { onClose: () => void }) {
                       <div key={item.id} className="flex gap-3">
                         <div className="relative h-16 w-16 shrink-0 overflow-hidden bg-black/20">
                           {item.product_image && (
-                            <Image
+                            <ProductImage
                               src={item.product_image}
                               alt={item.product_name}
                               fill
                               className="object-cover"
+                              sizes="128px"
                             />
                           )}
                         </div>

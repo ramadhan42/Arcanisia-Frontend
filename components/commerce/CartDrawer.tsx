@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { LoaderCircle, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import type { Order } from "@/types/api";
 import CheckoutModal from "@/components/Modals/Checkout";
 import ConfirmationModal from "@/components/Modals/Confirmation";
+import ProductImage from "@/components/ui/ProductImage";
 
 const currency = new Intl.NumberFormat("id-ID", {
   style: "currency",
@@ -78,7 +78,15 @@ export default function CartDrawer() {
               {cart?.items.map((item) => (
                 <article key={item.id} className="flex gap-4 border border-[#c9a84c]/15 p-3">
                   <div className="relative h-24 w-24 shrink-0 overflow-hidden bg-black/20">
-                    {item.product.image && <Image src={item.product.image} alt={item.product.name} fill className="object-cover" />}
+                    {item.product.image && (
+                      <ProductImage
+                        src={item.product.image}
+                        alt={item.product.name}
+                        fill
+                        className="object-cover"
+                        sizes="192px"
+                      />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex justify-between gap-2">
