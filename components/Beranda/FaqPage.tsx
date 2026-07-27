@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { useTranslation } from "@/contexts/LocaleContext";
 import enMessages from "@/messages/en.json";
 import idMessages from "@/messages/id.json";
@@ -74,6 +74,14 @@ export default function FAQPage() {
   const [activeUid, setActiveUid] = useState<string | null>(
     renderedFaqs[0]?.uid ?? null,
   );
+  const navRef = useRef<HTMLDivElement>(null);
+  const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [indicator, setIndicator] = useState({
+    top: 0,
+    left: 0,
+    height: 0,
+    ready: false,
+  });
 
   useEffect(() => {
     const nextCategory = renderedCategories[0]?.id ?? "produk";
@@ -82,6 +90,47 @@ export default function FAQPage() {
       renderedFaqs.find((faq) => faq.category === nextCategory)?.uid ?? null,
     );
   }, [locale, renderedCategories, renderedFaqs]);
+
+  const updateIndicator = () => {
+    const nav = navRef.current;
+    const button = buttonRefs.current[activeCategory];
+    if (!nav || !button) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const buttonRect = button.getBoundingClientRect();
+
+    setIndicator({
+      top: buttonRect.top - navRect.top + nav.scrollTop,
+      left: buttonRect.left - navRect.left + nav.scrollLeft,
+      height: buttonRect.height,
+      ready: true,
+    });
+  };
+
+  useLayoutEffect(() => {
+    updateIndicator();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCategory, locale, renderedCategories]);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const onResize = () => updateIndicator();
+    window.addEventListener("resize", onResize);
+
+    const observer =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => updateIndicator())
+        : null;
+    observer?.observe(nav);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      observer?.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCategory, locale]);
 
   const visibleFaqs = renderedFaqs.filter(
     (faq) => faq.category === activeCategory,
@@ -143,123 +192,150 @@ export default function FAQPage() {
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           >
-            <div className="grid grid-cols-2 gap-2 lg:grid-cols-1 lg:gap-2">
-              {renderedCategories.map((category) => {
-                const active = category.id === activeCategory;
-                const count = renderedFaqs.filter(
-                  (faq) => faq.category === category.id,
-                ).length;
-
-                return (
-                  <motion.button
-                    key={`${locale}-${category.id}`}
-                    type="button"
-                    onClick={() => changeCategory(category.id)}
-                    whileHover={{
-                      backgroundColor: active
-                        ? "rgba(201, 168, 76, 0.12)"
-                        : "rgba(201, 168, 76, 0.08)",
+            <LayoutGroup id={`faq-nav-${locale}`}>
+              <div
+                ref={navRef}
+                className="relative grid grid-cols-2 gap-2 lg:grid-cols-1 lg:gap-2"
+              >
+                {indicator.ready && (
+                  <motion.span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute z-20 w-[4px] rounded-full bg-[linear-gradient(180deg,#fdde8a,#C9A84C_45%,#8f7328)] shadow-[0_0_16px_rgba(248,197,108,0.45)]"
+                    initial={false}
+                    animate={{
+                      top: indicator.top,
+                      left: indicator.left,
+                      height: indicator.height,
+                      opacity: 1,
                     }}
-                    className={`relative flex items-center justify-between overflow-hidden rounded-sm border px-3 py-3 text-left transition-colors lg:px-4 ${
-                      active
-                        ? "border-[#C9A84C]/55 bg-[#C9A84C]/10 text-[#F8C56C]"
-                        : "border-[#C9A84C]/15 text-[#C9B99A99] hover:border-[#C9A84C]/35 hover:text-[#F5EDD6]"
-                    }`}
-                  >
-                    {active && (
-                      <motion.span
-                        layoutId="faq-category-indicator"
-                        className="absolute bottom-0 left-0 top-0 w-[3px] bg-[#C9A84C]"
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 32,
-                        }}
-                      />
-                    )}
-                    <span
-                      className={`font-graziemille text-[10px] tracking-[1.5px] md:text-[11px] ${
-                        active ? "font-bold" : "font-normal"
-                      }`}
-                      data-locale-text="true"
-                    >
-                      {category.label}
-                    </span>
-                    <span
-                      className={`font-graziemille text-[10px] tracking-[1px] ${
+                    transition={{
+                      type: "spring",
+                      stiffness: 160,
+                      damping: 26,
+                      mass: 0.85,
+                    }}
+                  />
+                )}
+
+                {renderedCategories.map((category) => {
+                  const active = category.id === activeCategory;
+                  const count = renderedFaqs.filter(
+                    (faq) => faq.category === category.id,
+                  ).length;
+
+                  return (
+                    <motion.button
+                      key={`${locale}-${category.id}`}
+                      ref={(node) => {
+                        buttonRefs.current[category.id] = node;
+                      }}
+                      type="button"
+                      onClick={() => changeCategory(category.id)}
+                      whileHover={{
+                        backgroundColor: active
+                          ? "rgba(201, 168, 76, 0.12)"
+                          : "rgba(201, 168, 76, 0.08)",
+                      }}
+                      className={`relative flex items-center justify-between overflow-hidden rounded-sm border px-3 py-3 text-left transition-colors lg:px-4 ${
                         active
-                          ? "rounded-sm bg-[#C9A84C] px-1.5 py-0.5 text-[8px] text-[#091812]"
-                          : "text-[#C9A84C4D]"
+                          ? "border-[#C9A84C]/55 bg-[#C9A84C]/10 text-[#F8C56C]"
+                          : "border-[#C9A84C]/15 text-[#C9B99A99] hover:border-[#C9A84C]/35 hover:text-[#F5EDD6]"
                       }`}
-                      data-locale-fade="ignore"
                     >
-                      {String(count).padStart(2, "0")}
-                    </span>
-                  </motion.button>
-                );
-              })}
-            </div>
+                      <span
+                        className={`pl-1.5 font-graziemille text-[10px] tracking-[1.5px] md:text-[11px] ${
+                          active ? "font-bold" : "font-normal"
+                        }`}
+                        data-locale-text="true"
+                      >
+                        {category.label}
+                      </span>
+                      <span
+                        className={`font-graziemille text-[10px] tracking-[1px] ${
+                          active
+                            ? "rounded-sm bg-[#C9A84C] px-1.5 py-0.5 text-[8px] text-[#091812]"
+                            : "text-[#C9A84C4D]"
+                        }`}
+                        data-locale-fade="ignore"
+                      >
+                        {String(count).padStart(2, "0")}
+                      </span>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </LayoutGroup>
           </motion.aside>
 
           <div className="overflow-hidden border border-[#C9A84C]/15 bg-black/20">
-            {visibleFaqs.map((faq, index) => {
-              const open = activeUid === faq.uid;
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${locale}-${activeCategory}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.28, ease: "easeOut" }}
+              >
+                {visibleFaqs.map((faq, index) => {
+                  const open = activeUid === faq.uid;
 
-              return (
-                <div
-                  key={faq.uid}
-                  className={
-                    index < visibleFaqs.length - 1
-                      ? "border-b border-[#C9A84C]/15"
-                      : ""
-                  }
-                >
-                  <button
-                    type="button"
-                    onClick={() => setActiveUid(open ? null : faq.uid)}
-                    className="flex w-full items-start gap-4 px-4 py-4 text-left md:gap-5 md:px-6 md:py-5"
-                  >
-                    <span
-                      className="mt-0.5 font-graziemille text-[16px] tracking-[2px] text-[#C9A84C] md:text-[19px]"
-                      data-locale-fade="ignore"
+                  return (
+                    <div
+                      key={faq.uid}
+                      className={
+                        index < visibleFaqs.length - 1
+                          ? "border-b border-[#C9A84C]/15"
+                          : ""
+                      }
                     >
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span
-                      className="flex-1 font-gilland text-[16px] leading-[1.35] text-[#F5EDD6] md:text-[19px]"
-                      data-locale-text="true"
-                    >
-                      {faq.question}
-                    </span>
-                    <span
-                      className={`mt-1 text-[#C9A84C] ${open ? "opacity-100" : "opacity-70"}`}
-                      data-locale-fade="ignore"
-                    >
-                      <ToggleIcon open={open} />
-                    </span>
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {open && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.28, ease: "easeOut" }}
-                        className="overflow-hidden"
+                      <button
+                        type="button"
+                        onClick={() => setActiveUid(open ? null : faq.uid)}
+                        className="flex w-full items-start gap-4 px-4 py-4 text-left md:gap-5 md:px-6 md:py-5"
                       >
-                        <p
-                          className="px-4 pb-5 pl-[3.25rem] font-graziemille text-[13px] leading-[1.8] text-[#C9B99A99] md:px-6 md:pb-6 md:pl-[4.25rem] md:text-[14px]"
+                        <span
+                          className="mt-0.5 font-graziemille text-[16px] tracking-[2px] text-[#C9A84C] md:text-[19px]"
+                          data-locale-fade="ignore"
+                        >
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span
+                          className="flex-1 font-gilland text-[16px] leading-[1.35] text-[#F5EDD6] md:text-[19px]"
                           data-locale-text="true"
                         >
-                          {faq.answer}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
+                          {faq.question}
+                        </span>
+                        <span
+                          className={`mt-1 text-[#C9A84C] ${open ? "opacity-100" : "opacity-70"}`}
+                          data-locale-fade="ignore"
+                        >
+                          <ToggleIcon open={open} />
+                        </span>
+                      </button>
+
+                      <AnimatePresence initial={false}>
+                        {open && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.28, ease: "easeOut" }}
+                            className="overflow-hidden"
+                          >
+                            <p
+                              className="px-4 pb-5 pl-[3.25rem] font-graziemille text-[13px] leading-[1.8] text-[#C9B99A99] md:px-6 md:pb-6 md:pl-[4.25rem] md:text-[14px]"
+                              data-locale-text="true"
+                            >
+                              {faq.answer}
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>

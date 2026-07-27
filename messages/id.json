@@ -62,36 +62,36 @@
     ]
   },
   "values": {
-    "eyebrow": "ESENSI KAMI",
-    "title": "Kejujuran Nusantara",
+    "eyebrow": "THE ESSENCE",
+    "title": "Kisah Jujur Nusantara",
     "items": [
       {
-        "id": 3,
-        "imgSrc": "/gambar/seksi%206/3.svg",
-        "topTitle": "ESTETIKA & SENI",
-        "mainTitle": "Estetika & Seni",
-        "description": "Produk dengan desain visual kuat yang berakar pada warisan artistik dan kerajinan lokal Indonesia."
-      },
-      {
-        "id": 4,
-        "imgSrc": "/gambar/seksi%206/4.svg",
-        "topTitle": "EDUKASI & KESADARAN",
-        "mainTitle": "Edukasi & Kesadaran",
-        "description": "Melalui parfum, Arcanisia menyoroti kekayaan budaya Indonesia dan keindahan lanskap visualnya yang luar biasa."
+        "id": 1,
+        "imgSrc": "/gambar/seksi%206/1.svg",
+        "topTitle": "KEBANGGAAN LOKAL",
+        "mainTitle": "Akar & Identitas",
+        "description": "Merayakan karya dan bahan baku asli yang lahir dari tanah kita sendiri."
       },
       {
         "id": 2,
         "imgSrc": "/gambar/seksi%206/2.svg",
         "topTitle": "KEBERLANJUTAN",
-        "mainTitle": "Keberlanjutan",
-        "description": "Menciptakan produk ramah lingkungan dengan bahan yang dapat dikelola secara berkelanjutan."
+        "mainTitle": "Langkah Bertanggung Jawab",
+        "description": "Merawat dan menjaga alam tempat semua cerita ini bermula."
       },
       {
-        "id": 1,
-        "imgSrc": "/gambar/seksi%206/1.svg",
-        "topTitle": "KEBANGGAAN LOKAL",
-        "mainTitle": "Kebanggaan Lokal",
-        "description": "Rasa bangga mendalam terhadap identitas lokal, produk, dan kerajinan yang mencerminkan nilai dan seni unik setiap daerah."
+        "id": 3,
+        "imgSrc": "/gambar/seksi%206/3.svg",
+        "topTitle": "SENI & ESTETIKA",
+        "mainTitle": "Kriya Nusantara",
+        "description": "Menerjemahkan kekayaan visual tradisional ke dalam wujud yang modern."
+      },
+      {
+        "id": 4,
+        "imgSrc": "/gambar/seksi%206/4.svg",
+        "topTitle": "CERITA & MAKNA",
+        "mainTitle": "Edukasi & Kesadaran",
+        "description": "Menjadikan aroma sebagai cara paling intim untuk mengenali kembali Indonesia."
       }
     ]
   },

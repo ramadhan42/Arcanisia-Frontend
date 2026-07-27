@@ -4,26 +4,7 @@ import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import { useTranslation } from "@/contexts/LocaleContext";
 import SafeImage from "@/components/ui/SafeImage";
-import enMessages from "@/messages/en.json";
-import idMessages from "@/messages/id.json";
-import type { Locale } from "@/lib/locale";
-
-type ValueItem = {
-  id?: number;
-  imgSrc?: string;
-  image?: string;
-  icon?: string;
-  topTitle?: string;
-  eyebrow?: string;
-  mainTitle?: string;
-  title?: string;
-  description: string;
-};
-
-const valueCatalogs: Record<Locale, ValueItem[]> = {
-  id: idMessages.values.items,
-  en: enMessages.values.items,
-};
+import { normalizeValueItems } from "@/lib/valuesContent";
 
 const goldText = {
   background:
@@ -36,12 +17,13 @@ export default function Honesty() {
   const { locale, t } = useTranslation();
   const { section } = useSiteContent();
   const content = section<{
+    eyebrow?: string;
+    title?: string;
     background_image?: string;
+    items?: Parameters<typeof normalizeValueItems>[0];
   }>("values");
 
-  // Locale catalog is the source of truth so English/Indonesian toggle
-  // is never overridden by stale CMS copy.
-  const items: ValueItem[] = valueCatalogs[locale];
+  const items = normalizeValueItems(content.items, locale);
 
   return (
     <section className="relative w-full overflow-hidden bg-[#012421] text-center">
@@ -74,7 +56,7 @@ export default function Honesty() {
           className="relative z-10 font-graziemille text-[8px] leading-none tracking-[3px] text-[#F5EDD6CC] sm:text-[9px] md:text-[12px] md:tracking-[5px]"
           data-locale-text="true"
         >
-          {t("values.eyebrow")}
+          {content.eyebrow ?? t("values.eyebrow")}
         </motion.p>
 
         <motion.h2
@@ -86,7 +68,7 @@ export default function Honesty() {
           style={goldText}
           data-locale-text="true"
         >
-          {t("values.title")}
+          {content.title ?? t("values.title")}
         </motion.h2>
 
         <motion.div
@@ -106,10 +88,10 @@ export default function Honesty() {
         </motion.div>
       </header>
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1180px] grid-cols-2 gap-x-6 gap-y-10 px-6 pb-12 pt-10 sm:gap-x-10 md:gap-y-14 md:px-12 md:py-20 xl:grid-cols-4 xl:gap-x-6">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1180px] grid-cols-4 gap-x-3 gap-y-10 px-4 pb-12 pt-10 sm:gap-x-5 md:gap-x-6 md:px-12 md:py-20 lg:gap-x-8">
         {items.map((item, index) => (
           <motion.article
-            key={`${item.id ?? "item"}-${item.mainTitle ?? item.title ?? item.topTitle ?? "value"}-${index}`}
+            key={`${item.id}-${item.mainTitle}-${index}`}
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
@@ -121,37 +103,37 @@ export default function Honesty() {
             className="mx-auto flex w-full max-w-[220px] flex-col items-center md:max-w-[260px]"
           >
             <SafeImage
-              src={item.imgSrc ?? item.icon ?? item.image ?? "/gambar/seksi%206/1.svg"}
+              src={item.imgSrc}
               width={74}
               height={74}
-              className="h-[54px] w-[54px] object-contain md:h-[74px] md:w-[74px]"
+              className="h-[40px] w-[40px] object-contain sm:h-[54px] sm:w-[54px] md:h-[74px] md:w-[74px]"
               sizes="74px"
               alt=""
             />
 
-            <div className="mt-5 flex w-full flex-col items-center md:mt-8">
+            <div className="mt-3 flex w-full flex-col items-center sm:mt-5 md:mt-8">
               <p
-                className="font-graziemille text-[8px] font-medium leading-none tracking-[2px] text-[#C9A84C] md:text-[9px] md:tracking-[2.2px]"
+                className="font-graziemille text-[6px] font-medium leading-tight tracking-[1px] text-[#C9A84C] sm:text-[8px] sm:tracking-[2px] md:text-[9px] md:tracking-[2.2px]"
                 data-locale-text="true"
               >
-                {item.topTitle ?? item.eyebrow}
+                {item.topTitle}
               </p>
 
               <h3
-                className="mt-2 font-gilland text-[15px] leading-tight text-[#F5EDD6] md:text-[19px]"
+                className="mt-1.5 font-gilland text-[11px] leading-tight text-[#F5EDD6] sm:mt-2 sm:text-[15px] md:text-[19px]"
                 data-locale-text="true"
               >
-                {item.mainTitle ?? item.title}
+                {item.mainTitle}
               </h3>
 
               <p
-                className="mt-3 font-graziemille text-[10px] font-light leading-[1.6] text-[#C9B99AB3] md:mt-4 md:text-[11px] md:leading-[1.6]"
+                className="mt-2 font-graziemille text-[8px] font-light leading-[1.55] text-[#C9B99AB3] sm:mt-3 sm:text-[10px] md:mt-4 md:text-[11px] md:leading-[1.6]"
                 data-locale-text="true"
               >
                 {item.description}
               </p>
 
-              <span className="mt-5 h-px w-[22px] bg-[#C9A84C]/30 md:w-[27px]" />
+              <span className="mt-3 h-px w-[18px] bg-[#C9A84C]/30 sm:mt-5 sm:w-[22px] md:w-[27px]" />
             </div>
           </motion.article>
         ))}

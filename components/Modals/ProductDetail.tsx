@@ -116,7 +116,7 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
   const [order, setOrder] = useState<Order | null>(null);
   const [message, setMessage] = useState("");
   const [isAdding, setIsAdding] = useState(false);
-  const pendingAction = useRef<"add" | "buy" | null>(null);
+  const pendingAction = useRef<"add" | null>(null);
   const { isAuthenticated } = useAuth();
   const { openLogin } = useAuthDialog();
   const { addItem, openCart } = useCart();
@@ -171,7 +171,6 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
     const action = pendingAction.current;
     pendingAction.current = null;
     if (action === "add") performAddToCart();
-    else setIsCheckoutOpen(true);
   }, [isAuthenticated, performAddToCart]);
 
   const handleAddToCart = () => {
@@ -183,11 +182,7 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
   };
 
   const handleBuyNow = () => {
-    if (isAuthenticated) setIsCheckoutOpen(true);
-    else {
-      pendingAction.current = "buy";
-      openLogin();
-    }
+    setIsCheckoutOpen(true);
   };
 
   // --- HANDLER KEMBALI KE BERANDA ---

@@ -27,20 +27,45 @@ function splitIntoTwoLines(text: string): string[] {
 }
 
 function splitHeroTitle(text: string): string[] {
-  if (text.includes("\n")) {
-    return text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
+  const normalized = text.replace(/\r\n/g, "\n").trim();
+  const singleLine = normalized.replace(/\s+/g, " ");
+
+  // Known titles always render as exactly two lines.
+  const whisperingIslands = singleLine.match(
+    /^(Cerita Setiap Pulau)\s+(yang Berbisik Tapi Terdengar)$/i,
+  );
+  if (whisperingIslands) {
+    return [whisperingIslands[1], whisperingIslands[2]];
   }
 
-  // Keep Indonesian title on two lines so it does not cover the product art.
-  const indonesian = text.match(/^(Di Mana Setiap Pulau)\s+(Menceritakan Wanginya)$/i);
+  const indonesian = singleLine.match(
+    /^(Di Mana Setiap Pulau)\s+(Menceritakan Wanginya)$/i,
+  );
   if (indonesian) {
     return [indonesian[1], indonesian[2]];
   }
 
-  return [text];
+  const english = singleLine.match(
+    /^(Where Every Island)\s+(Tells Its Fragrance)$/i,
+  );
+  if (english) {
+    return [english[1], english[2]];
+  }
+
+  if (normalized.includes("\n")) {
+    const lines = normalized
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    if (lines.length > 2) {
+      return [lines[0], lines.slice(1).join(" ")];
+    }
+
+    return lines;
+  }
+
+  return [normalized];
 }
 
 export default function HeroSection() {
@@ -61,7 +86,7 @@ export default function HeroSection() {
     "Enam wewangian yang diracik dari jiwa Nusantara — setiap botol adalah perjalanan melintasi lanskap paling sakral Indonesia.";
   const descriptionLines = splitIntoTwoLines(description);
   const title =
-    content.title ?? "Di Mana Setiap Pulau\nMenceritakan Wanginya";
+    content.title ?? "Cerita Setiap Pulau\nyang Berbisik Tapi Terdengar";
   const titleLines = splitHeroTitle(title);
   const isMultilineTitle = titleLines.length > 1;
 
@@ -153,14 +178,18 @@ export default function HeroSection() {
             color: "transparent",
             marginBottom: "16px",
           }}
-          className={`max-w-[330px] font-graziemille text-[23px] font-medium italic leading-[1.2] md:text-[28px] md:leading-snug ${
+          className={`font-graziemille font-medium italic leading-[1.2] ${
             isMultilineTitle
-              ? "md:max-w-[420px]"
-              : "md:max-w-none md:whitespace-nowrap"
+              ? "max-w-[min(100%,22rem)] text-[20px] sm:text-[23px] md:max-w-[26rem] md:text-[28px] md:leading-snug"
+              : "max-w-[330px] text-[23px] md:max-w-none md:text-[28px] md:leading-snug md:whitespace-nowrap"
           }`}
         >
           {titleLines.map((line, index) => (
-            <span key={`${line}-${index}`} data-locale-text="true">
+            <span
+              key={`${line}-${index}`}
+              data-locale-text="true"
+              className={isMultilineTitle ? "block whitespace-nowrap" : undefined}
+            >
               {line}
               {index < titleLines.length - 1 && <br />}
             </span>

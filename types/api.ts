@@ -131,7 +131,7 @@ export interface Order {
   id: number;
   order_number: string;
   source: "cart" | "buy_now";
-  user_id: number;
+  user_id: number | null;
   customer_name: string;
   customer_email: string;
   customer_phone: string;

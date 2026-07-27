@@ -1,9 +1,10 @@
 import type { Locale } from "@/lib/locale";
 import type { SiteContent } from "@/types/api";
+import { getDefaultValueItems, serializeValueItems } from "@/lib/valuesContent";
 
 const fallbackId: SiteContent = {
   hero: {
-    title: "Di Mana Setiap Pulau\nMenceritakan Wanginya",
+    title: "Cerita Setiap Pulau\nyang Berbisik Tapi Terdengar",
     description:
       "Enam wewangian yang diracik dari jiwa Nusantara — setiap botol adalah perjalanan melintasi lanskap paling sakral Indonesia.",
     cta_label: "JELAJAHI KOLEKSI",
@@ -35,9 +36,9 @@ const fallbackId: SiteContent = {
     items: [],
   },
   values: {
-    eyebrow: "ESENSI KAMI",
-    title: "Kejujuran Nusantara",
-    items: [],
+    eyebrow: "THE ESSENCE",
+    title: "Kisah Jujur Nusantara",
+    items: serializeValueItems(getDefaultValueItems("id")),
   },
   islands: {
     eyebrow: "JELAJAH NUSANTARA",
@@ -120,7 +121,7 @@ const fallbackId: SiteContent = {
 
 const fallbackEn: SiteContent = {
   hero: {
-    title: "Where Every Island Tells Its Fragrance",
+    title: "Where Every Island\nTells Its Fragrance",
     description:
       "Six fragrances crafted from the soul of the Indonesian archipelago — each bottle a journey through the Nusantara's most sacred landscapes.",
     cta_label: "EXPLORE COLLECTION",
@@ -154,7 +155,7 @@ const fallbackEn: SiteContent = {
   values: {
     eyebrow: "THE ESSENCE",
     title: "Honesty of Nusantara",
-    items: [],
+    items: serializeValueItems(getDefaultValueItems("en")),
   },
   islands: {
     eyebrow: "EXPLORE THE ARCHIPELAGO",

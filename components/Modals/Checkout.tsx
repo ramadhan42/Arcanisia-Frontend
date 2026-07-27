@@ -116,7 +116,9 @@ export default function CheckoutModal({
   };
 
   const submit = async () => {
-    if (!token || items.length === 0) return;
+    if (items.length === 0) return;
+    if (mode !== "buy-now" && !token) return;
+
     setIsSubmitting(true);
     setMessage("");
     setErrors(undefined);
@@ -132,7 +134,7 @@ export default function CheckoutModal({
               } satisfies BuyNowPayload,
               idempotencyKey.current,
             )
-          : await orderService.checkout(token, form, idempotencyKey.current);
+          : await orderService.checkout(token!, form, idempotencyKey.current);
       onConfirm(response.data);
     } catch (error) {
       if (error instanceof ApiError) {

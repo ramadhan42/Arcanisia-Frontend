@@ -5,6 +5,7 @@ import type {
   Cart,
   CheckoutPayload,
   DashboardSummary,
+  NewsletterSubscriber,
   Order,
   PaginatedResponse,
   Payment,
@@ -120,10 +121,14 @@ export const orderService = {
     });
     return { ...response, data: normalizeOrder(response.data) };
   },
-  buyNow: async (token: string, payload: BuyNowPayload, idempotencyKey: string) => {
+  buyNow: async (
+    token: string | null | undefined,
+    payload: BuyNowPayload,
+    idempotencyKey: string,
+  ) => {
     const response = await apiRequest<ApiEnvelope<Order>>("orders/buy-now", {
       method: "POST",
-      token,
+      token: token || undefined,
       headers: { "Idempotency-Key": idempotencyKey },
       body: JSON.stringify(payload),
     });

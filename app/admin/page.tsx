@@ -30,6 +30,7 @@ import type {
   ValidationErrors,
 } from "@/types/api";
 import type { Locale } from "@/lib/locale";
+import { normalizeValuesPayloadItems } from "@/lib/valuesContent";
 
 type Tab = "overview" | "users" | "products" | "orders" | "payments" | "subscribers" | "cms";
 type RecordValue = User | Product | Order | Payment | NewsletterSubscriber;
@@ -139,9 +140,16 @@ export default function AdminPage() {
       }
       if (tab === "cms") {
         const response = await adminService.getContent(token, cmsKey, cmsLocale);
-        setCmsPayload(
-          (response.data.payload ?? {}) as Record<string, unknown>,
-        );
+        const payload = (response.data.payload ?? {}) as Record<string, unknown>;
+
+        if (cmsKey === "values") {
+          payload.items = normalizeValuesPayloadItems(
+            payload.items as Parameters<typeof normalizeValuesPayloadItems>[0],
+            cmsLocale,
+          );
+        }
+
+        setCmsPayload(payload);
         setMeta(null);
         return;
       }
@@ -303,7 +311,21 @@ export default function AdminPage() {
     setIsSaving(true);
     setError("");
     try {
-      await adminService.updateContent(token, cmsKey, cmsPayload, cmsLocale);
+      const payload =
+        cmsKey === "values"
+          ? {
+              ...cmsPayload,
+              items: normalizeValuesPayloadItems(
+                cmsPayload.items as Parameters<typeof normalizeValuesPayloadItems>[0],
+                cmsLocale,
+              ),
+            }
+          : cmsPayload;
+
+      await adminService.updateContent(token, cmsKey, payload, cmsLocale);
+      if (cmsKey === "values") {
+        setCmsPayload(payload);
+      }
       await refreshContent();
       notify("success", `Konten "${cmsKey}" berhasil disimpan.`);
     } catch (requestError) {
@@ -507,6 +529,7 @@ export default function AdminPage() {
                       sectionKey={cmsKey}
                       payload={cmsPayload}
                       onChange={setCmsPayload}
+                      locale={cmsLocale}
                     />
                   </div>
                 )}

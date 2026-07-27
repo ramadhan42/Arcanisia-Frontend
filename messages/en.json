@@ -66,32 +66,32 @@
     "title": "Honesty of Nusantara",
     "items": [
       {
-        "id": 3,
-        "imgSrc": "/gambar/seksi%206/3.svg",
-        "topTitle": "AESTHETICS & ART",
-        "mainTitle": "Aesthetics & Art",
-        "description": "Products with strong visual design rooted in inspiration from the artistic heritage and local craftsmanship of Indonesia."
-      },
-      {
-        "id": 4,
-        "imgSrc": "/gambar/seksi%206/4.svg",
-        "topTitle": "EDUCATION & AWARENESS",
-        "mainTitle": "Education & Awareness",
-        "description": "Through perfume, Arcanisia highlights Indonesia's cultural richness, and the extraordinary beauty of its visual landscapes."
+        "id": 1,
+        "imgSrc": "/gambar/seksi%206/1.svg",
+        "topTitle": "LOCAL PRIDE",
+        "mainTitle": "Roots & Identity",
+        "description": "Celebrating authentic works and raw materials born from our own soil."
       },
       {
         "id": 2,
         "imgSrc": "/gambar/seksi%206/2.svg",
         "topTitle": "SUSTAINABILITY",
-        "mainTitle": "Sustainability",
-        "description": "Creating products that are environmentally friendly, using materials that can be managed and maintained in a sustainable manner."
+        "mainTitle": "Responsible Steps",
+        "description": "Caring for and preserving the nature where all these stories begin."
       },
       {
-        "id": 1,
-        "imgSrc": "/gambar/seksi%206/1.svg",
-        "topTitle": "LOCAL PRIDE",
-        "mainTitle": "Local Pride",
-        "description": "A deep sense of pride for local identity, products, and craftsmanship that reflects the unique values and artistry of each region."
+        "id": 3,
+        "imgSrc": "/gambar/seksi%206/3.svg",
+        "topTitle": "ART & AESTHETICS",
+        "mainTitle": "Nusantara Craft",
+        "description": "Translating traditional visual richness into a modern form."
+      },
+      {
+        "id": 4,
+        "imgSrc": "/gambar/seksi%206/4.svg",
+        "topTitle": "STORY & MEANING",
+        "mainTitle": "Education & Awareness",
+        "description": "Making fragrance the most intimate way to rediscover Indonesia."
       }
     ]
   },

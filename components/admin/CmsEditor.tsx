@@ -4,6 +4,13 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import { ImagePlus, Plus, Trash2, Upload } from "lucide-react";
 import type { SiteContentKey } from "@/types/api";
+import type { Locale } from "@/lib/locale";
+import {
+  normalizeValueItems,
+  serializeValueItems,
+  VALUE_ICON_PATHS,
+  type ValueItem,
+} from "@/lib/valuesContent";
 
 type Payload = Record<string, unknown>;
 type ImageVariant = "banner" | "square" | "icon" | "logo";
@@ -507,12 +514,14 @@ interface CmsEditorProps {
   sectionKey: SiteContentKey;
   payload: Payload;
   onChange: (payload: Payload) => void;
+  locale?: Locale;
 }
 
 export default function CmsEditor({
   sectionKey,
   payload,
   onChange,
+  locale = "id",
 }: CmsEditorProps) {
   const update = (key: string, value: unknown) =>
     onChange(setField(payload, key, value));
@@ -520,7 +529,7 @@ export default function CmsEditor({
   if (sectionKey === "hero") {
     return (
       <div className="space-y-4">
-        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
+        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <TextField label="Description" value={asString(payload.description)} onChange={(v) => update("description", v)} multiline />
         <TextField
           label="CTA Label"
@@ -622,49 +631,91 @@ export default function CmsEditor({
   }
 
   if (sectionKey === "values") {
-    const items = asArray<{
-      topTitle?: string;
-      eyebrow?: string;
-      mainTitle?: string;
-      title?: string;
-      description?: string;
-      icon?: string;
-      image?: string;
-      imgSrc?: string;
-    }>(payload.items);
+    const items = normalizeValueItems(
+      asArray<{
+        id?: string | number;
+        topTitle?: string;
+        eyebrow?: string;
+        mainTitle?: string;
+        title?: string;
+        description?: string;
+        icon?: string;
+        image?: string;
+        imgSrc?: string;
+      }>(payload.items),
+      locale,
+    );
+
+    const updateItems = (nextItems: ValueItem[]) => {
+      update("items", serializeValueItems(nextItems));
+    };
+
     return (
       <div className="space-y-5">
         <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
         <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
         <ImageField label="Background Image" value={asString(payload.background_image)} onChange={(v) => update("background_image", v)} variant="banner" />
-        <ObjectListEditor
-          label="Values"
-          items={items}
-          blank={{ topTitle: "", mainTitle: "", description: "", imgSrc: "" }}
-          onChange={(v) => update("items", v)}
-          renderItem={(item, patch) => (
-            <div className="space-y-3">
+        <div className="space-y-4">
+          <p className="font-gilland text-xl text-[#f8c56c]">Values</p>
+          <p className="text-xs leading-relaxed text-[#c9b99a]/70">
+            Empat nilai ditampilkan berurutan dari kiri ke kanan di beranda. Logo 1–4 mengikuti urutan yang sama dengan frontend.
+          </p>
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              className="space-y-3 border border-[#c9a84c]/15 bg-[#001c1a]/60 p-4"
+            >
+              <p className="text-xs tracking-[2px] text-[#c9b99a]/45">
+                Nilai {item.id} · Logo {item.id}
+              </p>
               <TextField
-                label="Top Title (EN)"
-                value={asString(item.topTitle ?? item.eyebrow)}
-                onChange={(v) => patch({ topTitle: v, eyebrow: v })}
+                label="Top Title"
+                value={item.topTitle}
+                onChange={(v) => {
+                  const next = [...items];
+                  next[index] = { ...item, topTitle: v };
+                  updateItems(next);
+                }}
               />
               <TextField
                 label="Main Title"
-                value={asString(item.mainTitle ?? item.title)}
-                onChange={(v) => patch({ mainTitle: v, title: v })}
+                value={item.mainTitle}
+                onChange={(v) => {
+                  const next = [...items];
+                  next[index] = { ...item, mainTitle: v };
+                  updateItems(next);
+                }}
               />
-              <TextField label="Description" value={asString(item.description)} onChange={(v) => patch({ description: v })} multiline />
+              <TextField
+                label="Description"
+                value={item.description}
+                onChange={(v) => {
+                  const next = [...items];
+                  next[index] = { ...item, description: v };
+                  updateItems(next);
+                }}
+                multiline
+              />
               <ImageField
                 label="Icon / Image"
-                value={asString(item.imgSrc ?? item.icon ?? item.image)}
-                onChange={(v) => patch({ imgSrc: v, icon: v, image: v })}
+                value={item.imgSrc}
+                onChange={(v) => {
+                  const next = [...items];
+                  next[index] = { ...item, imgSrc: v || VALUE_ICON_PATHS[index] };
+                  updateItems(next);
+                }}
                 variant="icon"
-                assets={ASSET_OPTIONS.filter((asset) => asset.includes("seksi%206") && asset.endsWith(".svg") && !asset.includes("ornamen") && !asset.includes("bg"))}
+                assets={ASSET_OPTIONS.filter(
+                  (asset) =>
+                    asset.includes("seksi%206") &&
+                    asset.endsWith(".svg") &&
+                    !asset.includes("ornamen") &&
+                    !asset.includes("bg"),
+                )}
               />
             </div>
-          )}
-        />
+          ))}
+        </div>
       </div>
     );
   }
