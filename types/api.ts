@@ -81,20 +81,6 @@ export type PaymentStatus =
   | "cancelled";
 export type PaymentMethod = "bank_transfer" | "qris" | "card";
 
-export interface Payment {
-  id: number;
-  order_id: number;
-  method: PaymentMethod;
-  status: PaymentStatus;
-  amount: string;
-  reference: string | null;
-  notes: string | null;
-  paid_at: string | null;
-  expires_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface OrderItem {
   id: number;
   product_id: number | null;
@@ -106,6 +92,39 @@ export interface OrderItem {
   quantity: number;
   subtotal: string;
   product?: Product | null;
+}
+
+export interface PaymentOrderSummary {
+  id: number;
+  order_number: string;
+  customer_name: string;
+  customer_email?: string;
+  customer_phone?: string;
+  address?: string;
+  city?: string;
+  province?: string;
+  postal_code?: string;
+  payment_method?: PaymentMethod;
+  status: OrderStatus;
+  subtotal?: string;
+  total?: string;
+  ordered_at?: string;
+  items?: OrderItem[];
+}
+
+export interface Payment {
+  id: number;
+  order_id: number;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  amount: string;
+  reference: string | null;
+  notes: string | null;
+  paid_at: string | null;
+  expires_at: string | null;
+  order?: PaymentOrderSummary | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Order {
@@ -190,6 +209,31 @@ export interface SiteContentRecord {
 export interface NewsletterSubscriber {
   id: number;
   email: string;
-  subscribed_at: string;
+  subscribed_at?: string;
   created_at: string;
+}
+
+export interface DashboardSalesPoint {
+  date: string;
+  label: string;
+  orders_count: number;
+  order_revenue: string;
+  paid_revenue: string;
+}
+
+export interface DashboardSummary {
+  users_count: number;
+  products_count: number;
+  active_products_count: number;
+  orders_count: number;
+  pending_orders_count: number;
+  paid_revenue: string;
+  pending_payments_count: number;
+  subscribers_count: number;
+  sales_series: DashboardSalesPoint[];
+  orders_by_status: Record<string, number>;
+  payments_by_status: Record<string, number>;
+  recent_users: User[];
+  recent_payments: Payment[];
+  recent_subscribers: NewsletterSubscriber[];
 }

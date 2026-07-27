@@ -143,7 +143,7 @@ export default function FAQPage() {
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
           >
-            <div className="grid grid-cols-2 gap-2 lg:grid-cols-1">
+            <div className="grid grid-cols-2 gap-2 lg:grid-cols-1 lg:gap-2">
               {renderedCategories.map((category) => {
                 const active = category.id === activeCategory;
                 const count = renderedFaqs.filter(
@@ -151,29 +151,51 @@ export default function FAQPage() {
                 ).length;
 
                 return (
-                  <button
+                  <motion.button
                     key={`${locale}-${category.id}`}
                     type="button"
                     onClick={() => changeCategory(category.id)}
-                    className={`flex items-center justify-between rounded-sm border px-3 py-3 text-left transition-colors lg:px-4 ${
+                    whileHover={{
+                      backgroundColor: active
+                        ? "rgba(201, 168, 76, 0.12)"
+                        : "rgba(201, 168, 76, 0.08)",
+                    }}
+                    className={`relative flex items-center justify-between overflow-hidden rounded-sm border px-3 py-3 text-left transition-colors lg:px-4 ${
                       active
                         ? "border-[#C9A84C]/55 bg-[#C9A84C]/10 text-[#F8C56C]"
                         : "border-[#C9A84C]/15 text-[#C9B99A99] hover:border-[#C9A84C]/35 hover:text-[#F5EDD6]"
                     }`}
                   >
+                    {active && (
+                      <motion.span
+                        layoutId="faq-category-indicator"
+                        className="absolute bottom-0 left-0 top-0 w-[3px] bg-[#C9A84C]"
+                        transition={{
+                          type: "spring",
+                          stiffness: 380,
+                          damping: 32,
+                        }}
+                      />
+                    )}
                     <span
-                      className="font-graziemille text-[10px] tracking-[1.5px] md:text-[11px]"
+                      className={`font-graziemille text-[10px] tracking-[1.5px] md:text-[11px] ${
+                        active ? "font-bold" : "font-normal"
+                      }`}
                       data-locale-text="true"
                     >
                       {category.label}
                     </span>
                     <span
-                      className="font-graziemille text-[10px] tracking-[1px]"
+                      className={`font-graziemille text-[10px] tracking-[1px] ${
+                        active
+                          ? "rounded-sm bg-[#C9A84C] px-1.5 py-0.5 text-[8px] text-[#091812]"
+                          : "text-[#C9A84C4D]"
+                      }`}
                       data-locale-fade="ignore"
                     >
                       {String(count).padStart(2, "0")}
                     </span>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>

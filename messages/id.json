@@ -128,7 +128,7 @@
         "description": "Savana luas dan kuda liar, surga pedesaan di mana bumi bertemu cakrawala tak berujung.",
         "notes": ["Cendana", "Savana Kering", "Kulit", "Vetiver Liar"],
         "productSlug": "reverie-of-sumba",
-        "labelPosition": { "top": "93.58%", "left": "45.37%" }
+        "labelPosition": { "top": "96.2%", "left": "44.9%" }
       },
       {
         "id": "KOMODO",
@@ -254,6 +254,7 @@
     "close": "Tutup",
     "save": "Simpan",
     "cancel": "Batal",
-    "loading": "Memuat..."
+    "loading": "Memuat...",
+    "back": "KEMBALI"
   }
 }

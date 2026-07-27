@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ProductDetail from "@/components/Modals/ProductDetail";
 import { productService } from "@/services/api";
 import type { Product } from "@/types/api";
+import { clearHash, setSingleHash } from "@/lib/sectionHash";
 
 export interface ProductDetailProduct {
   id: number;
@@ -81,14 +82,14 @@ export function ProductDetailProvider({
   const close = useCallback(() => {
     setIsOpen(false);
     if (window.location.hash.startsWith("#product-")) {
-      window.history.replaceState(null, "", "/#collection");
+      clearHash();
     }
   }, []);
 
   const openProduct = useCallback((product: ProductDetailProduct) => {
     setSelectedProduct(product);
     setIsOpen(true);
-    window.history.replaceState(null, "", `/#product-${product.slug}`);
+    setSingleHash(`product-${product.slug}`);
   }, []);
 
   const openBySlug = useCallback(

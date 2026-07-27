@@ -13,8 +13,7 @@ export interface ConfirmState {
   onConfirm: () => void | Promise<void>;
 }
 
-const hideScrollbar =
-  "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]";
+const hideScrollbar = "scrollbar-none";
 
 export default function ConfirmDialog({
   state,

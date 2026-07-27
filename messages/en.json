@@ -128,7 +128,7 @@
         "description": "Vast savannas and untamed horses, a rustic paradise where the earth meets endless horizons.",
         "notes": ["Sandalwood", "Dry Savanna", "Leather", "Wild Vetiver"],
         "productSlug": "reverie-of-sumba",
-        "labelPosition": { "top": "93.58%", "left": "45.37%" }
+        "labelPosition": { "top": "96.2%", "left": "44.9%" }
       },
       {
         "id": "KOMODO",
@@ -254,6 +254,7 @@
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "back": "BACK"
   }
 }

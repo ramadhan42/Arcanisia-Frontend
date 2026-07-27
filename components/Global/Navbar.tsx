@@ -29,6 +29,10 @@ import Link from "next/link";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "@/contexts/LocaleContext";
 import { LOCALE_LABELS, LOCALES, type Locale } from "@/lib/locale";
+import {
+  queueHomeSectionScroll,
+  scrollToSection,
+} from "@/lib/sectionHash";
 
 const navMenus = [
   { id: "about", labelKey: "nav.about" },
@@ -203,27 +207,22 @@ export default function Navbar() {
     setIsDropdownOpen(false);
 
     if (window.location.pathname !== "/") {
-      window.location.assign(`/#${targetId}`);
+      queueHomeSectionScroll(targetId, { setHash: true });
+      window.location.assign("/");
       return;
     }
 
-    const element = document.getElementById(targetId);
-    if (element) {
-      element.scrollIntoView({ behavior: "auto", block: "start" });
-      window.history.replaceState(null, "", `/#${targetId}`);
-    }
+    scrollToSection(targetId, { setHash: true });
   };
 
   const handleShopNow = () => {
     setIsMobileMenuOpen(false);
     if (window.location.pathname !== "/") {
-      window.location.assign("/#collection");
+      queueHomeSectionScroll("collection", { setHash: false });
+      window.location.assign("/");
       return;
     }
-    document
-      .getElementById("collection")
-      ?.scrollIntoView({ behavior: "auto", block: "start" });
-    window.history.replaceState(null, "", "/#collection");
+    scrollToSection("collection", { setHash: false });
   };
 
   const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -364,7 +363,7 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.22, ease: "easeOut" }}
-                    className="absolute right-0 top-full z-50 mt-2 w-[240px] overflow-hidden rounded-sm border border-[#7c7135]/45 bg-[#002d28] shadow-2xl"
+                    className="absolute right-0 top-full z-50 mt-2 w-[240px] overflow-hidden rounded-lg border border-[#7c7135]/45 bg-[#002d28]/95 backdrop-blur-xl shadow-2xl"
                   >
                     <div className="flex h-20 flex-col justify-center px-5 font-graziemille">
                       <p className="truncate text-[16px] leading-none text-[#F8C56C]">
@@ -392,7 +391,7 @@ export default function Navbar() {
                           setIsProfileOpen(true);
                           setIsDropdownOpen(false);
                         }}
-                        className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                        className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/12 hover:text-[#F8C56C] focus:outline-none focus:ring-2 focus:ring-[#F8C56C]/45"
                       >
                         <User size={18} strokeWidth={1.7} data-locale-fade="ignore" />
                         <span data-locale-text="true">{t("nav.myProfile")}</span>
@@ -616,7 +615,7 @@ export default function Navbar() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -8 }}
                           transition={{ duration: 0.22, ease: "easeOut" }}
-                          className="mt-2 w-[min(280px,calc(100vw-48px))] overflow-hidden rounded-sm border border-[#7c7135]/45 bg-[#002d28] shadow-2xl"
+                          className="mt-2 w-[min(280px,calc(100vw-48px))] overflow-hidden rounded-lg border border-[#7c7135]/45 bg-[#002d28]/95 backdrop-blur-xl shadow-2xl"
                         >
                           <div className="flex h-20 flex-col justify-center px-5 font-graziemille">
                             <p className="truncate text-[16px] leading-none text-[#F8C56C]">
@@ -648,7 +647,7 @@ export default function Navbar() {
                                 setIsDropdownOpen(false);
                                 setIsMobileMenuOpen(false);
                               }}
-                              className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/8 hover:text-[#F8C56C]"
+                              className="flex h-12 w-full items-center gap-3.5 px-5 text-left font-gilland text-[13px] tracking-[0.3px] text-[#c9c7b7] transition-colors hover:bg-[#F8C56C]/12 hover:text-[#F8C56C] focus:outline-none focus:ring-2 focus:ring-[#F8C56C]/45"
                             >
                               <User size={18} strokeWidth={1.7} data-locale-fade="ignore" />
                               <span data-locale-text="true">{t("nav.myProfile")}</span>

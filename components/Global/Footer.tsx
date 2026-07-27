@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import SafeImage from "@/components/ui/SafeImage";
+import {
+  isNavSectionId,
+  queueHomeSectionScroll,
+  scrollToSection,
+  setSingleHash,
+} from "@/lib/sectionHash";
 
 type LinkClassName = string;
 
@@ -66,7 +72,6 @@ function isExternal(href: string): boolean {
 
 export default function Footer() {
   const { section } = useSiteContent();
-  const router = useRouter();
   const pathname = usePathname();
   const footer = section<{
     logo?: string;
@@ -77,32 +82,36 @@ export default function Footer() {
   const legal = section<{ links?: Array<{ label: string; slug?: string; href?: string }> }>("legal");
 
   const goToHash = (hashId: string) => {
+    const cleanId = hashId.replace(/^#+/, "").split("#")[0]?.trim();
+    if (!cleanId) return;
+
     // Deep link to a specific product modal (e.g. "product-secret-of-buton").
-    const isProduct = hashId.startsWith("product-");
+    const isProduct = cleanId.startsWith("product-");
+    // Footer / content links scroll only — nav hashes are navbar-only.
+    const setHash = isProduct;
 
     if (pathname !== "/") {
-      router.push(`/#${hashId}`);
+      if (isNavSectionId(cleanId)) {
+        queueHomeSectionScroll(cleanId, { setHash: false });
+        window.location.assign("/");
+        return;
+      }
+      window.location.assign(`/#${cleanId}`);
       return;
     }
 
     if (isProduct) {
-      document
-        .getElementById("collection")
-        ?.scrollIntoView({ behavior: "auto", block: "start" });
-      if (window.location.hash === `#${hashId}`) {
-        // Same hash: re-trigger so Collections can reopen the modal.
+      scrollToSection("collection", { setHash: false });
+      if (window.location.hash === `#${cleanId}`) {
         window.dispatchEvent(new HashChangeEvent("hashchange"));
       } else {
-        window.location.hash = hashId;
+        setSingleHash(cleanId);
+        window.dispatchEvent(new HashChangeEvent("hashchange"));
       }
       return;
     }
 
-    const element = document.getElementById(hashId);
-    if (element) {
-      element.scrollIntoView({ behavior: "auto", block: "start" });
-      window.history.replaceState(null, "", `/#${hashId}`);
-    }
+    scrollToSection(cleanId, { setHash });
   };
 
   const renderLink = (
@@ -111,7 +120,7 @@ export default function Footer() {
     className: LinkClassName,
   ) => {
     const safeHref = href || "#";
-    const hashId = getHashId(safeHref);
+    const hashId = getHashId(safeHref)?.replace(/^#+/, "").split("#")[0]?.trim();
 
     // Same-page section anchor (e.g. "/#about", "#collection") or a product
     // deep link (e.g. "/#product-secret-of-buton"): handle in-app.

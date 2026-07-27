@@ -8,8 +8,7 @@ import type { SiteContentKey } from "@/types/api";
 type Payload = Record<string, unknown>;
 type ImageVariant = "banner" | "square" | "icon" | "logo";
 
-const hideScrollbar =
-  "[&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]";
+const hideScrollbar = "scrollbar-none";
 
 const fieldClass =
   "mt-2 w-full border border-[#c9a84c]/20 bg-[#012724] px-4 py-3 text-sm normal-case tracking-normal text-[#f5edd6] outline-none focus:border-[#f8c56c]";

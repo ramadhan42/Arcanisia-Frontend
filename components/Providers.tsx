@@ -9,6 +9,7 @@ import { SiteContentProvider } from "@/contexts/SiteContentContext";
 import type { Locale } from "@/lib/locale";
 import LocaleTextTransition from "./Global/LocaleTextTransition";
 import LocaleSkeletonLayer from "./Global/LocaleSkeletonLayer";
+import SectionHashWatcher from "./Global/SectionHashWatcher";
 import CartDrawer from "./commerce/CartDrawer";
 
 export default function Providers({
@@ -27,6 +28,7 @@ export default function Providers({
               <ProductDetailProvider>
                 <LocaleTextTransition />
                 <LocaleSkeletonLayer />
+                <SectionHashWatcher />
                 {children}
                 <CartDrawer />
               </ProductDetailProvider>

@@ -1,10 +1,10 @@
-import { apiRequest, resolveAssetUrl } from "@/lib/api";
+import { API_URL, apiRequest, resolveAssetUrl } from "@/lib/api";
 import type {
   ApiEnvelope,
   BuyNowPayload,
   Cart,
   CheckoutPayload,
-  NewsletterSubscriber,
+  DashboardSummary,
   Order,
   PaginatedResponse,
   Payment,
@@ -39,10 +39,23 @@ const normalizeCart = (cart: Cart): Cart => ({
 
 const normalizeOrder = (order: Order): Order => ({
   ...order,
-  items: order.items.map((item) => ({
+  items: (order.items ?? []).map((item) => ({
     ...item,
     product_image: resolveAssetUrl(item.product_image),
   })),
+});
+
+const normalizePayment = (payment: Payment): Payment => ({
+  ...payment,
+  order: payment.order
+    ? {
+        ...payment.order,
+        items: (payment.order.items ?? []).map((item) => ({
+          ...item,
+          product_image: resolveAssetUrl(item.product_image),
+        })),
+      }
+    : payment.order,
 });
 
 export const productService = {
@@ -168,15 +181,41 @@ export const siteContentService = {
 };
 
 export const adminService = {
-  list: <T>(
+  dashboard: (token: string) =>
+    apiRequest<ApiEnvelope<DashboardSummary>>("admin/dashboard", { token }),
+  list: async <T>(
     resource: string,
     token: string,
     parameters: Record<string, string | number | undefined> = {},
-  ) =>
-    apiRequest<PaginatedResponse<T>>(
+  ) => {
+    const response = await apiRequest<PaginatedResponse<T>>(
       `admin/${resource}${query(parameters)}`,
       { token },
-    ),
+    );
+
+    if (resource === "orders") {
+      return {
+        ...response,
+        data: (response.data as Order[]).map(normalizeOrder) as T[],
+      };
+    }
+
+    if (resource === "payments") {
+      return {
+        ...response,
+        data: (response.data as Payment[]).map(normalizePayment) as T[],
+      };
+    }
+
+    if (resource === "products") {
+      return {
+        ...response,
+        data: (response.data as Product[]).map(normalizeProduct) as T[],
+      };
+    }
+
+    return response;
+  },
   create: <T>(
     resource: string,
     token: string,
@@ -205,6 +244,31 @@ export const adminService = {
       method: "DELETE",
       token,
     }),
+  show: async <T>(resource: string, id: number | string, token: string) => {
+    const response = await apiRequest<ApiEnvelope<T>>(`admin/${resource}/${id}`, {
+      token,
+    });
+
+    if (resource === "orders") {
+      return { ...response, data: normalizeOrder(response.data as Order) as T };
+    }
+
+    if (resource === "payments") {
+      return {
+        ...response,
+        data: normalizePayment(response.data as Payment) as T,
+      };
+    }
+
+    if (resource === "products") {
+      return {
+        ...response,
+        data: normalizeProduct(response.data as Product) as T,
+      };
+    }
+
+    return response;
+  },
   updateStatus: <T>(
     resource: "orders" | "payments",
     id: number,
@@ -235,11 +299,29 @@ export const adminService = {
         body: JSON.stringify({ payload, is_active: true }),
       },
     ),
-  exportSubscribers: (token: string) =>
-    apiRequest<{ data?: NewsletterSubscriber[] }>(
-      "admin/newsletter-subscribers/export",
-      { token },
-    ),
+  exportSubscribers: async (token: string) => {
+    const response = await fetch(
+      `${API_URL}/admin/newsletter-subscribers/export`,
+      {
+        headers: {
+          Accept: "text/csv",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error("Export subscriber gagal.");
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "arcanisia-subscribers.csv";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  },
 };
 
 export type AdminResourceRecord =

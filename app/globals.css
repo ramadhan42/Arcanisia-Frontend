@@ -66,6 +66,19 @@ body {
   font-family: var(--font-gilland), sans-serif;
 }
 
+/* Keep scrolling, hide the scrollbar chrome everywhere this class is used. */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
 .rekindling-section {
   height: min(100svh, 820px);
   min-height: 560px;

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { productService } from "@/services/api";
 import { useSiteContent } from "@/contexts/SiteContentContext";
@@ -12,8 +13,16 @@ import {
 import { useTranslation } from "@/contexts/LocaleContext";
 import ProductImage from "@/components/ui/ProductImage";
 import SafeImage from "@/components/ui/SafeImage";
+import CollectionsModal from "@/components/Modals/CollectionsModal";
+import {
+  normalizeLocationHash,
+  queueHomeSectionScroll,
+  scrollToSection,
+} from "@/lib/sectionHash";
 
 export type CollectionProduct = ProductDetailProduct;
+
+const HOME_PREVIEW_COUNT = 6;
 
 function translateBadge(
   badge: string | undefined,
@@ -29,23 +38,36 @@ function translateBadge(
   return badge;
 }
 
-const Collections = () => {
+type CollectionsProps = {
+  /** `preview` = beranda (sebagian produk + CTA). `page` = halaman koleksi lengkap. */
+  variant?: "preview" | "page";
+};
+
+const Collections = ({ variant = "preview" }: CollectionsProps) => {
   const { t } = useTranslation();
+  const pathname = usePathname();
   const { section } = useSiteContent();
   const { openProduct } = useProductDetail();
+  const isPage = variant === "page";
   const content = section<{
     eyebrow?: string;
     title?: string;
     description?: string;
     cta?: string;
     cta_label?: string;
+    cta_href?: string;
   }>("collection");
   const [products, setProducts] = useState<CollectionProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isCompleteOpen, setIsCompleteOpen] = useState(false);
 
   const goldGradient =
     "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
+
+  useEffect(() => {
+    normalizeLocationHash();
+  }, []);
 
   useEffect(() => {
     let isActive = true;
@@ -77,6 +99,11 @@ const Collections = () => {
     };
   }, [t]);
 
+  const visibleProducts = useMemo(
+    () => (isPage ? products : products.slice(0, HOME_PREVIEW_COUNT)),
+    [isPage, products],
+  );
+
   const handleDiscoverClick = async (product: CollectionProduct) => {
     openProduct(product);
     try {
@@ -87,10 +114,27 @@ const Collections = () => {
     }
   };
 
+  const handleBackToCollection = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    event.preventDefault();
+
+    if (pathname === "/") {
+      scrollToSection("collection", { setHash: false });
+      return;
+    }
+
+    queueHomeSectionScroll("collection", { setHash: false });
+    window.location.assign("/");
+  };
+
   // Deep-link scroll for `#product-<slug>` (footer / shared URLs).
   // Uses hashchange only — replaceState from Islands CTA must not scroll away.
   useEffect(() => {
+    if (isPage) return;
+
     const scrollFromHash = () => {
+      normalizeLocationHash();
       if (!window.location.hash.startsWith("#product-")) return;
       document
         .getElementById("collection")
@@ -100,15 +144,53 @@ const Collections = () => {
     scrollFromHash();
     window.addEventListener("hashchange", scrollFromHash);
     return () => window.removeEventListener("hashchange", scrollFromHash);
-  }, []);
+  }, [isPage]);
 
   return (
     <section
-      className="relative flex w-full flex-col items-center overflow-hidden px-4 py-16 sm:px-6 md:py-20 lg:px-8 lg:py-24"
+      className={`relative flex w-full flex-col items-center overflow-hidden px-4 sm:px-6 lg:px-8 ${
+        isPage
+          ? "page-view pb-20 pt-28 md:pb-24 md:pt-32 lg:pb-28 lg:pt-36"
+          : "py-16 md:py-20 lg:py-24"
+      }`}
       style={{
         background: "linear-gradient(180deg, #00221f, #022421 50%, #00221f)",
       }}
     >
+      {isPage && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-10 w-full max-w-[1160px] px-2 sm:mb-12 sm:px-0"
+        >
+          <motion.div whileHover={{ x: -2 }} whileTap={{ scale: 0.98 }}>
+            <a
+              href="/#collection"
+              onClick={handleBackToCollection}
+              className="group inline-flex h-11 items-center gap-2.5 rounded-md px-1 font-graziemille text-[11px] tracking-[2.2px] text-[#F8C56C] transition-colors hover:text-[#fdde8a]"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="transition-transform group-hover:-translate-x-0.5"
+              >
+                <path d="M19 12H5" />
+                <path d="m12 19-7-7 7-7" />
+              </svg>
+              <span data-locale-text="true">{t("common.back")}</span>
+            </a>
+          </motion.div>
+        </motion.div>
+      )}
+
       <motion.p
         initial={{ opacity: 0, scale: 0.85 }}
         whileInView={{ opacity: 1, scale: 1 }}
@@ -177,13 +259,13 @@ const Collections = () => {
           </p>
         )}
 
-        {!isLoading && !errorMessage && products.length === 0 && (
+        {!isLoading && !errorMessage && visibleProducts.length === 0 && (
           <p className="col-span-full py-12 text-center font-graziemille text-[#C9B99A]">
             {t("collection.empty")}
           </p>
         )}
 
-        {products.map((product, index) => (
+        {visibleProducts.map((product, index) => (
           <motion.div
             key={product.id}
             initial={{ opacity: 0, y: 50 }}
@@ -277,30 +359,61 @@ const Collections = () => {
         ))}
       </div>
 
-      <motion.button
-        type="button"
-        initial={{ opacity: 0, scale: 0.85 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: false }}
-        transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-        className="flex h-10 w-full max-w-[260px] items-center justify-center gap-3 rounded-sm font-gilland text-[10px] font-normal tracking-[1px] text-[#124B46] transition-opacity hover:opacity-90 sm:text-[11px]"
-        style={{ background: goldGradient }}
-      >
-        {content.cta_label ?? content.cta ?? t("collection.cta")}
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M5 12h14"></path>
-          <path d="m12 5 7 7-7 7"></path>
-        </svg>
-      </motion.button>
+      {!isPage && (
+        <>
+          <motion.div
+            initial={{ opacity: 0.12, scale: 0.96 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            viewport={{ once: false, amount: 0.35 }}
+            transition={{ duration: 0.7, delay: 0.42, ease: "easeOut" }}
+          >
+            <button
+              type="button"
+              onClick={() => setIsCompleteOpen(true)}
+              className="group relative inline-flex items-center justify-center gap-2 rounded-[7px] px-4 py-3"
+              style={{
+                background:
+                  "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461) padding-box, linear-gradient(86.7deg, #ffeeab, rgba(255, 238, 171, 0) 25%, rgba(255, 238, 171, 0) 75%, #ffeeab) border-box",
+                border: "0.6px solid transparent",
+                boxShadow: "inset 0 1px 0 rgba(255, 255, 255, 0.22)",
+              }}
+            >
+              <span
+                data-locale-text="true"
+                className="relative font-gilland text-[12px] font-bold leading-none tracking-[1.92px] text-[#124b46]"
+              >
+                {content.cta_label ?? content.cta ?? t("collection.cta")}
+              </span>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                className="relative text-[#124b46] transition-transform duration-300 group-hover:translate-x-0.5"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
+          </motion.div>
+
+          <CollectionsModal
+            open={isCompleteOpen}
+            onClose={() => setIsCompleteOpen(false)}
+            products={products}
+            isLoading={isLoading}
+            errorMessage={errorMessage}
+            onDiscover={(product) => void handleDiscoverClick(product)}
+          />
+        </>
+      )}
     </section>
   );
 };

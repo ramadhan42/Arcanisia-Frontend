@@ -32,8 +32,8 @@ const islandCatalogs: Record<Locale, IslandItem[]> = {
   en: enMessages.islands.items,
 };
 
-/** Auto-advance island slider every 2.5s */
-const ISLAND_AUTO_SLIDE_MS = 2500;
+/** Auto-advance island slider every 4s */
+const ISLAND_AUTO_SLIDE_MS = 4000;
 
 const MapSection: NextPage = () => {
   const { locale, t } = useTranslation();

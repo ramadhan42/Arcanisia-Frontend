@@ -18,6 +18,7 @@ const fallbackId: SiteContent = {
     description:
       "Setiap wewangian adalah perjalanan olfaktori melintasi jiwa Nusantara — enam pulau, enam kisah, satu bangsa yang dihidupkan melalui aroma.",
     cta_label: "LIHAT KOLEKSI LENGKAP",
+    cta_href: "#",
   },
   missions: {
     eyebrow: "MISI KAMI",
@@ -134,6 +135,7 @@ const fallbackEn: SiteContent = {
     description:
       "Each fragrance is an olfactory journey through the soul of the Indonesian archipelago — six islands, six stories, one nation breathed into being.",
     cta_label: "VIEW COMPLETE COLLECTION",
+    cta_href: "#",
   },
   missions: {
     eyebrow: "OUR MISSION",

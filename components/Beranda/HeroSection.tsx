@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import SafeImage from "@/components/ui/SafeImage";
+import { scrollToSection } from "@/lib/sectionHash";
 
 function splitIntoTwoLines(text: string): string[] {
   if (text.includes("\n")) {
@@ -193,6 +194,10 @@ export default function HeroSection() {
 
         <motion.a
           href={content.cta_href ?? "#collection"}
+          onClick={(event) => {
+            event.preventDefault();
+            scrollToSection("collection", { setHash: false });
+          }}
           initial={{ opacity: 0.12, scale: 0.96 }}
           whileInView={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.03 }}
