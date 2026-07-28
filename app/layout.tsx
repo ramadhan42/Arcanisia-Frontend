@@ -61,19 +61,23 @@ export default async function RootLayout({
   return (
     <html
       lang={initialLocale}
-      className={`${gilland.variable} ${grazieMille.variable}`}
-      style={{ backgroundColor: BRAND_BG }}
-      data-locale-phase="idle"
+      className={`${gilland.variable} ${grazieMille.variable} scrollbar-none`}
+      data-locale-phase="boot"
+      style={{
+        backgroundColor: BRAND_BG,
+        ["--locale-text-opacity" as string]: 0,
+      }}
     >
       <head>
-        {/* Earliest paint: brand green before CSS/JS — prevents black canvas flash */}
+        {/* Earliest paint: brand green + hide copy before globals/JS (no old 2-line flash). */}
         <style
           dangerouslySetInnerHTML={{
-            __html: `html,body{background:${BRAND_BG}!important;background-color:${BRAND_BG}!important;margin:0;min-height:100%}html{color-scheme:normal}`,
+            __html: `html,body{background:${BRAND_BG}!important;background-color:${BRAND_BG}!important;margin:0;min-height:100%}html{color-scheme:normal}:root{--locale-text-opacity:0}html[data-locale-phase=boot] .page-content :is(h1,h2,h3,h4,h5,h6,p,label,li,td,th,blockquote,figcaption,a,span,button):not([aria-hidden=true]):not([data-locale-fade=ignore]),html[data-locale-phase=boot] .page-content [data-locale-text],html[data-locale-phase=boot] nav :is(a,span,p,label,button):not([aria-hidden=true]):not([data-locale-fade=ignore]),html[data-locale-phase=boot] nav [data-locale-text],html[data-locale-phase=boot] [data-locale-shimmer],html[data-locale-phase=loading] .page-content :is(h1,h2,h3,h4,h5,h6,p,label,li,td,th,blockquote,figcaption,a,span,button):not([aria-hidden=true]):not([data-locale-fade=ignore]),html[data-locale-phase=loading] .page-content [data-locale-text],html[data-locale-phase=loading] nav :is(a,span,p,label,button):not([aria-hidden=true]):not([data-locale-fade=ignore]),html[data-locale-phase=loading] nav [data-locale-text],html[data-locale-phase=loading] [data-locale-shimmer]{visibility:hidden!important;opacity:0!important;color:transparent!important;-webkit-text-fill-color:transparent!important}`,
           }}
         />
       </head>
       <body
+        className="scrollbar-none"
         style={{
           backgroundColor: BRAND_BG,
           color: '#f5edd6',

@@ -10,11 +10,12 @@ const MIN_SKELETON_MS = 650;
 /**
  * Keep skeleton placeholders visible during phase=loading for at least
  * MIN_SKELETON_MS and until CMS finished, then fade text back in.
- * Also covers the first refresh EN → ID content handoff.
+ * First refresh stays hidden (boot/loading) until CMS is ready — no old
+ * 2-line copy fading underneath the shimmer.
  */
 export default function LocaleTextTransition() {
   const { isReady, isTextFading, phase, finishTextFade } = useLocale();
-  const { isLoading } = useSiteContent();
+  const { isLoading, content } = useSiteContent();
   const loadingStartedAt = useRef(0);
   const finishedForCycle = useRef(false);
 
@@ -35,15 +36,21 @@ export default function LocaleTextTransition() {
     const waitMore = Math.max(0, MIN_SKELETON_MS - elapsed);
 
     const timer = window.setTimeout(() => {
-      finishedForCycle.current = true;
-      finishTextFade();
+      // Two frames: let CMS text + typography commit, then shimmer measure.
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          if (finishedForCycle.current) return;
+          finishedForCycle.current = true;
+          finishTextFade();
+        });
+      });
     }, waitMore);
 
     return () => window.clearTimeout(timer);
-  }, [finishTextFade, isLoading, isReady, phase]);
+  }, [content, finishTextFade, isLoading, isReady, phase]);
 
   useEffect(() => {
-    if (!isTextFading && phase !== "loading") return;
+    if (!isTextFading && phase !== "loading" && phase !== "boot") return;
 
     const safety = window.setTimeout(() => {
       finishedForCycle.current = true;

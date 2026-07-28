@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocale } from "@/contexts/LocaleContext";
+import { useSiteContent } from "@/contexts/SiteContentContext";
 
 type SkeletonRect = {
   top: number;
@@ -44,7 +45,6 @@ function hasOwnText(el: HTMLElement): boolean {
   return (el.textContent ?? "").replace(/\s+/g, "").length > 0;
 }
 
-/** Skip parents when a nested text target already exists (fit text, not whole row). */
 function hasNestedTextTarget(el: HTMLElement): boolean {
   const nested = el.querySelectorAll(TEXT_SELECTOR);
   for (const child of nested) {
@@ -55,22 +55,29 @@ function hasNestedTextTarget(el: HTMLElement): boolean {
   return false;
 }
 
-function pushVisibleRect(rects: SkeletonRect[], rect: DOMRect) {
-  if (rect.width < 6 || rect.height < 5) return;
-  if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+function pushVisibleRect(rects: SkeletonRect[], rect: DOMRect | SkeletonRect) {
+  const width = rect.width;
+  const height = rect.height;
+  const top = "top" in rect ? rect.top : 0;
+  const left = "left" in rect ? rect.left : 0;
+  const bottom = top + height;
+
+  if (width < 4 || height < 4) return;
+  if (bottom < 0 || top > window.innerHeight) return;
+
   rects.push({
-    top: rect.top,
-    left: rect.left,
-    width: rect.width,
-    height: Math.max(rect.height, 8),
+    top,
+    left,
+    width,
+    height: Math.max(height, 7),
   });
 }
 
-/** Measure actual glyph boxes so shimmer fits the words, not the flex row. */
 function measureTextRects(el: HTMLElement): SkeletonRect[] {
   const result: SkeletonRect[] = [];
   const range = document.createRange();
   const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  let measured = false;
 
   let textNode = walker.nextNode();
   while (textNode) {
@@ -80,19 +87,49 @@ function measureTextRects(el: HTMLElement): SkeletonRect[] {
       const clientRects = range.getClientRects();
       for (const rect of Array.from(clientRects)) {
         pushVisibleRect(result, rect);
+        measured = true;
       }
     }
     textNode = walker.nextNode();
   }
 
+  if (!measured) {
+    pushVisibleRect(result, el.getBoundingClientRect());
+  }
+
   return result;
 }
 
-/** Measure logos / media boxes marked for shimmer (not text glyphs). */
 function measureMediaRects(el: HTMLElement): SkeletonRect[] {
   const result: SkeletonRect[] = [];
   pushVisibleRect(result, el.getBoundingClientRect());
   return result;
+}
+
+function mergeRects(rects: SkeletonRect[]): SkeletonRect[] {
+  if (rects.length <= 1) return rects;
+
+  const sorted = [...rects].sort((a, b) => a.top - b.top || a.left - b.left);
+  const merged: SkeletonRect[] = [];
+
+  for (const rect of sorted) {
+    const prev = merged[merged.length - 1];
+    if (
+      prev &&
+      Math.abs(prev.top - rect.top) < 4 &&
+      Math.abs(prev.height - rect.height) < 6 &&
+      rect.left <= prev.left + prev.width + 8
+    ) {
+      const right = Math.max(prev.left + prev.width, rect.left + rect.width);
+      prev.left = Math.min(prev.left, rect.left);
+      prev.width = right - prev.left;
+      prev.height = Math.max(prev.height, rect.height);
+      continue;
+    }
+    merged.push({ ...rect });
+  }
+
+  return merged;
 }
 
 function collectRects(): SkeletonRect[] {
@@ -118,46 +155,84 @@ function collectRects(): SkeletonRect[] {
     rects.push(...measureMediaRects(node));
   });
 
-  return rects;
+  return mergeRects(rects);
 }
 
 /**
- * Gold shimmer bars placed exactly over faded-out text / logo while the next
- * language content is loading (including first refresh reveal).
+ * Shimmer mirrors the *new* CMS/frontend text metrics only after content is
+ * ready — never the previous 2-line/default layout from the prior paint.
  */
 export default function LocaleSkeletonLayer() {
   const { phase } = useLocale();
+  const { content, isLoading } = useSiteContent();
   const [rects, setRects] = useState<SkeletonRect[]>([]);
   const [mounted, setMounted] = useState(false);
+
+  const active = phase === "loading";
+  const canMeasure = active && !isLoading;
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (phase !== "loading") {
+    if (!active) {
       setRects([]);
       return;
     }
 
-    const measure = () => setRects(collectRects());
+    // While CMS is still fetching, keep shimmer empty so old text geometry
+    // cannot linger under the gold bars.
+    if (!canMeasure) {
+      setRects([]);
+      return;
+    }
 
-    measure();
-    const raf = window.requestAnimationFrame(measure);
-    const interval = window.setInterval(measure, 180);
+    let cancelled = false;
+    let raf1 = 0;
+    let raf2 = 0;
 
-    window.addEventListener("resize", measure);
+    const measure = () => {
+      if (cancelled) return;
+      setRects(collectRects());
+    };
+
+    const measureAfterLayout = () => {
+      raf1 = window.requestAnimationFrame(() => {
+        raf2 = window.requestAnimationFrame(measure);
+      });
+    };
+
+    measureAfterLayout();
+    const interval = window.setInterval(measure, 120);
+    window.addEventListener("resize", measureAfterLayout);
     window.addEventListener("scroll", measure, true);
 
-    return () => {
-      window.cancelAnimationFrame(raf);
-      window.clearInterval(interval);
-      window.removeEventListener("resize", measure);
-      window.removeEventListener("scroll", measure, true);
-    };
-  }, [phase]);
+    const observer = new MutationObserver(measureAfterLayout);
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["style", "class", "data-locale-text"],
+    });
 
-  if (!mounted || phase !== "loading" || rects.length === 0) {
+    void document.fonts?.ready.then(() => {
+      if (!cancelled) measureAfterLayout();
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(raf1);
+      window.cancelAnimationFrame(raf2);
+      window.clearInterval(interval);
+      window.removeEventListener("resize", measureAfterLayout);
+      window.removeEventListener("scroll", measure, true);
+      observer.disconnect();
+    };
+  }, [active, canMeasure, content, isLoading, phase]);
+
+  if (!mounted || !canMeasure || rects.length === 0) {
     return null;
   }
 
@@ -168,7 +243,7 @@ export default function LocaleSkeletonLayer() {
     >
       {rects.map((rect, index) => (
         <span
-          key={`${rect.top}-${rect.left}-${rect.width}-${index}`}
+          key={`${Math.round(rect.top)}-${Math.round(rect.left)}-${Math.round(rect.width)}-${Math.round(rect.height)}-${index}`}
           className="locale-skeleton-bar"
           style={{
             top: rect.top,

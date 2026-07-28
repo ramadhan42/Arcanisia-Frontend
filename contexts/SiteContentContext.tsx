@@ -34,9 +34,9 @@ const SiteContentContext = createContext<SiteContentContextValue | undefined>(
 export function SiteContentProvider({ children }: { children: React.ReactNode }) {
   const { locale, phase } = useLocale();
   const fallback = useMemo(() => getSiteContentFallback(locale), [locale]);
-  const [content, setContent] = useState<SiteContent>(() =>
-    getSiteContentFallback(locale),
-  );
+  // Start empty so hero/etc. hardcoded fallbacks + 2-line layout never paint
+  // under the refresh shimmer before the CMS payload arrives.
+  const [content, setContent] = useState<SiteContent>({} as SiteContent);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const hasLoadedOnce = useRef(false);
@@ -86,7 +86,8 @@ export function SiteContentProvider({ children }: { children: React.ReactNode })
     }
   }, [applyRemote, locale]);
 
-  // Apply buffered CMS payload once fade-out finished (phase → loading).
+  // Apply buffered CMS payload once fade-out finished (phase → loading),
+  // or immediately during boot/loading handoff on first refresh.
   useEffect(() => {
     if (phase !== "loading" && phase !== "in" && phase !== "idle") return;
     if (!pendingRemote.current) return;
@@ -95,12 +96,13 @@ export function SiteContentProvider({ children }: { children: React.ReactNode })
     applyRemote(remote);
   }, [applyRemote, phase]);
 
-  // Always swap to the active locale fallback immediately so old-language CMS
-  // copy cannot override the new language while the request is in flight.
+  // Clear previous locale CMS immediately so old copy/typography cannot linger
+  // while the next locale request is in flight.
   useLayoutEffect(() => {
-    setContent(fallback);
+    setContent({} as SiteContent);
     setIsLoading(true);
-  }, [fallback, locale]);
+    pendingRemote.current = null;
+  }, [locale]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => void refresh(), 0);
@@ -114,11 +116,18 @@ export function SiteContentProvider({ children }: { children: React.ReactNode })
       isLoading,
       error,
       refresh,
-      section: <T extends ContentPayload>(key: SiteContentKey) =>
-        ({
+      section: <T extends ContentPayload>(key: SiteContentKey) => {
+        // While fetching, do not merge static fallbacks (2-line hero defaults,
+        // etc.) — only remote/error-applied content should drive layout.
+        if (isLoading) {
+          return { ...(content[key] ?? {}) } as T;
+        }
+
+        return {
           ...(fallback[key] ?? {}),
           ...(content[key] ?? {}),
-        }) as T,
+        } as T;
+      },
     }),
     [content, error, fallback, isLoading, refresh],
   );
@@ -138,4 +147,19 @@ export function useSiteContent() {
     );
   }
   return context;
+}
+
+/** Prefer CMS copy; while loading return empty so defaults never flash/shimmer. */
+export function useCmsText(
+  value: string | undefined | null,
+  fallback: string,
+): string {
+  const { isLoading } = useSiteContent();
+  if (typeof value === "string" && value.length > 0) {
+    return value;
+  }
+  if (isLoading) {
+    return "";
+  }
+  return fallback;
 }

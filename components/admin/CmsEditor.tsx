@@ -11,6 +11,8 @@ import {
   VALUE_ICON_PATHS,
   type ValueItem,
 } from "@/lib/valuesContent";
+import { SECTION_TYPOGRAPHY_FIELDS } from "@/lib/typography";
+import TypographySettingsEditor from "@/components/admin/TypographySettingsEditor";
 
 type Payload = Record<string, unknown>;
 type ImageVariant = "banner" | "square" | "icon" | "logo";
@@ -170,12 +172,17 @@ function TextField({
     <label className={labelClass}>
       {label}
       {multiline ? (
-        <textarea
-          value={value}
-          rows={rows}
-          onChange={(event) => onChange(event.target.value)}
-          className={`${fieldClass} ${hideScrollbar}`}
-        />
+        <>
+          <textarea
+            value={value}
+            rows={rows}
+            onChange={(event) => onChange(event.target.value)}
+            className={`${fieldClass} ${hideScrollbar} whitespace-pre-wrap`}
+          />
+          <span className="mt-1 block text-[10px] font-normal normal-case tracking-normal text-[#c9b99a]/45">
+            Tekan Enter untuk break line di beranda.
+          </span>
+        </>
       ) : (
         <input
           type="text"
@@ -526,6 +533,16 @@ export default function CmsEditor({
   const update = (key: string, value: unknown) =>
     onChange(setField(payload, key, value));
 
+  const typographyFields = SECTION_TYPOGRAPHY_FIELDS[sectionKey] ?? [];
+  const typographyBlock =
+    typographyFields.length > 0 ? (
+      <TypographySettingsEditor
+        fields={typographyFields}
+        value={payload.typography}
+        onChange={(typography) => update("typography", typography)}
+      />
+    ) : null;
+
   if (sectionKey === "hero") {
     return (
       <div className="space-y-4">
@@ -540,6 +557,7 @@ export default function CmsEditor({
         <ImageField label="Background Image" value={asString(payload.background_image)} onChange={(v) => update("background_image", v)} variant="banner" />
         <ImageField label="Product Image" value={asString(payload.product_image)} onChange={(v) => update("product_image", v)} variant="square" />
         <ImageField label="Logo Image" value={asString(payload.logo_image)} onChange={(v) => update("logo_image", v)} variant="logo" />
+        {typographyBlock}
       </div>
     );
   }
@@ -551,6 +569,7 @@ export default function CmsEditor({
         <TextField label="Description" value={asString(payload.description)} onChange={(v) => update("description", v)} multiline />
         <ImageField label="Background Image" value={asString(payload.background_image)} onChange={(v) => update("background_image", v)} variant="banner" />
         <ImageField label="Product Image" value={asString(payload.product_image)} onChange={(v) => update("product_image", v)} variant="square" />
+        {typographyBlock}
       </div>
     );
   }
@@ -560,8 +579,8 @@ export default function CmsEditor({
     const statistics = asArray<{ value?: string; label?: string }>(payload.statistics);
     return (
       <div className="space-y-5">
-        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
-        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
+        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
+        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <ImageField label="Image" value={asString(payload.image)} onChange={(v) => update("image", v)} variant="banner" />
         <TextField label="Quote" value={asString(payload.quote)} onChange={(v) => update("quote", v)} multiline />
         <StringListField label="Paragraphs" values={paragraphs} onChange={(v) => update("paragraphs", v)} placeholder="Paragraf..." />
@@ -577,6 +596,7 @@ export default function CmsEditor({
             </div>
           )}
         />
+        {typographyBlock}
       </div>
     );
   }
@@ -584,8 +604,8 @@ export default function CmsEditor({
   if (sectionKey === "collection") {
     return (
       <div className="space-y-4">
-        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
-        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
+        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
+        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <TextField label="Description" value={asString(payload.description)} onChange={(v) => update("description", v)} multiline />
         <TextField label="CTA Label" value={asString(payload.cta_label)} onChange={(v) => update("cta_label", v)} />
         <StringListField
@@ -594,6 +614,7 @@ export default function CmsEditor({
           onChange={(v) => update("product_slugs", v)}
           placeholder="secret-of-buton"
         />
+        {typographyBlock}
       </div>
     );
   }
@@ -604,8 +625,8 @@ export default function CmsEditor({
     );
     return (
       <div className="space-y-5">
-        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
-        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
+        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
+        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <ImageField
           label="Background Image"
           value={asString(payload.background_image)}
@@ -626,6 +647,7 @@ export default function CmsEditor({
             </div>
           )}
         />
+        {typographyBlock}
       </div>
     );
   }
@@ -652,8 +674,8 @@ export default function CmsEditor({
 
     return (
       <div className="space-y-5">
-        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
-        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
+        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
+        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <ImageField label="Background Image" value={asString(payload.background_image)} onChange={(v) => update("background_image", v)} variant="banner" />
         <div className="space-y-4">
           <p className="font-gilland text-xl text-[#f8c56c]">Values</p>
@@ -676,6 +698,8 @@ export default function CmsEditor({
                   next[index] = { ...item, topTitle: v };
                   updateItems(next);
                 }}
+                multiline
+                rows={2}
               />
               <TextField
                 label="Main Title"
@@ -685,6 +709,8 @@ export default function CmsEditor({
                   next[index] = { ...item, mainTitle: v };
                   updateItems(next);
                 }}
+                multiline
+                rows={2}
               />
               <TextField
                 label="Description"
@@ -695,6 +721,7 @@ export default function CmsEditor({
                   updateItems(next);
                 }}
                 multiline
+                rows={4}
               />
               <ImageField
                 label="Icon / Image"
@@ -716,6 +743,7 @@ export default function CmsEditor({
             </div>
           ))}
         </div>
+        {typographyBlock}
       </div>
     );
   }
@@ -733,8 +761,8 @@ export default function CmsEditor({
     }>(payload.items);
     return (
       <div className="space-y-5">
-        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
-        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
+        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
+        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <ObjectListEditor
           label="Islands"
           items={items}
@@ -794,6 +822,7 @@ export default function CmsEditor({
             </div>
           )}
         />
+        {typographyBlock}
       </div>
     );
   }
@@ -803,8 +832,8 @@ export default function CmsEditor({
     const items = asArray<{ category?: string; question?: string; answer?: string }>(payload.items);
     return (
       <div className="space-y-5">
-        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
-        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} />
+        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
+        <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <TextField label="Description" value={asString(payload.description)} onChange={(v) => update("description", v)} multiline />
         <ObjectListEditor
           label="Categories"
@@ -845,6 +874,7 @@ export default function CmsEditor({
             </div>
           )}
         />
+        {typographyBlock}
       </div>
     );
   }
@@ -852,7 +882,7 @@ export default function CmsEditor({
   if (sectionKey === "newsletter") {
     return (
       <div className="space-y-4">
-        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} />
+        <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
         <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
         <TextField label="Description" value={asString(payload.description)} onChange={(v) => update("description", v)} multiline />
         <TextField label="Placeholder" value={asString(payload.placeholder)} onChange={(v) => update("placeholder", v)} />
@@ -868,6 +898,7 @@ export default function CmsEditor({
           variant="icon"
           assets={ASSET_OPTIONS.filter((asset) => asset.includes("seksi%208"))}
         />
+        {typographyBlock}
       </div>
     );
   }
@@ -880,72 +911,77 @@ export default function CmsEditor({
       lines?: string[];
     }>(payload.items);
     return (
-      <ObjectListEditor
-        label="Contact Items"
-        items={items}
-        blank={{
-          title: "LOCATION",
-          icon: "/gambar/seksi%208/location.svg",
-          lines: [""],
-        }}
-        onChange={(v) => update("items", v)}
-        renderItem={(item, patch) => {
-          const iconValue = asString(item.icon ?? item.icon_src);
-          return (
-            <div className="space-y-4">
-              <div className="flex items-start gap-4 border border-[#c9a84c]/15 bg-[#012421]/40 p-4">
-                <div className="flex h-[45px] w-[45px] shrink-0 items-center justify-center border border-[#C9A84C]/30">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={iconValue || "/gambar/seksi%208/email.svg"}
-                    alt=""
-                    width={17}
-                    height={17}
-                    className="object-contain"
-                  />
-                </div>
-                <div className="pt-0.5">
-                  <h3 className="text-[9px] font-semibold tracking-[3px] text-[#F8C56C]">
-                    {asString(item.title) || "JUDUL KARTU"}
-                  </h3>
-                  <div className="mt-1 text-[13px] font-light leading-[1.85] text-[#C9B99A]">
-                    {(item.lines?.length ? item.lines : ["Baris kontak..."]).map(
-                      (line, index) => (
-                        <p key={`${line}-${index}`}>{line || "—"}</p>
-                      ),
-                    )}
+      <div className="space-y-5">
+        <ObjectListEditor
+          label="Contact Items"
+          items={items}
+          blank={{
+            title: "LOCATION",
+            icon: "/gambar/seksi%208/location.svg",
+            lines: [""],
+          }}
+          onChange={(v) => update("items", v)}
+          renderItem={(item, patch) => {
+            const iconValue = asString(item.icon ?? item.icon_src);
+            return (
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 border border-[#c9a84c]/15 bg-[#012421]/40 p-4">
+                  <div className="flex h-[45px] w-[45px] shrink-0 items-center justify-center border border-[#C9A84C]/30">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={iconValue || "/gambar/seksi%208/email.svg"}
+                      alt=""
+                      width={17}
+                      height={17}
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="pt-0.5">
+                    <h3 className="text-[9px] font-semibold tracking-[3px] text-[#F8C56C]">
+                      {asString(item.title) || "JUDUL KARTU"}
+                    </h3>
+                    <div className="mt-1 text-[13px] font-light leading-[1.85] text-[#C9B99A]">
+                      {(item.lines?.length ? item.lines : ["Baris kontak..."]).map(
+                        (line, index) => (
+                          <p key={`${line}-${index}`}>{line || "—"}</p>
+                        ),
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <TextField
-                label="Title"
-                value={asString(item.title)}
-                onChange={(v) => {
-                  const matched = CONTACT_ICON_OPTIONS.find(
-                    (option) => option.label === v.trim().toUpperCase(),
-                  );
-                  patch(
-                    matched
-                      ? { title: v, icon: matched.value, icon_src: matched.value }
-                      : { title: v },
-                  );
-                }}
-              />
-              <ContactIconField
-                label="Icon Kartu"
-                value={iconValue}
-                onChange={(v) => patch({ icon: v, icon_src: v })}
-              />
-              <StringListField
-                label="Lines"
-                values={asArray<string>(item.lines)}
-                onChange={(v) => patch({ lines: v })}
-              />
-            </div>
-          );
-        }}
-      />
+                <TextField
+                  label="Title"
+                  value={asString(item.title)}
+                  onChange={(v) => {
+                    const matched = CONTACT_ICON_OPTIONS.find(
+                      (option) => option.label === v.trim().toUpperCase(),
+                    );
+                    patch(
+                      matched
+                        ? { title: v, icon: matched.value, icon_src: matched.value }
+                        : { title: v },
+                    );
+                  }}
+                  multiline
+                  rows={2}
+                />
+                <ContactIconField
+                  label="Icon Kartu"
+                  value={iconValue}
+                  onChange={(v) => patch({ icon: v, icon_src: v })}
+                />
+                <StringListField
+                  label="Lines"
+                  values={asArray<string>(item.lines)}
+                  onChange={(v) => patch({ lines: v })}
+                />
+              </div>
+            );
+          }}
+        />
+        {typographyBlock}
+      </div>
     );
   }
 
@@ -954,11 +990,29 @@ export default function CmsEditor({
       title?: string;
       links?: Array<{ label?: string; href?: string }>;
     }>(payload.groups);
+    const legalLinks = asArray<{
+      label?: string;
+      slug?: string;
+      href?: string;
+    }>(payload.legal_links);
+    const defaultLegalLinks =
+      locale === "en"
+        ? [
+            { label: "Privacy Policy", slug: "privacy-policy", href: "/legal/privacy-policy" },
+            { label: "Terms of Service", slug: "terms-of-service", href: "/legal/terms-of-service" },
+            { label: "Cookie Policy", slug: "cookie-policy", href: "/legal/cookie-policy" },
+          ]
+        : [
+            { label: "Kebijakan Privasi", slug: "privacy-policy", href: "/legal/privacy-policy" },
+            { label: "Ketentuan Layanan", slug: "terms-of-service", href: "/legal/terms-of-service" },
+            { label: "Kebijakan Cookie", slug: "cookie-policy", href: "/legal/cookie-policy" },
+          ];
+
     return (
       <div className="space-y-5">
         <ImageField label="Logo" value={asString(payload.logo)} onChange={(v) => update("logo", v)} variant="logo" />
         <TextField label="Description" value={asString(payload.description)} onChange={(v) => update("description", v)} multiline />
-        <TextField label="Copyright" value={asString(payload.copyright)} onChange={(v) => update("copyright", v)} />
+        <TextField label="Copyright" value={asString(payload.copyright)} onChange={(v) => update("copyright", v)} multiline rows={2} />
         <ObjectListEditor
           label="Link Groups"
           items={groups}
@@ -966,7 +1020,7 @@ export default function CmsEditor({
           onChange={(v) => update("groups", v)}
           renderItem={(item, patch) => (
             <div className="space-y-3">
-              <TextField label="Group Title" value={asString(item.title)} onChange={(v) => patch({ title: v })} />
+              <TextField label="Group Title" value={asString(item.title)} onChange={(v) => patch({ title: v })} multiline rows={2} />
               <ObjectListEditor
                 label="Links"
                 items={asArray<{ label?: string; href?: string }>(item.links)}
@@ -982,28 +1036,94 @@ export default function CmsEditor({
             </div>
           )}
         />
+        <ObjectListEditor
+          label="Legal Links (bawah footer)"
+          items={legalLinks.length ? legalLinks : defaultLegalLinks}
+          blank={{ label: "", slug: "", href: "/legal/" }}
+          onChange={(v) => update("legal_links", v)}
+          renderItem={(item, patch) => (
+            <div className="space-y-3">
+              <TextField
+                label="Teks Link"
+                value={asString(item.label)}
+                onChange={(v) => patch({ label: v })}
+                multiline
+                rows={2}
+              />
+              <div className="grid gap-3 sm:grid-cols-2">
+                <TextField
+                  label="Slug"
+                  value={asString(item.slug)}
+                  onChange={(v) =>
+                    patch({
+                      slug: v,
+                      href: v ? `/legal/${v}` : asString(item.href),
+                    })
+                  }
+                />
+                <TextField
+                  label="Href"
+                  value={asString(item.href)}
+                  onChange={(v) => patch({ href: v })}
+                />
+              </div>
+              <p className="text-[10px] text-[#c9b99a]/45">
+                Atur teks Kebijakan Privasi, Ketentuan Layanan, dan Kebijakan Cookie di sini.
+              </p>
+            </div>
+          )}
+        />
+        {!legalLinks.length ? (
+          <button
+            type="button"
+            className="border border-[#c9a84c]/30 px-3 py-2 text-[11px] tracking-[1px] text-[#f8c56c] transition-colors hover:border-[#f8c56c]"
+            onClick={() => update("legal_links", defaultLegalLinks)}
+          >
+            Muat 3 link legal default
+          </button>
+        ) : null}
+        {typographyBlock}
       </div>
     );
   }
 
   if (sectionKey === "legal") {
     const pages = asArray<{ slug?: string; title?: string; content?: string }>(
-      payload.pages ?? payload.links,
+      payload.pages,
+    );
+    const links = asArray<{ label?: string; slug?: string; href?: string }>(
+      payload.links,
     );
     return (
-      <ObjectListEditor
-        label="Legal Pages"
-        items={pages}
-        blank={{ slug: "", title: "", content: "" }}
-        onChange={(v) => update("pages", v)}
-        renderItem={(item, patch) => (
-          <div className="space-y-3">
-            <TextField label="Slug" value={asString(item.slug)} onChange={(v) => patch({ slug: v })} />
-            <TextField label="Title" value={asString(item.title)} onChange={(v) => patch({ title: v })} />
-            <TextField label="Content" value={asString(item.content)} onChange={(v) => patch({ content: v })} multiline rows={5} />
-          </div>
-        )}
-      />
+      <div className="space-y-5">
+        <ObjectListEditor
+          label="Footer Legal Links"
+          items={links}
+          blank={{ label: "", slug: "", href: "" }}
+          onChange={(v) => update("links", v)}
+          renderItem={(item, patch) => (
+            <div className="grid gap-3 sm:grid-cols-3">
+              <TextField label="Label" value={asString(item.label)} onChange={(v) => patch({ label: v })} />
+              <TextField label="Slug" value={asString(item.slug)} onChange={(v) => patch({ slug: v })} />
+              <TextField label="Href" value={asString(item.href)} onChange={(v) => patch({ href: v })} />
+            </div>
+          )}
+        />
+        <ObjectListEditor
+          label="Legal Pages"
+          items={pages}
+          blank={{ slug: "", title: "", content: "" }}
+          onChange={(v) => update("pages", v)}
+          renderItem={(item, patch) => (
+            <div className="space-y-3">
+              <TextField label="Slug" value={asString(item.slug)} onChange={(v) => patch({ slug: v })} />
+              <TextField label="Title" value={asString(item.title)} onChange={(v) => patch({ title: v })} multiline rows={2} />
+              <TextField label="Content" value={asString(item.content)} onChange={(v) => patch({ content: v })} multiline rows={5} />
+            </div>
+          )}
+        />
+        {typographyBlock}
+      </div>
     );
   }
 
@@ -1043,7 +1163,7 @@ export default function CmsEditor({
         <TextField
           label="Shipping Notice / Label"
           value={asString(payload.shipping_notice ?? payload.shipping_label)}
-          onChange={(v) => update("shipping_notice", v)}
+          onChange={(v) => onChange({ ...payload, shipping_notice: v, shipping_label: v })}
           multiline
         />
         <TextField
@@ -1052,6 +1172,7 @@ export default function CmsEditor({
           onChange={(v) => update("shipping_note", v)}
           multiline
         />
+        {typographyBlock}
       </div>
     );
   }

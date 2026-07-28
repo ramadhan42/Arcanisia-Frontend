@@ -7,6 +7,14 @@ import SafeImage from "@/components/ui/SafeImage";
 import enMessages from "@/messages/en.json";
 import idMessages from "@/messages/id.json";
 import type { Locale } from "@/lib/locale";
+import {
+  hasTypographyField,
+  resolveTextStyle,
+  splitTextByNewlines,
+  textStyleFontClass,
+  textStyleToCss,
+  SECTION_TYPOGRAPHY_FIELDS,
+} from "@/lib/typography";
 
 type MissionItem = {
   id?: string;
@@ -28,13 +36,14 @@ const goldText = {
 
 export default function Missions() {
   const { locale, t } = useTranslation();
-  const { section } = useSiteContent();
+  const { section, isLoading } = useSiteContent();
   const content = section<{
     eyebrow?: string;
     title?: string;
     background_image?: string;
     items?: MissionItem[];
     missions?: MissionItem[];
+    typography?: Record<string, unknown>;
   }>("missions");
 
   const cmsItems =
@@ -44,11 +53,24 @@ export default function Missions() {
         ? content.missions
         : null;
 
-  const items = (cmsItems ?? missionCatalogs[locale]).map((item, index) => ({
+  const items = (
+    isLoading ? (cmsItems ?? []) : (cmsItems ?? missionCatalogs[locale])
+  ).map((item, index) => ({
     id: item.id ?? String(index + 1).padStart(2, "0"),
     title: item.title,
     description: item.description,
   }));
+  const payload = content as Record<string, unknown>;
+  const eyebrowDefaults = SECTION_TYPOGRAPHY_FIELDS.missions?.find((item) => item.key === "eyebrow")?.defaults;
+  const titleDefaults = SECTION_TYPOGRAPHY_FIELDS.missions?.find((item) => item.key === "title")?.defaults;
+  const eyebrowStyle = resolveTextStyle(payload, "eyebrow", eyebrowDefaults);
+  const titleStyle = resolveTextStyle(payload, "title", titleDefaults);
+  const useEyebrowTypography = !isLoading && hasTypographyField(payload, "eyebrow");
+  const useTitleTypography = !isLoading && hasTypographyField(payload, "title");
+  const eyebrowText = isLoading ? "" : (content.eyebrow ?? t("missions.eyebrow"));
+  const titleText = isLoading ? "" : (content.title ?? t("missions.title"));
+  const eyebrowLines = splitTextByNewlines(eyebrowText);
+  const titleLines = splitTextByNewlines(titleText);
 
   return (
     <section className="w-full overflow-hidden bg-[linear-gradient(180deg,#00221f,#012421)]">
@@ -75,9 +97,25 @@ export default function Missions() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          className="relative z-10 font-graziemille text-[6px] leading-none tracking-[3px] text-[#F5EDD6CC] md:text-[13px] md:tracking-[5px]"
+          className={`relative z-10 leading-none tracking-[3px] md:text-[13px] md:tracking-[5px] ${
+            useEyebrowTypography
+              ? textStyleFontClass(eyebrowStyle)
+              : "font-graziemille text-[6px] text-[#F5EDD6CC]"
+          }`}
+          style={useEyebrowTypography ? textStyleToCss(eyebrowStyle) : undefined}
         >
-          {content.eyebrow ?? t("missions.eyebrow")}
+          {eyebrowLines.map((line, index) => (
+            <span
+              key={`${line}-${index}`}
+              className={
+                eyebrowLines.length > 1
+                  ? "block whitespace-nowrap"
+                  : "whitespace-nowrap"
+              }
+            >
+              {line}
+            </span>
+          ))}
         </motion.p>
 
         <motion.h2
@@ -85,10 +123,33 @@ export default function Missions() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-          className="relative z-10 mt-2 font-gilland text-[20px] leading-tight md:mt-4 md:text-[43px]"
-          style={goldText}
+          className={`relative z-10 mt-2 leading-tight md:mt-4 md:text-[43px] ${
+            useTitleTypography
+              ? textStyleFontClass(titleStyle)
+              : "font-gilland text-[20px]"
+          }`}
+          style={{
+            ...goldText,
+            ...(useTitleTypography
+              ? {
+                  ...textStyleToCss(titleStyle),
+                  color: "transparent",
+                }
+              : {}),
+          }}
         >
-          {content.title ?? t("missions.title")}
+          {titleLines.map((line, index) => (
+            <span
+              key={`${line}-${index}`}
+              className={
+                titleLines.length > 1
+                  ? "block whitespace-nowrap"
+                  : "whitespace-nowrap"
+              }
+            >
+              {line}
+            </span>
+          ))}
         </motion.h2>
 
         <motion.div
@@ -137,10 +198,34 @@ export default function Missions() {
 
             <div className="min-w-0 pt-px text-left md:pt-0.5">
               <h3 className="font-gilland text-[14px] leading-[1.15] text-[#F5EDD6] md:text-[23px] md:leading-[1.1]">
-                {item.title}
+                {splitTextByNewlines(item.title).map((line, lineIndex, lines) => (
+                  <span
+                    key={`${line}-${lineIndex}`}
+                    className={
+                      lines.length > 1
+                        ? "block whitespace-nowrap"
+                        : "whitespace-nowrap"
+                    }
+                  >
+                    {line}
+                  </span>
+                ))}
               </h3>
-              <p className="mt-1.5 max-w-[430px] font-graziemille text-[9.5px] leading-[1.35] text-[#C9B99A99] md:mt-2 md:text-[12px] md:leading-[1.65]">
-                {item.description}
+              <p className="mt-1.5 font-graziemille text-[9.5px] leading-[1.35] text-[#C9B99A99] md:mt-2 md:text-[12px] md:leading-[1.65]">
+                {splitTextByNewlines(item.description).map(
+                  (line, lineIndex, lines) => (
+                    <span
+                      key={`${line}-${lineIndex}`}
+                      className={
+                        lines.length > 1
+                          ? "block whitespace-nowrap"
+                          : "whitespace-nowrap"
+                      }
+                    >
+                      {line}
+                    </span>
+                  ),
+                )}
               </p>
             </div>
           </motion.article>

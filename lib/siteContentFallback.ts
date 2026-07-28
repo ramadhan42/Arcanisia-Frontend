@@ -103,12 +103,17 @@ const fallbackId: SiteContent = {
     ],
     copyright:
       "© 2026 Arcanisia Scent. Hak cipta dilindungi. Dibuat dengan cinta untuk Indonesia.",
+    legal_links: [
+      { label: "Kebijakan Privasi", slug: "privacy-policy", href: "/legal/privacy-policy" },
+      { label: "Ketentuan Layanan", slug: "terms-of-service", href: "/legal/terms-of-service" },
+      { label: "Kebijakan Cookie", slug: "cookie-policy", href: "/legal/cookie-policy" },
+    ],
   },
   legal: {
     links: [
-      { label: "Kebijakan Privasi", slug: "privacy-policy" },
-      { label: "Ketentuan Layanan", slug: "terms-of-service" },
-      { label: "Kebijakan Cookie", slug: "cookie-policy" },
+      { label: "Kebijakan Privasi", slug: "privacy-policy", href: "/legal/privacy-policy" },
+      { label: "Ketentuan Layanan", slug: "terms-of-service", href: "/legal/terms-of-service" },
+      { label: "Kebijakan Cookie", slug: "cookie-policy", href: "/legal/cookie-policy" },
     ],
   },
   checkout: {
@@ -220,12 +225,17 @@ const fallbackEn: SiteContent = {
     ],
     copyright:
       "© 2026 Arcanisia Scent. All rights reserved. Made with love for Indonesia.",
+    legal_links: [
+      { label: "Privacy Policy", slug: "privacy-policy", href: "/legal/privacy-policy" },
+      { label: "Terms of Service", slug: "terms-of-service", href: "/legal/terms-of-service" },
+      { label: "Cookie Policy", slug: "cookie-policy", href: "/legal/cookie-policy" },
+    ],
   },
   legal: {
     links: [
-      { label: "Privacy Policy", slug: "privacy-policy" },
-      { label: "Terms of Service", slug: "terms-of-service" },
-      { label: "Cookie Policy", slug: "cookie-policy" },
+      { label: "Privacy Policy", slug: "privacy-policy", href: "/legal/privacy-policy" },
+      { label: "Terms of Service", slug: "terms-of-service", href: "/legal/terms-of-service" },
+      { label: "Cookie Policy", slug: "cookie-policy", href: "/legal/cookie-policy" },
     ],
   },
   checkout: {

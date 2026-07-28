@@ -16,6 +16,13 @@ import type {
 import { useAuth } from "@/contexts/AuthContext";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import ProductImage from "@/components/ui/ProductImage";
+import {
+  hasTypographyField,
+  resolveTextStyle,
+  textStyleFontClass,
+  textStyleToCss,
+  SECTION_TYPOGRAPHY_FIELDS,
+} from "@/lib/typography";
 
 interface CheckoutModalProps {
   items: Array<{ product: Product; quantity: number }>;
@@ -61,9 +68,22 @@ export default function CheckoutModal({
   const { section } = useSiteContent();
   const settings = section<{
     shipping_label?: string;
+    shipping_notice?: string;
     shipping_note?: string;
+    payment_notice?: string;
     payment_methods?: PaymentMethod[];
+    typography?: Record<string, unknown>;
   }>("checkout");
+  const checkoutPayload = settings as Record<string, unknown>;
+  const shippingLabelDefaults = SECTION_TYPOGRAPHY_FIELDS.checkout?.find((item) => item.key === "shippingLabel")?.defaults;
+  const shippingNoteDefaults = SECTION_TYPOGRAPHY_FIELDS.checkout?.find((item) => item.key === "shippingNote")?.defaults;
+  const paymentNoticeDefaults = SECTION_TYPOGRAPHY_FIELDS.checkout?.find((item) => item.key === "paymentNotice")?.defaults;
+  const shippingLabelStyle = resolveTextStyle(checkoutPayload, "shippingLabel", shippingLabelDefaults);
+  const shippingNoteStyle = resolveTextStyle(checkoutPayload, "shippingNote", shippingNoteDefaults);
+  const paymentNoticeStyle = resolveTextStyle(checkoutPayload, "paymentNotice", paymentNoticeDefaults);
+  const useShippingLabelTypography = hasTypographyField(checkoutPayload, "shippingLabel");
+  const useShippingNoteTypography = hasTypographyField(checkoutPayload, "shippingNote");
+  const usePaymentNoticeTypography = hasTypographyField(checkoutPayload, "paymentNotice");
   const [form, setForm] = useState<CheckoutPayload>({
     customer_name: user?.name ?? "",
     customer_email: user?.email ?? "",
@@ -235,8 +255,21 @@ export default function CheckoutModal({
             </div>
             <div className="flex justify-between">
               <span>Ongkos Kirim</span>
-              <span className="text-[#f8c56c]">
-                {settings.shipping_label ?? "GRATIS"}
+              <span
+                className={
+                  useShippingLabelTypography
+                    ? textStyleFontClass(shippingLabelStyle)
+                    : "text-[#f8c56c]"
+                }
+                style={
+                  useShippingLabelTypography
+                    ? textStyleToCss(shippingLabelStyle)
+                    : undefined
+                }
+              >
+                {settings.shipping_label ??
+                  settings.shipping_notice ??
+                  "GRATIS"}
               </span>
             </div>
           </div>
@@ -248,8 +281,28 @@ export default function CheckoutModal({
             </span>
           </div>
 
-          <p className="mt-auto text-[11px] leading-relaxed text-[#c9b99a]/40">
+          <p
+            className={`mt-auto ${
+              settings.shipping_note
+                ? useShippingNoteTypography
+                  ? textStyleFontClass(shippingNoteStyle)
+                  : "text-[11px] leading-relaxed text-[#c9b99a]/40"
+                : usePaymentNoticeTypography
+                  ? textStyleFontClass(paymentNoticeStyle)
+                  : "text-[11px] leading-relaxed text-[#c9b99a]/40"
+            }`}
+            style={
+              settings.shipping_note
+                ? useShippingNoteTypography
+                  ? textStyleToCss(shippingNoteStyle)
+                  : undefined
+                : usePaymentNoticeTypography
+                  ? textStyleToCss(paymentNoticeStyle)
+                  : undefined
+            }
+          >
             {settings.shipping_note ??
+              settings.payment_notice ??
               "Pengiriman menggunakan kemasan premium Arcanisia. Estimasi tiba 2–4 hari kerja."}
           </p>
         </div>

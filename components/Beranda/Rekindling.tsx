@@ -4,10 +4,41 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import SafeImage from "@/components/ui/SafeImage";
+import {
+  hasTypographyField,
+  resolveTextStyle,
+  splitTextByNewlines,
+  textStyleFontClass,
+  textStyleToCss,
+  SECTION_TYPOGRAPHY_FIELDS,
+} from "@/lib/typography";
 
 export default function Rekindling() {
-  const { section } = useSiteContent();
-  const content = section<{ title?: string; description?: string; background_image?: string; product_image?: string }>("rekindling");
+  const { section, isLoading } = useSiteContent();
+  const content = section<{
+    title?: string;
+    description?: string;
+    background_image?: string;
+    product_image?: string;
+    typography?: Record<string, unknown>;
+  }>("rekindling");
+  const payload = content as Record<string, unknown>;
+  const titleText = isLoading
+    ? ""
+    : (content.title ?? "Arcanisia \nRekindling Love \nfor Indonesia");
+  const titleDefaults = SECTION_TYPOGRAPHY_FIELDS.rekindling?.find((item) => item.key === "title")?.defaults;
+  const descriptionDefaults = SECTION_TYPOGRAPHY_FIELDS.rekindling?.find((item) => item.key === "description")?.defaults;
+  const titleStyle = resolveTextStyle(payload, "title", titleDefaults);
+  const descriptionStyle = resolveTextStyle(payload, "description", descriptionDefaults);
+  const useTitleTypography = !isLoading && hasTypographyField(payload, "title");
+  const useDescriptionTypography = !isLoading && hasTypographyField(payload, "description");
+  const titleLines = splitTextByNewlines(titleText);
+  const descriptionLines = splitTextByNewlines(
+    isLoading ? "" : (content.description ?? ""),
+  );
+  const isMultilineTitle = titleLines.length > 1;
+  const isMultilineDescription = descriptionLines.length > 1;
+
   return (
     <section className="rekindling-section relative flex w-full items-center overflow-hidden bg-[#012320]">
       <div className="pointer-events-none absolute inset-0 z-0">
@@ -64,10 +95,23 @@ export default function Rekindling() {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             transformOrigin: "center left",
+            ...(useTitleTypography
+              ? {
+                  ...textStyleToCss(titleStyle),
+                  color: "transparent",
+                }
+              : {}),
           }}
-          className="font-gilland whitespace-pre-line font-normal"
+          className={`${useTitleTypography ? textStyleFontClass(titleStyle) : "font-gilland"} font-normal`}
         >
-          {content.title ?? "Arcanisia \nRekindling Love \nfor Indonesia"}
+          {titleLines.map((line, index) => (
+            <span
+              key={`${line}-${index}`}
+              className={isMultilineTitle ? "block whitespace-nowrap" : "whitespace-nowrap"}
+            >
+              {line}
+            </span>
+          ))}
         </motion.h2>
 
         <motion.p
@@ -75,13 +119,27 @@ export default function Rekindling() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: false }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-          className="font-graziemille font-normal"
+          className={`${useDescriptionTypography ? textStyleFontClass(descriptionStyle) : "font-graziemille"} font-normal`}
           style={{
             color: "#C9B99A",
             transformOrigin: "center left",
+            ...(useDescriptionTypography ? textStyleToCss(descriptionStyle) : {}),
           }}
         >
-          {content.description}
+          {isLoading
+            ? null
+            : descriptionLines.map((line, index) => (
+                <span
+                  key={`${line}-${index}`}
+                  className={
+                    isMultilineDescription
+                      ? "block whitespace-nowrap"
+                      : "whitespace-nowrap"
+                  }
+                >
+                  {line}
+                </span>
+              ))}
         </motion.p>
       </div>
     </section>

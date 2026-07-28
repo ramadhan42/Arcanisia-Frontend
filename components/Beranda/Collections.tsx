@@ -19,6 +19,14 @@ import {
   queueHomeSectionScroll,
   scrollToSection,
 } from "@/lib/sectionHash";
+import {
+  hasTypographyField,
+  resolveTextStyle,
+  splitTextByNewlines,
+  textStyleFontClass,
+  textStyleToCss,
+  SECTION_TYPOGRAPHY_FIELDS,
+} from "@/lib/typography";
 
 export type CollectionProduct = ProductDetailProduct;
 
@@ -56,7 +64,27 @@ const Collections = ({ variant = "preview" }: CollectionsProps) => {
     cta?: string;
     cta_label?: string;
     cta_href?: string;
+    typography?: Record<string, unknown>;
   }>("collection");
+  const payload = content as Record<string, unknown>;
+  const eyebrowDefaults = SECTION_TYPOGRAPHY_FIELDS.collection?.find((item) => item.key === "eyebrow")?.defaults;
+  const titleDefaults = SECTION_TYPOGRAPHY_FIELDS.collection?.find((item) => item.key === "title")?.defaults;
+  const descriptionDefaults = SECTION_TYPOGRAPHY_FIELDS.collection?.find((item) => item.key === "description")?.defaults;
+  const eyebrowStyle = resolveTextStyle(payload, "eyebrow", eyebrowDefaults);
+  const titleStyle = resolveTextStyle(payload, "title", titleDefaults);
+  const descriptionStyle = resolveTextStyle(payload, "description", descriptionDefaults);
+  const useEyebrowTypography = hasTypographyField(payload, "eyebrow");
+  const useTitleTypography = hasTypographyField(payload, "title");
+  const useDescriptionTypography = hasTypographyField(payload, "description");
+  const eyebrowText = content.eyebrow ?? t("collection.eyebrow");
+  const titleText = content.title ?? t("collection.title");
+  const descriptionText = content.description ?? t("collection.description");
+  const eyebrowLines = splitTextByNewlines(eyebrowText);
+  const titleLines = splitTextByNewlines(titleText);
+  const descriptionLines = splitTextByNewlines(descriptionText);
+  const isMultilineEyebrow = eyebrowLines.length > 1;
+  const isMultilineTitle = titleLines.length > 1;
+  const isMultilineDescription = descriptionLines.length > 1;
   const [products, setProducts] = useState<CollectionProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -196,10 +224,26 @@ const Collections = ({ variant = "preview" }: CollectionsProps) => {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-        className="mb-3 font-medium uppercase text-[#F5EDD6CC] text-[9px] tracking-[3px] sm:text-[10px]"
-        style={{ fontFamily: "'Grazie mille', serif" }}
+        className={`mb-3 uppercase tracking-[3px] sm:text-[10px] ${
+          useEyebrowTypography
+            ? textStyleFontClass(eyebrowStyle)
+            : "font-medium text-[9px] text-[#F5EDD6CC]"
+        }`}
+        style={
+          useEyebrowTypography
+            ? textStyleToCss(eyebrowStyle)
+            : { fontFamily: "'Grazie mille', serif" }
+        }
+        data-locale-text="true"
       >
-        {content.eyebrow ?? t("collection.eyebrow")}
+        {eyebrowLines.map((line, index) => (
+          <span
+            key={`${line}-${index}`}
+            className={isMultilineEyebrow ? "block whitespace-nowrap" : "whitespace-nowrap"}
+          >
+            {line}
+          </span>
+        ))}
       </motion.p>
 
       <motion.h2
@@ -207,13 +251,35 @@ const Collections = ({ variant = "preview" }: CollectionsProps) => {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-        className="mb-5 bg-clip-text px-2 text-center text-[28px] font-normal leading-tight text-transparent sm:text-[34px] md:mb-6 md:text-[40px]"
+        className={`mb-5 px-2 text-center sm:text-[34px] md:mb-6 md:text-[40px] ${
+          useTitleTypography
+            ? textStyleFontClass(titleStyle)
+            : "text-[28px] font-normal leading-tight"
+        }`}
         style={{
           backgroundImage: goldGradient,
-          fontFamily: "'Gilland', sans-serif",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          color: "transparent",
+          fontFamily: useTitleTypography ? undefined : "'Gilland', sans-serif",
+          ...(useTitleTypography
+            ? {
+                ...textStyleToCss(titleStyle),
+                color: "transparent",
+              }
+            : {}),
         }}
+        data-locale-text="true"
       >
-        {content.title ?? t("collection.title")}
+        {titleLines.map((line, index) => (
+          <span
+            key={`${line}-${index}`}
+            className={isMultilineTitle ? "block whitespace-nowrap" : "whitespace-nowrap"}
+          >
+            {line}
+          </span>
+        ))}
       </motion.h2>
 
       <motion.div
@@ -237,10 +303,30 @@ const Collections = ({ variant = "preview" }: CollectionsProps) => {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: false }}
         transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-        className="mb-10 max-w-[650px] px-4 text-center text-[13px] leading-relaxed text-[#C9B99A] sm:text-[14px] md:mb-14 md:text-[15px]"
-        style={{ fontFamily: "'Grazie mille', serif", fontWeight: "normal" }}
+        className={`mb-10 px-4 text-center sm:text-[14px] md:mb-14 md:text-[15px] ${
+          useDescriptionTypography
+            ? textStyleFontClass(descriptionStyle)
+            : "text-[13px] leading-relaxed text-[#C9B99A]"
+        } ${isMultilineDescription ? "" : "max-w-none"}`}
+        style={
+          useDescriptionTypography
+            ? textStyleToCss(descriptionStyle)
+            : { fontFamily: "'Grazie mille', serif", fontWeight: "normal" }
+        }
+        data-locale-text="true"
       >
-        {content.description ?? t("collection.description")}
+        {descriptionLines.map((line, index) => (
+          <span
+            key={`${line}-${index}`}
+            className={
+              isMultilineDescription
+                ? "block whitespace-nowrap"
+                : "whitespace-nowrap"
+            }
+          >
+            {line}
+          </span>
+        ))}
       </motion.p>
 
       <div className="mx-auto mb-12 grid w-full max-w-[1160px] grid-cols-1 gap-5 px-2 sm:grid-cols-2 sm:px-0 lg:grid-cols-3 lg:gap-7">

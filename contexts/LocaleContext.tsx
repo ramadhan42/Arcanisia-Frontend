@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -20,7 +21,7 @@ import {
 /** Fade out & fade in duration — must match CSS transition. */
 export const LOCALE_FADE_MS = 320;
 
-type LocalePhase = "idle" | "out" | "loading" | "in";
+type LocalePhase = "boot" | "idle" | "out" | "loading" | "in";
 
 interface LocaleContextValue {
   locale: Locale;
@@ -77,8 +78,8 @@ export function LocaleProvider({
 }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [isReady, setIsReady] = useState(false);
-  const [isTextFading, setIsTextFading] = useState(false);
-  const [phase, setPhase] = useState<LocalePhase>("idle");
+  const [isTextFading, setIsTextFading] = useState(true);
+  const [phase, setPhase] = useState<LocalePhase>("boot");
   const localeRef = useRef(locale);
   const switchTimer = useRef<number | null>(null);
   const fadeInDoneTimer = useRef<number | null>(null);
@@ -90,34 +91,23 @@ export function LocaleProvider({
   }, []);
 
   /**
-   * On first refresh/load: fade English defaults out → gold shimmer →
-   * apply preferred locale / CMS copy → fade text back in.
-   * Avoids a hard English → Indonesian snap.
+   * First refresh/load: keep text hidden (boot → loading) until preferred
+   * locale + CMS are ready. Skip fading the old 2-line/default copy so it
+   * never sticks under the shimmer.
    */
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (didInitialReveal.current) return;
     didInitialReveal.current = true;
 
     const preferredLocale = readStoredLocale() || initialLocale || DEFAULT_LOCALE;
+
+    setTextOpacity(0);
+    setIsTextFading(true);
+    localeRef.current = preferredLocale;
+    persistLocale(preferredLocale);
+    setLocaleState(preferredLocale);
+    updatePhase("loading");
     setIsReady(true);
-
-    const raf = window.requestAnimationFrame(() => {
-      setIsTextFading(true);
-      updatePhase("out");
-      setTextOpacity(0);
-
-      switchTimer.current = window.setTimeout(() => {
-        localeRef.current = preferredLocale;
-        persistLocale(preferredLocale);
-        setLocaleState(preferredLocale);
-        updatePhase("loading");
-        switchTimer.current = null;
-      }, LOCALE_FADE_MS);
-    });
-
-    return () => {
-      window.cancelAnimationFrame(raf);
-    };
   }, [initialLocale, updatePhase]);
 
   useEffect(() => {

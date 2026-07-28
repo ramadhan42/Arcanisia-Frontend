@@ -5,71 +5,17 @@ import { motion } from "framer-motion";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import SafeImage from "@/components/ui/SafeImage";
 import { scrollToSection } from "@/lib/sectionHash";
-
-function splitIntoTwoLines(text: string): string[] {
-  if (text.includes("\n")) {
-    return text
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-  }
-
-  const marker = text.match(/a journey/i);
-  if (marker && marker.index && marker.index > 0) {
-    return [text.slice(0, marker.index).trim(), text.slice(marker.index).trim()];
-  }
-
-  const mid = Math.floor(text.length / 2);
-  let breakIndex = text.indexOf(" ", mid);
-  if (breakIndex === -1) breakIndex = text.lastIndexOf(" ", mid);
-  if (breakIndex === -1) return [text];
-  return [text.slice(0, breakIndex).trim(), text.slice(breakIndex).trim()];
-}
-
-function splitHeroTitle(text: string): string[] {
-  const normalized = text.replace(/\r\n/g, "\n").trim();
-  const singleLine = normalized.replace(/\s+/g, " ");
-
-  // Known titles always render as exactly two lines.
-  const whisperingIslands = singleLine.match(
-    /^(Cerita Setiap Pulau)\s+(yang Berbisik Tapi Terdengar)$/i,
-  );
-  if (whisperingIslands) {
-    return [whisperingIslands[1], whisperingIslands[2]];
-  }
-
-  const indonesian = singleLine.match(
-    /^(Di Mana Setiap Pulau)\s+(Menceritakan Wanginya)$/i,
-  );
-  if (indonesian) {
-    return [indonesian[1], indonesian[2]];
-  }
-
-  const english = singleLine.match(
-    /^(Where Every Island)\s+(Tells Its Fragrance)$/i,
-  );
-  if (english) {
-    return [english[1], english[2]];
-  }
-
-  if (normalized.includes("\n")) {
-    const lines = normalized
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    if (lines.length > 2) {
-      return [lines[0], lines.slice(1).join(" ")];
-    }
-
-    return lines;
-  }
-
-  return [normalized];
-}
+import {
+  hasTypographyField,
+  resolveTextStyle,
+  splitTextByNewlines,
+  textStyleFontClass,
+  textStyleToCss,
+  SECTION_TYPOGRAPHY_FIELDS,
+} from "@/lib/typography";
 
 export default function HeroSection() {
-  const { section } = useSiteContent();
+  const { section, isLoading } = useSiteContent();
   const content = section<{
     title?: string;
     description?: string;
@@ -81,14 +27,29 @@ export default function HeroSection() {
     logo_image?: string;
   }>("hero");
 
-  const description =
-    content.description ??
-    "Enam wewangian yang diracik dari jiwa Nusantara — setiap botol adalah perjalanan melintasi lanskap paling sakral Indonesia.";
-  const descriptionLines = splitIntoTwoLines(description);
-  const title =
-    content.title ?? "Cerita Setiap Pulau\nyang Berbisik Tapi Terdengar";
-  const titleLines = splitHeroTitle(title);
+  // While CMS is fetching, keep copy empty so defaults never drive
+  // shimmer geometry or a visible flash under the locale handoff.
+  const description = isLoading
+    ? ""
+    : (content.description ??
+      "Enam wewangian yang diracik dari jiwa Nusantara — setiap botol adalah perjalanan melintasi lanskap paling sakral Indonesia.");
+  const title = isLoading
+    ? ""
+    : (content.title ?? "Cerita Setiap Pulau\nyang Berbisik Tapi Terdengar");
+  const payload = content as Record<string, unknown>;
+  const titleDefaults = SECTION_TYPOGRAPHY_FIELDS.hero?.find((item) => item.key === "title")?.defaults;
+  const descriptionDefaults = SECTION_TYPOGRAPHY_FIELDS.hero?.find((item) => item.key === "description")?.defaults;
+  const ctaDefaults = SECTION_TYPOGRAPHY_FIELDS.hero?.find((item) => item.key === "cta")?.defaults;
+  const titleStyle = resolveTextStyle(payload, "title", titleDefaults);
+  const descriptionStyle = resolveTextStyle(payload, "description", descriptionDefaults);
+  const ctaStyle = resolveTextStyle(payload, "cta", ctaDefaults);
+  const useTitleTypography = !isLoading && hasTypographyField(payload, "title");
+  const useDescriptionTypography = !isLoading && hasTypographyField(payload, "description");
+  const useCtaTypography = !isLoading && hasTypographyField(payload, "cta");
+  const titleLines = splitTextByNewlines(title);
+  const descriptionLines = splitTextByNewlines(description);
   const isMultilineTitle = titleLines.length > 1;
+  const isMultilineDescription = descriptionLines.length > 1;
 
   return (
     <section className="relative flex h-[min(100svh,650px)] min-h-[580px] w-full flex-col items-center justify-start overflow-hidden pt-24 md:h-auto md:min-h-screen md:justify-center md:pt-0">
@@ -177,8 +138,14 @@ export default function HeroSection() {
             backgroundClip: "text",
             color: "transparent",
             marginBottom: "16px",
+            ...(useTitleTypography
+              ? {
+                  ...textStyleToCss(titleStyle),
+                  color: "transparent",
+                }
+              : {}),
           }}
-          className={`font-graziemille font-medium italic leading-[1.2] ${
+          className={`${useTitleTypography ? textStyleFontClass(titleStyle) : "font-graziemille font-medium"} italic leading-[1.2] ${
             isMultilineTitle
               ? "max-w-[min(100%,22rem)] text-[20px] sm:text-[23px] md:max-w-[26rem] md:text-[28px] md:leading-snug"
               : "max-w-[330px] text-[23px] md:max-w-none md:text-[28px] md:leading-snug md:whitespace-nowrap"
@@ -191,7 +158,6 @@ export default function HeroSection() {
               className={isMultilineTitle ? "block whitespace-nowrap" : undefined}
             >
               {line}
-              {index < titleLines.length - 1 && <br />}
             </span>
           ))}
         </motion.h1>
@@ -205,18 +171,19 @@ export default function HeroSection() {
             color: "#F5EDD6",
             marginBottom: "32px",
             lineHeight: "1.6",
+            ...(useDescriptionTypography ? textStyleToCss(descriptionStyle) : {}),
           }}
-          className="max-w-[320px] font-graziemille text-[12px] font-normal md:max-w-none md:whitespace-nowrap md:text-[13px]"
+          className={`${useDescriptionTypography ? textStyleFontClass(descriptionStyle) : "font-graziemille font-normal"} text-[12px] md:text-[13px] ${
+            isMultilineDescription ? "" : "max-w-[320px] md:max-w-none md:whitespace-nowrap"
+          }`}
         >
           {descriptionLines.map((line, index) => (
-            <span key={index}>
+            <span
+              key={index}
+              // Each CMS Enter line stays on exactly one visual row (no soft wrap).
+              className={isMultilineDescription ? "block whitespace-nowrap" : undefined}
+            >
               {line}
-              {index < descriptionLines.length - 1 && (
-                <>
-                  {" "}
-                  <br className="hidden md:block" />
-                </>
-              )}
             </span>
           ))}
         </motion.p>
@@ -243,9 +210,16 @@ export default function HeroSection() {
         >
           <span
             data-locale-text="true"
-            className="relative font-gilland text-[12px] font-bold leading-none tracking-[1.92px] text-[#124b46]"
+            className={`relative leading-none tracking-[1.92px] ${
+              useCtaTypography
+                ? textStyleFontClass(ctaStyle)
+                : "font-gilland text-[12px] font-bold text-[#124b46]"
+            }`}
+            style={useCtaTypography ? textStyleToCss(ctaStyle) : undefined}
           >
-            {content.cta ?? content.cta_label ?? "JELAJAHI KOLEKSI"}
+            {isLoading
+              ? ""
+              : (content.cta ?? content.cta_label ?? "JELAJAHI KOLEKSI")}
           </span>
         </motion.a>
       </div>

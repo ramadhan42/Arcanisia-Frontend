@@ -5,6 +5,14 @@ import { useState } from "react";
 import { newsletterService } from "@/services/api";
 import { useSiteContent } from "@/contexts/SiteContentContext";
 import SafeImage from "@/components/ui/SafeImage";
+import {
+  hasTypographyField,
+  resolveTextStyle,
+  splitTextByNewlines,
+  textStyleFontClass,
+  textStyleToCss,
+  SECTION_TYPOGRAPHY_FIELDS,
+} from "@/lib/typography";
 
 const goldGradient =
   "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)";
@@ -25,11 +33,50 @@ export default function Subscribe() {
     button?: string;
     button_label?: string;
     button_icon?: string;
+    typography?: Record<string, unknown>;
   }>("newsletter");
-  const contact = section<{ items?: Array<{ title: string; icon?: string; icon_src?: string; lines: string[] }> }>("contact");
+  const contact = section<{
+    items?: Array<{ title: string; icon?: string; icon_src?: string; lines: string[] }>;
+    typography?: Record<string, unknown>;
+  }>("contact");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const payload = newsletter as Record<string, unknown>;
+  const contactPayload = contact as Record<string, unknown>;
+  const eyebrowDefaults = SECTION_TYPOGRAPHY_FIELDS.newsletter?.find((item) => item.key === "eyebrow")?.defaults;
+  const titleDefaults = SECTION_TYPOGRAPHY_FIELDS.newsletter?.find((item) => item.key === "title")?.defaults;
+  const descriptionDefaults = SECTION_TYPOGRAPHY_FIELDS.newsletter?.find((item) => item.key === "description")?.defaults;
+  const contactTitleDefaults = SECTION_TYPOGRAPHY_FIELDS.contact?.find((item) => item.key === "itemTitle")?.defaults;
+  const contactLinesDefaults = SECTION_TYPOGRAPHY_FIELDS.contact?.find((item) => item.key === "itemLines")?.defaults;
+  const eyebrowStyle = resolveTextStyle(payload, "eyebrow", eyebrowDefaults);
+  const titleStyle = resolveTextStyle(payload, "title", titleDefaults);
+  const descriptionStyle = resolveTextStyle(payload, "description", descriptionDefaults);
+  const contactTitleStyle = resolveTextStyle(contactPayload, "itemTitle", contactTitleDefaults);
+  const contactLinesStyle = resolveTextStyle(contactPayload, "itemLines", contactLinesDefaults);
+  const useEyebrowTypography = hasTypographyField(payload, "eyebrow");
+  const useTitleTypography = hasTypographyField(payload, "title");
+  const useDescriptionTypography = hasTypographyField(payload, "description");
+  const useContactTitleTypography = hasTypographyField(contactPayload, "itemTitle");
+  const useContactLinesTypography = hasTypographyField(contactPayload, "itemLines");
+  const eyebrowText = newsletter.eyebrow ?? "STAY CONNECTED";
+  const titleText = newsletter.title ?? "Join the Journey of the Nusantara";
+  const descriptionText = newsletter.description ?? "";
+  const eyebrowLines = splitTextByNewlines(eyebrowText);
+  const titleLines = splitTextByNewlines(titleText);
+  const descriptionLines = splitTextByNewlines(descriptionText);
+
+  const renderCmsLines = (lines: string[]) =>
+    lines.map((line, index) => (
+      <span
+        key={`${line}-${index}`}
+        className={
+          lines.length > 1 ? "block whitespace-nowrap" : "whitespace-nowrap"
+        }
+      >
+        {line}
+      </span>
+    ));
 
   const subscribe = async () => {
     setIsSubmitting(true);
@@ -58,9 +105,14 @@ export default function Subscribe() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-[7px] tracking-[5px] text-[#F5EDD6] md:text-[10px]"
+            className={`tracking-[5px] md:text-[10px] ${
+              useEyebrowTypography
+                ? textStyleFontClass(eyebrowStyle)
+                : "text-[7px] text-[#F5EDD6]"
+            }`}
+            style={useEyebrowTypography ? textStyleToCss(eyebrowStyle) : undefined}
           >
-            {newsletter.eyebrow ?? "STAY CONNECTED"}
+            {renderCmsLines(eyebrowLines)}
           </motion.p>
 
           <motion.h2
@@ -68,10 +120,22 @@ export default function Subscribe() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false, amount: 0.2 }}
             transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-            className="mt-3 font-gilland text-[34px] leading-[1.4] md:text-[56px] md:leading-[1.3]"
-            style={goldText}
+            className={`mt-3 leading-[1.4] md:text-[56px] md:leading-[1.3] ${
+              useTitleTypography
+                ? textStyleFontClass(titleStyle)
+                : "font-gilland text-[34px]"
+            }`}
+            style={{
+              ...goldText,
+              ...(useTitleTypography
+                ? {
+                    ...textStyleToCss(titleStyle),
+                    color: "transparent",
+                  }
+                : {}),
+            }}
           >
-            {newsletter.title ?? "Join the Journey of the Nusantara"}
+            {renderCmsLines(titleLines)}
           </motion.h2>
 
           <motion.p
@@ -79,9 +143,14 @@ export default function Subscribe() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
             transition={{ duration: 0.8, delay: 0.35, ease: "easeOut" }}
-            className="mt-3 max-w-[285px] text-[10px] leading-[1.7] text-[#C9B99A] md:max-w-[520px] md:text-[13px] md:leading-[2]"
+            className={`mt-3 md:text-[13px] ${
+              useDescriptionTypography
+                ? textStyleFontClass(descriptionStyle)
+                : "text-[10px] leading-[1.7] text-[#C9B99A] md:leading-[2]"
+            }`}
+            style={useDescriptionTypography ? textStyleToCss(descriptionStyle) : undefined}
           >
-            {newsletter.description}
+            {renderCmsLines(descriptionLines)}
           </motion.p>
 
           <motion.form
@@ -152,12 +221,36 @@ export default function Subscribe() {
               </div>
 
               <div className="pt-0.5">
-                <h3 className="font-sans text-[9px] font-semibold tracking-[3px] text-[#F8C56C]">
+                <h3
+                  className={`tracking-[3px] ${
+                    useContactTitleTypography
+                      ? textStyleFontClass(contactTitleStyle)
+                      : "font-sans text-[9px] font-semibold text-[#F8C56C]"
+                  }`}
+                  style={
+                    useContactTitleTypography
+                      ? textStyleToCss(contactTitleStyle)
+                      : undefined
+                  }
+                >
                   {item.title}
                 </h3>
-                <div className="mt-1 font-graziemille text-[13px] font-light leading-[1.85] text-[#C9B99A] md:text-[12px] md:leading-[1.8]">
+                <div
+                  className={`mt-1 ${
+                    useContactLinesTypography
+                      ? textStyleFontClass(contactLinesStyle)
+                      : "font-graziemille text-[13px] font-light leading-[1.85] text-[#C9B99A] md:text-[12px] md:leading-[1.8]"
+                  }`}
+                  style={
+                    useContactLinesTypography
+                      ? textStyleToCss(contactLinesStyle)
+                      : undefined
+                  }
+                >
                   {(item.lines ?? []).map((line, lineIndex) => (
-                    <p key={`${line}-${lineIndex}`}>{line}</p>
+                    <p key={`${line}-${lineIndex}`} className="whitespace-nowrap">
+                      {line}
+                    </p>
                   ))}
                 </div>
               </div>

@@ -14,10 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="page-view min-h-svh bg-[#012320] text-[#f5edd6]">
+    <main className="page-view min-h-svh bg-[#012320] text-[#f5edd6] scrollbar-none">
       <Navbar />
-      <div className="page-content bg-[#012320]">
-        <main className="bg-[#012320]">{children}</main>
+      <div className="page-content bg-[#012320] scrollbar-none">
+        <main className="bg-[#012320] scrollbar-none">{children}</main>
         <Footer />
       </div>
     </main>

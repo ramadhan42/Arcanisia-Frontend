@@ -79,6 +79,37 @@ body {
   background: transparent;
 }
 
+/* Frontend + dashboard: hide scrollbar UI, keep scroll/wheel/touch working. */
+html,
+body,
+.page-view,
+.page-content {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.page-view::-webkit-scrollbar,
+.page-content::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
 .rekindling-section {
   height: min(100svh, 820px);
   min-height: 560px;
@@ -96,7 +127,9 @@ body {
 }
 
 .rekindling-content p {
-  max-width: 430px;
+  /* Width follows CMS Enter breaks only — do not soft-wrap early. */
+  width: max-content;
+  max-width: min(92vw, 720px);
   font-size: clamp(0.875rem, 1.65vw, 1.5rem);
   line-height: 1.32;
 }
@@ -128,7 +161,8 @@ body {
   }
 
   .rekindling-content p {
-    max-width: 42vw;
+    max-width: min(88vw, 720px);
+    width: max-content;
     font-size: 2.401vw;
     line-height: 1.32;
   }
@@ -142,9 +176,9 @@ body {
   }
 }
 
-/* Locale text transition: language switch + first-load EN→ID soft reveal */
+/* Locale text transition: language switch + first-load soft reveal */
 :root {
-  --locale-text-opacity: 1;
+  --locale-text-opacity: 0;
   --locale-fade-ms: 320ms;
 }
 
@@ -155,6 +189,38 @@ body {
   100% {
     background-position: -100% 0;
   }
+}
+
+/* Hide copy immediately on boot/refresh so old 2-line/default text never sticks.
+   opacity !important beats Framer Motion inline opacity during the handoff. */
+html[data-locale-phase="boot"] .page-content :is(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  label,
+  li,
+  td,
+  th,
+  blockquote,
+  figcaption,
+  a,
+  span,
+  button
+):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="boot"] .page-content [data-locale-text],
+html[data-locale-phase="boot"] nav :is(a, span, p, label, button):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="boot"] nav [data-locale-text],
+html[data-locale-phase="boot"] [data-locale-shimmer] {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none;
+  transition: none;
 }
 
 html[data-locale-phase="out"] .page-content :is(
@@ -179,28 +245,6 @@ html[data-locale-phase="out"] .page-content [data-locale-text],
 html[data-locale-phase="out"] nav :is(a, span, p, label, button):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
 html[data-locale-phase="out"] nav [data-locale-text],
 html[data-locale-phase="out"] [data-locale-shimmer],
-html[data-locale-phase="loading"] .page-content :is(
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p,
-  label,
-  li,
-  td,
-  th,
-  blockquote,
-  figcaption,
-  a,
-  span,
-  button
-):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
-html[data-locale-phase="loading"] .page-content [data-locale-text],
-html[data-locale-phase="loading"] nav :is(a, span, p, label, button):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
-html[data-locale-phase="loading"] nav [data-locale-text],
-html[data-locale-phase="loading"] [data-locale-shimmer],
 html[data-locale-phase="in"] .page-content :is(
   h1,
   h2,
@@ -225,6 +269,37 @@ html[data-locale-phase="in"] nav [data-locale-text],
 html[data-locale-phase="in"] [data-locale-shimmer] {
   filter: opacity(var(--locale-text-opacity));
   transition: filter var(--locale-fade-ms) ease;
+}
+
+html[data-locale-phase="loading"] .page-content :is(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  label,
+  li,
+  td,
+  th,
+  blockquote,
+  figcaption,
+  a,
+  span,
+  button
+):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="loading"] .page-content [data-locale-text],
+html[data-locale-phase="loading"] nav :is(a, span, p, label, button):not([aria-hidden="true"]):not([data-locale-fade="ignore"]),
+html[data-locale-phase="loading"] nav [data-locale-text],
+html[data-locale-phase="loading"] [data-locale-shimmer] {
+  /* Keep real copy invisible while shimmer mirrors the new CMS metrics. */
+  visibility: hidden !important;
+  opacity: 0 !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none;
+  transition: none;
 }
 
 html[data-locale-phase="out"] .page-content :is(img, video, canvas, iframe):not([data-locale-shimmer] img),
