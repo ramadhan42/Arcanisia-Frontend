@@ -763,6 +763,13 @@ export default function CmsEditor({
       <div className="space-y-5">
         <TextField label="Eyebrow" value={asString(payload.eyebrow)} onChange={(v) => update("eyebrow", v)} multiline rows={2} />
         <TextField label="Title" value={asString(payload.title)} onChange={(v) => update("title", v)} multiline rows={3} />
+        <TextField
+          label="Scent Notes Label"
+          value={asString(payload.notes_label)}
+          onChange={(v) => update("notes_label", v)}
+          multiline
+          rows={2}
+        />
         <ObjectListEditor
           label="Islands"
           items={items}
@@ -788,7 +795,7 @@ export default function CmsEditor({
               <TextField label="Subtitle" value={asString(item.subtitle)} onChange={(v) => patch({ subtitle: v })} />
               <TextField label="Description" value={asString(item.description)} onChange={(v) => patch({ description: v })} multiline />
               <StringListField
-                label="Notes"
+                label="Notes (baris 1, 2, 3, … — font diatur di Typography)"
                 values={asArray<string>(item.notes)}
                 onChange={(v) => patch({ notes: v })}
                 placeholder="Scent note"
@@ -1135,7 +1142,7 @@ export default function CmsEditor({
         <div className="space-y-2">
           <p className={labelClass}>Payment Methods (CMS / fallback manual)</p>
           <p className="text-xs normal-case tracking-normal text-[#c9b99a]/55">
-            Mode Manual di Pengaturan Bayar memakai COD. Bank Transfer / QRIS / Kartu
+            Mode Manual di Pengaturan Pembayaran memakai COD. Bank Transfer / QRIS / Kartu
             dikonfigurasi per Midtrans atau Xendit.
           </p>
           <div className="flex flex-wrap gap-4">

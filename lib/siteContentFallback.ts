@@ -43,6 +43,7 @@ const fallbackId: SiteContent = {
   islands: {
     eyebrow: "JELAJAH NUSANTARA",
     title: "Enam Pulau, Satu Jiwa",
+    notes_label: "CATATAN AROMA",
     items: [],
   },
   newsletter: {
@@ -165,6 +166,7 @@ const fallbackEn: SiteContent = {
   islands: {
     eyebrow: "EXPLORE THE ARCHIPELAGO",
     title: "Six Islands, One Soul",
+    notes_label: "SCENT NOTES",
     items: [],
   },
   newsletter: {

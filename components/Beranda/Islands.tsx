@@ -15,6 +15,14 @@ import SafeImage from "@/components/ui/SafeImage";
 import enMessages from "@/messages/en.json";
 import idMessages from "@/messages/id.json";
 import type { Locale } from "@/lib/locale";
+import {
+  hasTypographyField,
+  resolveTextStyle,
+  splitTextByNewlines,
+  textStyleFontClass,
+  textStyleToCss,
+  SECTION_TYPOGRAPHY_FIELDS,
+} from "@/lib/typography";
 
 type IslandItem = {
   id: string;
@@ -27,6 +35,17 @@ type IslandItem = {
   labelPosition: { top: string; left: string };
 };
 
+type CmsIslandItem = {
+  id?: string;
+  region?: string;
+  name?: string;
+  subtitle?: string;
+  description?: string;
+  notes?: string[];
+  product_slug?: string;
+  label_position?: { top?: string; left?: string };
+};
+
 const islandCatalogs: Record<Locale, IslandItem[]> = {
   id: idMessages.islands.items,
   en: enMessages.islands.items,
@@ -37,19 +56,85 @@ const ISLAND_AUTO_SLIDE_MS = 4000;
 
 const MapSection: NextPage = () => {
   const { locale, t } = useTranslation();
-  const { section } = useSiteContent();
+  const { section, isLoading } = useSiteContent();
   const { openBySlug, openProduct, isOpen } = useProductDetail();
   const cmsIslands = section<{
-    items?: Array<{ id?: string; product_slug?: string }>;
+    eyebrow?: string;
+    title?: string;
+    notes_label?: string;
+    items?: CmsIslandItem[];
+    typography?: Record<string, unknown>;
   }>("islands");
-  const renderedIslands = useMemo(
-    () =>
-      islandCatalogs[locale].map((island) => ({
+  const payload = cmsIslands as Record<string, unknown>;
+  const typographyFields = SECTION_TYPOGRAPHY_FIELDS.islands ?? [];
+  const fieldDefaults = (key: string) =>
+    typographyFields.find((item) => item.key === key)?.defaults;
+
+  const eyebrowStyle = resolveTextStyle(payload, "eyebrow", fieldDefaults("eyebrow"));
+  const titleStyle = resolveTextStyle(payload, "title", fieldDefaults("title"));
+  const regionStyle = resolveTextStyle(payload, "region", fieldDefaults("region"));
+  const nameStyle = resolveTextStyle(payload, "name", fieldDefaults("name"));
+  const subtitleStyle = resolveTextStyle(payload, "subtitle", fieldDefaults("subtitle"));
+  const descriptionStyle = resolveTextStyle(
+    payload,
+    "description",
+    fieldDefaults("description"),
+  );
+  const notesStyle = resolveTextStyle(payload, "notes", fieldDefaults("notes"));
+  const notesLabelStyle = resolveTextStyle(
+    payload,
+    "notesLabel",
+    fieldDefaults("notesLabel"),
+  );
+  const discoverStyle = resolveTextStyle(payload, "discover", fieldDefaults("discover"));
+
+  const useEyebrowTypography = !isLoading && hasTypographyField(payload, "eyebrow");
+  const useTitleTypography = !isLoading && hasTypographyField(payload, "title");
+  const useRegionTypography = !isLoading && hasTypographyField(payload, "region");
+  const useNameTypography = !isLoading && hasTypographyField(payload, "name");
+  const useSubtitleTypography = !isLoading && hasTypographyField(payload, "subtitle");
+  const useDescriptionTypography =
+    !isLoading && hasTypographyField(payload, "description");
+  const useNotesTypography = !isLoading && hasTypographyField(payload, "notes");
+  const useNotesLabelTypography =
+    !isLoading && hasTypographyField(payload, "notesLabel");
+  const useDiscoverTypography = !isLoading && hasTypographyField(payload, "discover");
+
+  const eyebrowText = cmsIslands.eyebrow?.trim() || t("islands.eyebrow");
+  const titleText = cmsIslands.title?.trim() || t("islands.title");
+  const notesLabelText =
+    cmsIslands.notes_label?.trim() || t("islands.scentNotes");
+  const discoverText = t("islands.discover");
+  const eyebrowLines = splitTextByNewlines(eyebrowText);
+  const titleLines = splitTextByNewlines(titleText);
+  const notesLabelLines = splitTextByNewlines(notesLabelText);
+  const discoverLines = splitTextByNewlines(discoverText);
+
+  const renderedIslands = useMemo(() => {
+    return islandCatalogs[locale].map((island) => {
+      const cmsItem = cmsIslands.items?.find(
+        (item) => item.id?.toUpperCase() === island.id.toUpperCase(),
+      );
+      const cmsNotes = Array.isArray(cmsItem?.notes)
+        ? cmsItem.notes.filter((note): note is string => typeof note === "string" && note.trim() !== "")
+        : [];
+
+      return {
         ...island,
         id: island.id.toUpperCase(),
-      })),
-    [locale],
-  );
+        region: cmsItem?.region?.trim() || island.region,
+        name: cmsItem?.name?.trim() || island.name,
+        subtitle: cmsItem?.subtitle?.trim() || island.subtitle,
+        description: cmsItem?.description?.trim() || island.description,
+        notes: cmsNotes.length > 0 ? cmsNotes : island.notes,
+        productSlug: cmsItem?.product_slug?.trim() || island.productSlug,
+        labelPosition: {
+          top: cmsItem?.label_position?.top?.trim() || island.labelPosition.top,
+          left: cmsItem?.label_position?.left?.trim() || island.labelPosition.left,
+        },
+      };
+    });
+  }, [cmsIslands.items, locale]);
   const [activeIsland, setActiveIsland] = useState(
     () => renderedIslands[0]?.id ?? "NIAS",
   );
@@ -242,7 +327,7 @@ const MapSection: NextPage = () => {
         >
           {/* Subtitle "JELAJAH NUSANTARA" */}
           <motion.p
-            className={styles.eyebrow}
+            className={`${styles.eyebrow} ${useEyebrowTypography ? textStyleFontClass(eyebrowStyle) : ""}`}
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
@@ -253,14 +338,22 @@ const MapSection: NextPage = () => {
               lineHeight: "15px",
               fontWeight: "500",
               marginBottom: "16px",
+              ...(useEyebrowTypography ? textStyleToCss(eyebrowStyle) : {}),
             }}
           >
-            {t("islands.eyebrow")}
+            {eyebrowLines.map((line, index) => (
+              <span
+                key={`${line}-${index}`}
+                className={eyebrowLines.length > 1 ? "block whitespace-nowrap" : undefined}
+              >
+                {line}
+              </span>
+            ))}
           </motion.p>
 
           {/* Judul Utama */}
           <motion.h2
-            className={styles.title}
+            className={`${styles.title} ${useTitleTypography ? textStyleFontClass(titleStyle) : ""}`}
             initial={{ opacity: 0, scale: 0.85 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
@@ -269,6 +362,13 @@ const MapSection: NextPage = () => {
               fontSize: "62px",
               fontFamily: "Gilland",
               marginBottom: "20px",
+              ...(useTitleTypography
+                ? {
+                    ...textStyleToCss(titleStyle),
+                    color: "transparent",
+                    ["--island-title-font-size" as string]: `${titleStyle.fontSize}${titleStyle.fontSizeUnit}`,
+                  }
+                : {}),
             }}
           >
             <span
@@ -276,14 +376,21 @@ const MapSection: NextPage = () => {
               data-locale-text="true"
               style={{
                 display: "inline-block",
-                lineHeight: "74.4px",
+                lineHeight: useTitleTypography ? titleStyle.lineHeight : "74.4px",
                 background:
                   "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
             >
-              {t("islands.title")}
+              {titleLines.map((line, index) => (
+                <span
+                  key={`${line}-${index}`}
+                  className={titleLines.length > 1 ? "block whitespace-nowrap" : undefined}
+                >
+                  {line}
+                </span>
+              ))}
             </span>
           </motion.h2>
 
@@ -728,22 +835,33 @@ const MapSection: NextPage = () => {
                 }}
               >
                 <div
-                  className={styles.region}
-                  style={{ letterSpacing: "2.29px", lineHeight: "8.59px" }}
+                  className={`${styles.region} ${useRegionTypography ? textStyleFontClass(regionStyle) : ""}`}
+                  style={{
+                    letterSpacing: "2.29px",
+                    lineHeight: "8.59px",
+                    ...(useRegionTypography ? textStyleToCss(regionStyle) : {}),
+                  }}
                 >
                   {currentIslandData.region}
                 </div>
                 <div
-                  className={styles.islandName}
+                  className={`${styles.islandName} ${useNameTypography ? textStyleFontClass(nameStyle) : ""}`}
                   style={{
                     padding: "2.5px 0px 0px",
                     fontSize: "33.1px",
                     fontFamily: "Gilland",
+                    ...(useNameTypography
+                      ? {
+                          ...textStyleToCss(nameStyle),
+                          color: "transparent",
+                          ["--island-name-font-size" as string]: `${nameStyle.fontSize}${nameStyle.fontSizeUnit}`,
+                        }
+                      : {}),
                   }}
                 >
                   <div
                     style={{
-                      lineHeight: "36.41px",
+                      lineHeight: useNameTypography ? nameStyle.lineHeight : "36.41px",
                       background:
                         "linear-gradient(256.8deg, #bda461, #fdde8a 24.52%, #bda461 50%, #fdde8a 75.48%, #bda461)",
                       WebkitBackgroundClip: "text",
@@ -754,15 +872,21 @@ const MapSection: NextPage = () => {
                   </div>
                 </div>
                 <div
-                  className={styles.subtitle}
+                  className={`${styles.subtitle} ${useSubtitleTypography ? textStyleFontClass(subtitleStyle) : ""}`}
                   style={{
                     padding: "2.5px 0px 0px",
                     fontSize: "9.55px",
                     color: "#f5edd6",
                     fontFamily: "'Grazie mille'",
+                    ...(useSubtitleTypography
+                      ? {
+                          ...textStyleToCss(subtitleStyle),
+                          ["--island-subtitle-font-size" as string]: `${subtitleStyle.fontSize}${subtitleStyle.fontSizeUnit}`,
+                        }
+                      : {}),
                   }}
                 >
-                  <i style={{ lineHeight: "14.32px" }}>
+                  <i style={{ lineHeight: useSubtitleTypography ? subtitleStyle.lineHeight : "14.32px" }}>
                     {currentIslandData.subtitle}
                   </i>
                 </div>
@@ -793,7 +917,7 @@ const MapSection: NextPage = () => {
 
               {/* Kolom 2: Deskripsi[cite: 23] */}
               <div
-                className={styles.descriptionColumn}
+                className={`${styles.descriptionColumn} ${useDescriptionTypography ? textStyleFontClass(descriptionStyle) : ""}`}
                 style={{
                   width: "230.6px",
                   display: "flex",
@@ -801,6 +925,12 @@ const MapSection: NextPage = () => {
                   alignItems: "flex-start",
                   fontSize: "7.64px",
                   color: "#c9b99a",
+                  ...(useDescriptionTypography
+                    ? {
+                        ...textStyleToCss(descriptionStyle),
+                        ["--island-description-font-size" as string]: `${descriptionStyle.fontSize}${descriptionStyle.fontSizeUnit}`,
+                      }
+                    : {}),
                 }}
               >
                 <div
@@ -813,8 +943,12 @@ const MapSection: NextPage = () => {
                 <div
                   style={{
                     padding: "12.7px 0px 0px",
-                    lineHeight: "16.04px",
-                    fontWeight: "300",
+                    lineHeight: useDescriptionTypography
+                      ? descriptionStyle.lineHeight
+                      : "16.04px",
+                    fontWeight: useDescriptionTypography
+                      ? descriptionStyle.fontWeight
+                      : "300",
                   }}
                 >
                   {currentIslandData.description}
@@ -823,17 +957,41 @@ const MapSection: NextPage = () => {
 
               {/* Kolom 3: Scent Notes[cite: 23] */}
               <div
-                className={styles.notesColumn}
+                className={`${styles.notesColumn} ${useNotesTypography ? textStyleFontClass(notesStyle) : ""}`}
                 style={{
                   width: "230.6px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
                   color: "rgba(201, 168, 76, 0.6)",
+                  ...(useNotesTypography
+                    ? {
+                        ["--island-notes-font-size" as string]: `${notesStyle.fontSize}${notesStyle.fontSizeUnit}`,
+                      }
+                    : {}),
                 }}
               >
-                <div style={{ letterSpacing: "2.29px", lineHeight: "8.59px" }}>
-                  SCENT NOTES
+                <div
+                  className={useNotesLabelTypography ? textStyleFontClass(notesLabelStyle) : undefined}
+                  data-locale-text="true"
+                  style={{
+                    letterSpacing: "2.29px",
+                    lineHeight: "8.59px",
+                    ...(useNotesLabelTypography
+                      ? textStyleToCss(notesLabelStyle)
+                      : {}),
+                  }}
+                >
+                  {notesLabelLines.map((line, index) => (
+                    <span
+                      key={`${line}-${index}`}
+                      className={
+                        notesLabelLines.length > 1 ? "block whitespace-nowrap" : undefined
+                      }
+                    >
+                      {line}
+                    </span>
+                  ))}
                 </div>
                 <div
                   style={{
@@ -844,6 +1002,7 @@ const MapSection: NextPage = () => {
                     fontSize: "9.55px",
                     color: "rgba(201, 185, 154, 0.8)",
                     fontFamily: "'Cormorant Garamond'",
+                    ...(useNotesTypography ? textStyleToCss(notesStyle) : {}),
                   }}
                 >
                   {currentIslandData.notes.map((note, index) => (
@@ -863,7 +1022,15 @@ const MapSection: NextPage = () => {
                           backgroundColor: "rgba(201, 168, 76, 0.15)",
                         }}
                       />
-                      <i style={{ lineHeight: "14.32px" }}>{note}</i>
+                      <i
+                        style={{
+                          lineHeight: useNotesTypography
+                            ? notesStyle.lineHeight
+                            : "14.32px",
+                        }}
+                      >
+                        {note}
+                      </i>
                     </div>
                   ))}
                 </div>
@@ -873,30 +1040,48 @@ const MapSection: NextPage = () => {
                     void handleDiscoverFragrance(currentIslandData.id)
                   }
                   disabled={isDiscovering}
-                  aria-label={t("islands.discover")}
+                  aria-label={discoverText}
+                  className={useDiscoverTypography ? textStyleFontClass(discoverStyle) : undefined}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     padding: "15.3px 0px 0px",
                     gap: "5.1px",
-                    fontSize: "6.37px",
-                    color: "#c9a84c",
                     cursor: isDiscovering ? "wait" : "pointer",
                     background: "none",
                     border: "none",
-                    font: "inherit",
                     opacity: isDiscovering ? 0.7 : 1,
+                    ...(useDiscoverTypography
+                      ? textStyleToCss(discoverStyle)
+                      : {
+                          fontFamily: "inherit",
+                          fontSize: "6.37px",
+                          color: "#c9a84c",
+                        }),
                   }}
                 >
                     <div
                       data-locale-text="true"
                       style={{
                       letterSpacing: "1.59px",
-                      lineHeight: "9.55px",
-                      fontWeight: "500",
+                      lineHeight: useDiscoverTypography
+                        ? discoverStyle.lineHeight
+                        : "9.55px",
+                      fontWeight: useDiscoverTypography
+                        ? discoverStyle.fontWeight
+                        : "500",
                     }}
                   >
-                    {t("islands.discover")}
+                    {discoverLines.map((line, index) => (
+                      <span
+                        key={`${line}-${index}`}
+                        className={
+                          discoverLines.length > 1 ? "block whitespace-nowrap" : undefined
+                        }
+                      >
+                        {line}
+                      </span>
+                    ))}
                   </div>
                   <SafeImage
                     src="/gambar/seksi%207/Icon.svg"
@@ -966,7 +1151,10 @@ const MapSection: NextPage = () => {
                   padding: "6px 16px",
                   cursor: "pointer",
                   border: "0.7px solid",
-                  font: "inherit",
+                  fontFamily: "inherit",
+                  fontSize: "inherit",
+                  fontWeight: "inherit",
+                  lineHeight: "inherit",
                 }}
               >
                 <div

@@ -91,7 +91,7 @@ const tabs: Array<{ id: Tab; label: string }> = [
   { id: "payments", label: "Pembayaran" },
   { id: "subscribers", label: "Subscriber" },
   { id: "cms", label: "Konten Situs" },
-  { id: "payment-settings", label: "Pengaturan Bayar" },
+  { id: "payment-settings", label: "Pengaturan Pembayaran" },
 ];
 
 const cmsKeys: SiteContentKey[] = [
@@ -869,19 +869,23 @@ export default function AdminPage() {
             </div>
           )}
           {tab === "payment-settings" && (
-            <div className="space-y-4">
-              <p className="max-w-2xl text-sm text-[#c9b99a]/60">
-                Pilih Manual (verifikasi admin) atau Midtrans Snap. Kredensial Midtrans disimpan
-                terenkripsi di database dan bisa diganti kapan saja.
+            <div className="flex min-h-0 flex-col gap-4">
+              <p className="max-w-3xl text-sm leading-relaxed text-[#c9b99a]/60">
+                Pilih Manual, Midtrans, atau Xendit. Kredensial gateway disimpan di database dan
+                bisa diganti kapan saja tanpa menyentuh file <code className="text-[#f8c56c]">.env</code>.
               </p>
-              <PaymentSettingsEditor
-                settings={paymentSettings}
-                isLoading={isLoading}
-                isSaving={isSaving}
-                error={error}
-                formErrors={formErrors}
-                onSave={savePaymentSettings}
-              />
+              <div
+                className={`max-h-[min(640px,calc(100svh-260px))] overflow-y-auto border border-[#c9a84c]/15 bg-[#012724]/40 ${hideScrollbar}`}
+              >
+                <PaymentSettingsEditor
+                  settings={paymentSettings}
+                  isLoading={isLoading}
+                  isSaving={isSaving}
+                  error={error}
+                  formErrors={formErrors}
+                  onSave={savePaymentSettings}
+                />
+              </div>
             </div>
           )}
           {tab !== "overview" && tab !== "cms" && tab !== "payment-settings" && (
