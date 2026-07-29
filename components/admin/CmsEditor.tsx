@@ -1129,11 +1129,15 @@ export default function CmsEditor({
 
   if (sectionKey === "checkout") {
     const methods = asArray<string>(payload.payment_methods);
-    const options = ["bank_transfer", "qris", "card"];
+    const options = ["cod", "bank_transfer", "qris", "card"];
     return (
       <div className="space-y-4">
         <div className="space-y-2">
-          <p className={labelClass}>Payment Methods</p>
+          <p className={labelClass}>Payment Methods (CMS / fallback manual)</p>
+          <p className="text-xs normal-case tracking-normal text-[#c9b99a]/55">
+            Mode Manual di Pengaturan Bayar memakai COD. Bank Transfer / QRIS / Kartu
+            dikonfigurasi per Midtrans atau Xendit.
+          </p>
           <div className="flex flex-wrap gap-4">
             {options.map((method) => (
               <label key={method} className="flex items-center gap-2 text-sm normal-case tracking-normal">

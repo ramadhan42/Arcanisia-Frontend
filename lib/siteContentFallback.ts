@@ -120,7 +120,7 @@ const fallbackId: SiteContent = {
     shipping_label: "GRATIS",
     shipping_note:
       "Pengiriman menggunakan kemasan premium Arcanisia. Estimasi tiba 2–4 hari kerja.",
-    payment_methods: ["bank_transfer", "qris", "card"],
+    payment_methods: ["cod"],
   },
 };
 
@@ -242,7 +242,7 @@ const fallbackEn: SiteContent = {
     shipping_label: "FREE",
     shipping_note:
       "Shipping uses premium Arcanisia packaging. Estimated arrival 2–4 business days.",
-    payment_methods: ["bank_transfer", "qris", "card"],
+    payment_methods: ["cod"],
   },
 };
 

@@ -390,6 +390,7 @@ const ProductDetail: NextPage<ProductDetailProps> = ({ product, onClose }) => {
               <ConfirmationModal
                 order={order}
                 onClose={handleGoToBeranda}
+                onOrderUpdate={setOrder}
               />
             </div>
           </motion.div>

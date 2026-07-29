@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { orderService } from "@/services/api";
 import ProductImage from "@/components/ui/ProductImage";
+import { PaymentChannelInfo } from "@/components/commerce/PaymentChannelInfo";
 import type { Order, OrderStatus, PaginationMeta } from "@/types/api";
 
 const labels: Record<OrderStatus, string> = {
@@ -74,6 +75,7 @@ export default function OrdersModal({ onClose }: { onClose: () => void }) {
           page: 1,
           per_page: 1,
           status: value || undefined,
+          sync_payments: false,
         });
         return [value || "all", response.meta?.total ?? response.data.length] as const;
       }),
@@ -95,6 +97,7 @@ export default function OrdersModal({ onClose }: { onClose: () => void }) {
       const response = await orderService.list(token, {
         page,
         status: status || undefined,
+        sync_payments: true,
       });
       setOrders(response.data);
       setMeta(response.meta);
@@ -109,6 +112,40 @@ export default function OrdersModal({ onClose }: { onClose: () => void }) {
       setIsLoading(false);
     }
   }, [loadCounts, page, status, token]);
+
+  const syncExpandedOrder = useCallback(
+    async (order: Order) => {
+      const gateway = order.payment?.gateway;
+      if (
+        (gateway !== "midtrans" && gateway !== "xendit") ||
+        order.payment?.status !== "pending"
+      ) {
+        return;
+      }
+
+      try {
+        const response = await orderService.syncGatewayStatus(
+          order.order_number,
+          gateway,
+        );
+        setOrders((current) => {
+          const next = current.map((item) =>
+            item.id === response.data.id ? response.data : item,
+          );
+
+          if (status && status !== response.data.status) {
+            return next.filter((item) => item.id !== response.data.id);
+          }
+
+          return next;
+        });
+        void loadCounts().catch(() => undefined);
+      } catch {
+        // Keep local pending status if gateway sync fails.
+      }
+    },
+    [loadCounts, status],
+  );
 
   useEffect(() => {
     const timer = window.setTimeout(() => void load(), 0);
@@ -263,9 +300,13 @@ export default function OrdersModal({ onClose }: { onClose: () => void }) {
                 </p>
                 <button
                   type="button"
-                  onClick={() =>
-                    setExpanded(expanded === order.id ? null : order.id)
-                  }
+                  onClick={() => {
+                    const nextExpanded = expanded === order.id ? null : order.id;
+                    setExpanded(nextExpanded);
+                    if (nextExpanded !== null) {
+                      void syncExpandedOrder(order);
+                    }
+                  }}
                   className="mt-3 flex items-center gap-2 text-[9px] tracking-[2px] text-[#f8c56c]"
                 >
                   DETAIL{" "}
@@ -303,6 +344,7 @@ export default function OrdersModal({ onClose }: { onClose: () => void }) {
                         </div>
                       </div>
                     ))}
+                    <PaymentChannelInfo source={order} />
                     <p className="text-xs leading-relaxed text-[#c9b99a]/60">
                       {order.address}, {order.city}, {order.province}{" "}
                       {order.postal_code}

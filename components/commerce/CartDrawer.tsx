@@ -133,7 +133,11 @@ export default function CartDrawer() {
       )}
       {order && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-3">
-          <ConfirmationModal order={order} onClose={() => setOrder(null)} />
+          <ConfirmationModal
+            order={order}
+            onClose={() => setOrder(null)}
+            onOrderUpdate={setOrder}
+          />
         </div>
       )}
     </>

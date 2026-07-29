@@ -79,7 +79,77 @@ export type PaymentStatus =
   | "failed"
   | "expired"
   | "cancelled";
-export type PaymentMethod = "bank_transfer" | "qris" | "card";
+export type PaymentMethod = "bank_transfer" | "qris" | "card" | "cod" | "midtrans" | "xendit";
+export type PaymentProvider = "manual" | "midtrans" | "xendit";
+export type GatewayPaymentMethod = "bank_transfer" | "qris" | "card";
+
+export interface PaymentSettingsMidtransPublic {
+  client_key: string | null;
+  is_production: boolean;
+  enabled_methods: GatewayPaymentMethod[];
+}
+
+export interface PaymentSettingsXenditPublic {
+  is_production: boolean;
+  enabled_methods: GatewayPaymentMethod[];
+}
+
+export interface PaymentSettingsPublic {
+  provider: PaymentProvider;
+  configured: boolean;
+  available_methods: PaymentMethod[];
+  midtrans?: PaymentSettingsMidtransPublic;
+  xendit?: PaymentSettingsXenditPublic;
+}
+
+export interface PaymentSettingsMidtransAdmin {
+  is_production: boolean;
+  merchant_id: string | null;
+  client_key: string | null;
+  server_key: string | null;
+  has_server_key: boolean;
+  enabled_methods: GatewayPaymentMethod[];
+  configured: boolean;
+}
+
+export interface PaymentSettingsXenditAdmin {
+  is_production: boolean;
+  merchant_id: string | null;
+  callback_token: string | null;
+  has_callback_token: boolean;
+  secret_key: string | null;
+  has_secret_key: boolean;
+  enabled_methods: GatewayPaymentMethod[];
+  configured: boolean;
+}
+
+export interface PaymentSettingsAdmin {
+  provider: PaymentProvider;
+  configured: boolean;
+  available_methods: PaymentMethod[];
+  midtrans: PaymentSettingsMidtransAdmin;
+  xendit: PaymentSettingsXenditAdmin;
+  updated_by: number | null;
+  updated_at: string | null;
+}
+
+export interface PaymentSettingsUpdatePayload {
+  provider?: PaymentProvider;
+  midtrans?: {
+    is_production?: boolean;
+    merchant_id?: string | null;
+    client_key?: string | null;
+    server_key?: string;
+    enabled_methods?: GatewayPaymentMethod[];
+  };
+  xendit?: {
+    is_production?: boolean;
+    merchant_id?: string | null;
+    callback_token?: string;
+    secret_key?: string;
+    enabled_methods?: GatewayPaymentMethod[];
+  };
+}
 
 export interface OrderItem {
   id: number;
@@ -116,6 +186,15 @@ export interface Payment {
   id: number;
   order_id: number;
   method: PaymentMethod;
+  gateway?: PaymentProvider | null;
+  snap_token?: string | null;
+  checkout_url?: string | null;
+  bank?: string | null;
+  va_number?: string | null;
+  qr_string?: string | null;
+  qr_url?: string | null;
+  expiry_time?: string | null;
+  gateway_transaction_id?: string | null;
   status: PaymentStatus;
   amount: string;
   reference: string | null;
@@ -125,6 +204,31 @@ export interface Payment {
   order?: PaymentOrderSummary | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface MidtransPaymentInstructions {
+  payment_type?: string | null;
+  bank?: string | null;
+  va_number?: string | null;
+  qr_string?: string | null;
+  qr_url?: string | null;
+  transaction_status?: string | null;
+  expiry_time?: string | null;
+}
+
+export interface OrderMidtransMeta {
+  client_key: string | null;
+  is_production: boolean;
+  enabled_methods?: GatewayPaymentMethod[];
+  instructions?: MidtransPaymentInstructions | null;
+}
+
+export interface OrderXenditMeta {
+  is_production: boolean;
+  external_id?: string;
+  reference_id?: string;
+  invoice_url: string | null;
+  instructions?: MidtransPaymentInstructions | null;
 }
 
 export interface Order {
@@ -147,6 +251,8 @@ export interface Order {
   stock_restored_at: string | null;
   items: OrderItem[];
   payment: Payment | null;
+  midtrans?: OrderMidtransMeta | null;
+  xendit?: OrderXenditMeta | null;
   created_at: string;
   updated_at: string;
 }
@@ -160,6 +266,17 @@ export interface CheckoutPayload {
   province: string;
   postal_code: string;
   payment_method: PaymentMethod;
+  payment_bank?:
+    | "bca"
+    | "bni"
+    | "bri"
+    | "permata"
+    | "mandiri"
+    | "bsi"
+    | "cimb"
+    | "bjb"
+    | "bnc"
+    | "muamalat";
 }
 
 export interface BuyNowPayload extends CheckoutPayload {

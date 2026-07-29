@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Download, Eye, LoaderCircle, LogOut, Plus, RefreshCw, Save, Trash2 } from "lucide-react";
+import { Download, Eye, LoaderCircle, LogOut, Pencil, Plus, RefreshCw, Save, Trash2 } from "lucide-react";
 import { ApiError } from "@/lib/api";
 import { adminService } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,15 +15,26 @@ import StatusSelect from "@/components/admin/StatusSelect";
 import AdminTablePagination from "@/components/admin/AdminTablePagination";
 import OverviewDashboard from "@/components/admin/OverviewDashboard";
 import {
+  currency,
   OrderDetailBody,
+  OrderEditBody,
+  OrderProductsCell,
   PaymentDetailBody,
+  StatusBadge,
 } from "@/components/admin/OrderProductDetail";
+import PaymentSettingsEditor, {
+  paymentSettingsErrorMessage,
+} from "@/components/admin/PaymentSettingsEditor";
+import ProductImage from "@/components/ui/ProductImage";
 import type {
   DashboardSummary,
   NewsletterSubscriber,
   Order,
+  OrderStatus,
   PaginationMeta,
   Payment,
+  PaymentSettingsAdmin,
+  PaymentSettingsUpdatePayload,
   Product,
   SiteContentKey,
   User,
@@ -32,7 +43,37 @@ import type {
 import type { Locale } from "@/lib/locale";
 import { normalizeValuesPayloadItems } from "@/lib/valuesContent";
 
-type Tab = "overview" | "users" | "products" | "orders" | "payments" | "subscribers" | "cms";
+const COLUMN_LABELS: Record<string, string> = {
+  image: "gambar",
+  name: "nama",
+  sku: "sku",
+  size: "ukuran",
+  price: "harga",
+  stock: "stok",
+  is_active: "status",
+  is_admin: "admin",
+  email: "email",
+  products: "produk",
+  order_number: "no. pesanan",
+  customer_name: "pelanggan",
+  total: "total",
+  status: "status",
+  payment_status: "pembayaran",
+  amount: "jumlah",
+  method: "metode",
+  order_status: "status pesanan",
+  created_at: "dibuat",
+};
+
+type Tab =
+  | "overview"
+  | "users"
+  | "products"
+  | "orders"
+  | "payments"
+  | "subscribers"
+  | "cms"
+  | "payment-settings";
 type RecordValue = User | Product | Order | Payment | NewsletterSubscriber;
 type DetailState =
   | { type: "order"; record: Order }
@@ -50,6 +91,7 @@ const tabs: Array<{ id: Tab; label: string }> = [
   { id: "payments", label: "Pembayaran" },
   { id: "subscribers", label: "Subscriber" },
   { id: "cms", label: "Konten Situs" },
+  { id: "payment-settings", label: "Pengaturan Bayar" },
 ];
 
 const cmsKeys: SiteContentKey[] = [
@@ -98,6 +140,8 @@ export default function AdminPage() {
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
+  const [productImagePreview, setProductImagePreview] = useState<string | null>(null);
+  const [paymentSettings, setPaymentSettings] = useState<PaymentSettingsAdmin | null>(null);
 
   useEffect(() => {
     const previousHtmlOverflow = document.documentElement.style.overflow;
@@ -153,6 +197,12 @@ export default function AdminPage() {
         setMeta(null);
         return;
       }
+      if (tab === "payment-settings") {
+        const response = await adminService.getPaymentSettings(token);
+        setPaymentSettings(response.data);
+        setMeta(null);
+        return;
+      }
       const resource = resources[tab];
       if (!resource) return;
       const usePagination = PAGINATED_TABS.includes(tab);
@@ -191,12 +241,28 @@ export default function AdminPage() {
   useEffect(() => {
     setPage(1);
     setMeta(null);
+    setRecords([]);
+    setError("");
+    setFormErrors(undefined);
+    if (PAGINATED_TABS.includes(tab) || tab === "overview" || tab === "cms" || tab === "payment-settings") {
+      setIsLoading(true);
+    }
   }, [tab]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => void loadResource(), search ? 300 : 0);
     return () => window.clearTimeout(timer);
   }, [loadResource, search]);
+
+  useEffect(() => {
+    if (form.image_file instanceof File) {
+      const objectUrl = URL.createObjectURL(form.image_file);
+      setProductImagePreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    }
+
+    setProductImagePreview(typeof form.image === "string" ? form.image : null);
+  }, [form.image, form.image_file]);
 
   const beginCreate = () => {
     setEditing("new");
@@ -209,10 +275,27 @@ export default function AdminPage() {
     setError("");
   };
 
-  const beginEdit = (record: RecordValue) => {
+  const beginEdit = async (record: RecordValue) => {
+    setFormErrors(undefined);
+    setError("");
+
+    if (tab === "orders") {
+      if (!token) return;
+      try {
+        const response = await adminService.show<Order>("orders", record.id, token);
+        setEditing(response.data);
+        setForm({ status: response.data.status });
+      } catch (requestError) {
+        notify(
+          "error",
+          requestError instanceof Error ? requestError.message : "Pesanan gagal dimuat.",
+        );
+      }
+      return;
+    }
+
     setEditing(record);
     setForm({ ...record });
-    setFormErrors(undefined);
   };
 
   const openDetail = async (record: Order | Payment) => {
@@ -236,23 +319,40 @@ export default function AdminPage() {
   };
 
   const saveRecord = async () => {
-    if (!token || (tab !== "users" && tab !== "products")) return;
-    const resource = resources[tab]!;
+    if (!token || (tab !== "users" && tab !== "products" && tab !== "orders")) return;
+    if (!editing) return;
+
     setIsSaving(true);
     setFormErrors(undefined);
     setError("");
     try {
+      if (tab === "orders" && editing !== "new") {
+        await adminService.updateStatus<Order>(
+          "orders",
+          editing.id,
+          token,
+          String(form.status ?? (editing as Order).status),
+        );
+        setEditing(null);
+        await loadResource();
+        notify("success", "Status pesanan berhasil diperbarui.");
+        return;
+      }
+
+      const resource = resources[tab]!;
       let payload: Record<string, unknown> | FormData = form;
       if (tab === "products" && form.image_file instanceof File) {
         const data = new FormData();
         Object.entries(form).forEach(([key, value]) => {
           if (key === "image_file" && value instanceof File) data.set("image", value);
-          else if (value !== undefined && value !== null) data.set(key, typeof value === "boolean" ? (value ? "1" : "0") : String(value));
+          else if (value !== undefined && value !== null) {
+            data.set(key, typeof value === "boolean" ? (value ? "1" : "0") : String(value));
+          }
         });
         payload = data;
       }
       if (editing === "new") await adminService.create<RecordValue>(resource, token, payload);
-      else if (editing) await adminService.update<RecordValue>(resource, editing.id, token, payload);
+      else await adminService.update<RecordValue>(resource, editing.id, token, payload);
       const wasNew = editing === "new";
       setEditing(null);
       await loadResource();
@@ -268,14 +368,26 @@ export default function AdminPage() {
   const remove = (record: RecordValue) => {
     const resource = resources[tab];
     if (!resource || !token) return;
+
+    const isOrderOrPayment = tab === "orders" || tab === "payments";
     setConfirmState({
-      title: "Hapus Data",
-      message: "Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.",
+      title: isOrderOrPayment
+        ? tab === "orders"
+          ? "Hapus Pesanan"
+          : "Hapus Pembayaran"
+        : "Hapus Data",
+      message: isOrderOrPayment
+        ? tab === "orders"
+          ? "Pesanan dan pembayaran terkait akan dihapus. Stok produk dikembalikan jika masih tertahan. Lanjutkan?"
+          : "Pembayaran dan pesanan terkait akan dihapus. Stok produk dikembalikan jika masih tertahan. Lanjutkan?"
+        : "Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.",
       confirmLabel: "HAPUS",
       tone: "danger",
       onConfirm: async () => {
         try {
           await adminService.remove(resource, record.id, token);
+          setDetail(null);
+          setEditing(null);
           await loadResource();
           notify("success", "Data berhasil dihapus.");
         } catch (requestError) {
@@ -340,6 +452,26 @@ export default function AdminPage() {
     }
   };
 
+  const savePaymentSettings = async (payload: PaymentSettingsUpdatePayload) => {
+    if (!token) return;
+    setIsSaving(true);
+    setFormErrors(undefined);
+    setError("");
+    try {
+      const response = await adminService.updatePaymentSettings(token, payload);
+      setPaymentSettings(response.data);
+      notify("success", "Pengaturan pembayaran berhasil disimpan.");
+    } catch (requestError) {
+      if (requestError instanceof ApiError) setFormErrors(requestError.errors);
+      const message = paymentSettingsErrorMessage(requestError);
+      setError(message);
+      notify("error", message);
+      throw requestError;
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const exportSubscribers = async () => {
     if (!token) return;
     try {
@@ -355,15 +487,21 @@ export default function AdminPage() {
 
   const columns = useMemo(() => {
     if (tab === "users") return ["name", "email", "is_admin"];
-    if (tab === "products") return ["sku", "name", "price", "stock", "is_active"];
-    if (tab === "orders") return ["order_number", "customer_name", "total", "status", "payment_status"];
-    if (tab === "payments") return ["id", "order_number", "amount", "method", "status", "order_status"];
+    if (tab === "products") return ["image", "name", "sku", "size", "price", "stock", "is_active"];
+    if (tab === "orders") return ["products", "customer_name", "total", "status"];
+    if (tab === "payments") return ["products", "amount", "method", "status"];
     return ["email", "created_at"];
   }, [tab]);
+
+  const columnLabel = (column: string) =>
+    COLUMN_LABELS[column] ?? column.replaceAll("_", " ");
 
   const cellValue = (record: RecordValue, column: string): string => {
     if (tab === "orders" && column === "payment_status") {
       return (record as Order).payment?.status ?? "—";
+    }
+    if (tab === "orders" && column === "total") {
+      return currency.format(Number((record as Order).total));
     }
     if (tab === "payments" && column === "order_number") {
       return (record as Payment).order?.order_number ?? String((record as Payment).order_id);
@@ -371,7 +509,193 @@ export default function AdminPage() {
     if (tab === "payments" && column === "order_status") {
       return (record as Payment).order?.status ?? "—";
     }
+    if (tab === "payments" && column === "amount") {
+      return currency.format(Number((record as Payment).amount));
+    }
+    if (tab === "users" && column === "is_admin") {
+      return (record as User).is_admin ? "Ya" : "Tidak";
+    }
     return String((record as unknown as Record<string, unknown>)[column] ?? "—");
+  };
+
+  const renderCell = (record: RecordValue, column: string) => {
+    if (tab === "products") {
+      const product = record as Product;
+
+      if (column === "image") {
+        return (
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden border border-[#c9a84c]/15 bg-black/30">
+            {product.image ? (
+              <ProductImage
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="64px"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-[9px] uppercase tracking-[1px] text-[#c9b99a]/35">
+                N/A
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      if (column === "name") {
+        return (
+          <div className="min-w-0 max-w-[240px]">
+            <p className="truncate font-medium text-[#f5edd6]">{product.name}</p>
+            {product.top_title ? (
+              <p className="mt-0.5 truncate text-xs text-[#c9b99a]/55">{product.top_title}</p>
+            ) : null}
+            {product.badge ? (
+              <span className="mt-1 inline-block text-[10px] uppercase tracking-[1.5px] text-[#f8c56c]/85">
+                {product.badge}
+              </span>
+            ) : null}
+          </div>
+        );
+      }
+
+      if (column === "price") {
+        return (
+          <span className="whitespace-nowrap text-[#e6ddc7]">
+            {currency.format(Number(product.price))}
+          </span>
+        );
+      }
+
+      if (column === "is_active") {
+        return (
+          <span
+            className={`inline-flex items-center px-2 py-0.5 text-[10px] uppercase tracking-[1.5px] ${
+              product.is_active
+                ? "bg-emerald-500/15 text-emerald-300"
+                : "bg-red-500/15 text-red-300"
+            }`}
+          >
+            {product.is_active ? "Aktif" : "Nonaktif"}
+          </span>
+        );
+      }
+
+      if (column === "stock") {
+        return (
+          <span className={product.stock <= 0 ? "text-red-300" : "text-[#e6ddc7]"}>
+            {product.stock}
+          </span>
+        );
+      }
+
+      return <span className="text-[#e6ddc7]">{String(product[column as keyof Product] ?? "—")}</span>;
+    }
+
+    if (tab === "orders") {
+      const order = record as Order;
+
+      if (column === "products") {
+        return <OrderProductsCell items={order.items ?? []} truncate={false} />;
+      }
+
+      if (column === "order_number") {
+        return (
+          <div className="whitespace-nowrap">
+            <p className="font-medium text-[#f5edd6]">{order.order_number ?? "—"}</p>
+            <p className="mt-0.5 text-[10px] uppercase tracking-[1px] text-[#c9b99a]/45">
+              {order.source === "buy_now" ? "Beli langsung" : "Keranjang"}
+            </p>
+          </div>
+        );
+      }
+
+      if (column === "customer_name") {
+        return (
+          <div className="min-w-[180px] max-w-[280px]">
+            <p className="break-words font-medium text-[#f5edd6]">{order.customer_name ?? "—"}</p>
+            <p className="mt-0.5 break-all text-xs text-[#c9b99a]/55">{order.customer_email ?? "—"}</p>
+          </div>
+        );
+      }
+
+      if (column === "total") {
+        return (
+          <span className="whitespace-nowrap font-medium text-[#f8c56c]">
+            {currency.format(Number(order.total ?? 0))}
+          </span>
+        );
+      }
+
+      if (column === "status") {
+        return order.status ? (
+          <StatusBadge value={String(order.status)} />
+        ) : (
+          <span className="text-[#c9b99a]/40">—</span>
+        );
+      }
+
+      if (column === "payment_status") {
+        return order.payment?.status ? (
+          <StatusBadge value={order.payment.status} kind="payment" />
+        ) : (
+          <span className="text-[#c9b99a]/40">—</span>
+        );
+      }
+    }
+
+    if (tab === "payments") {
+      const payment = record as Payment;
+
+      if (column === "products") {
+        return <OrderProductsCell items={payment.order?.items ?? []} truncate={false} />;
+      }
+
+      if (column === "order_number") {
+        return (
+          <div className="min-w-[160px] whitespace-nowrap">
+            <p className="font-medium text-[#f5edd6]">
+              {payment.order?.order_number ?? `#${payment.order_id}`}
+            </p>
+            {payment.order?.customer_name ? (
+              <p className="mt-0.5 max-w-[220px] break-words text-xs whitespace-normal text-[#c9b99a]/55">
+                {payment.order.customer_name}
+              </p>
+            ) : null}
+          </div>
+        );
+      }
+
+      if (column === "amount") {
+        return (
+          <span className="whitespace-nowrap font-medium text-[#f8c56c]">
+            {currency.format(Number(payment.amount))}
+          </span>
+        );
+      }
+
+      if (column === "method") {
+        const method = payment.method ? String(payment.method).replaceAll("_", " ") : "—";
+        return <span className="whitespace-nowrap capitalize text-[#e6ddc7]">{method}</span>;
+      }
+
+      if (column === "status") {
+        return payment.status ? (
+          <StatusBadge value={String(payment.status)} kind="payment" />
+        ) : (
+          <span className="text-[#c9b99a]/40">—</span>
+        );
+      }
+
+      if (column === "order_status") {
+        return payment.order?.status ? (
+          <StatusBadge value={payment.order.status} />
+        ) : (
+          <span className="text-[#c9b99a]/40">—</span>
+        );
+      }
+    }
+
+    return cellValue(record, column);
   };
 
   if (isInitializing) return <div className="flex min-h-screen items-center justify-center bg-[#071d1b] text-[#f8c56c]"><LoaderCircle className="animate-spin" /></div>;
@@ -544,7 +868,23 @@ export default function AdminPage() {
               </div>
             </div>
           )}
-          {tab !== "overview" && tab !== "cms" && (
+          {tab === "payment-settings" && (
+            <div className="space-y-4">
+              <p className="max-w-2xl text-sm text-[#c9b99a]/60">
+                Pilih Manual (verifikasi admin) atau Midtrans Snap. Kredensial Midtrans disimpan
+                terenkripsi di database dan bisa diganti kapan saja.
+              </p>
+              <PaymentSettingsEditor
+                settings={paymentSettings}
+                isLoading={isLoading}
+                isSaving={isSaving}
+                error={error}
+                formErrors={formErrors}
+                onSave={savePaymentSettings}
+              />
+            </div>
+          )}
+          {tab !== "overview" && tab !== "cms" && tab !== "payment-settings" && (
             <>
               <input
                 value={search}
@@ -557,9 +897,41 @@ export default function AdminPage() {
               />
               <div className={`overflow-x-auto border border-[#c9a84c]/15 bg-[#012724]/30 ${hideScrollbar}`}>
                 {isLoading ? <div className="flex h-52 items-center justify-center"><LoaderCircle className="animate-spin text-[#f8c56c]" /></div> : records.length === 0 ? <p className="p-10 text-center text-[#c9b99a]/45">Belum ada data.</p> : (
-                  <table className="w-full min-w-[860px] text-left text-sm">
-                    <thead className="bg-[#012f2b] text-[10px] uppercase tracking-[2px] text-[#c9b99a]/55"><tr>{columns.map((column) => <th key={column} className="px-5 py-4 font-semibold">{column.replaceAll("_", " ")}</th>)}<th className="px-5 py-4 text-right font-semibold">aksi</th></tr></thead>
-                    <tbody>{records.map((record, index) => (
+                  <table
+                    className={`w-full text-left text-sm ${
+                      tab === "orders" || tab === "payments"
+                        ? "min-w-[1280px] table-auto"
+                        : tab === "products"
+                          ? "min-w-[980px]"
+                          : "min-w-[860px]"
+                    }`}
+                  >
+                    <thead className="bg-[#012f2b] text-[10px] uppercase tracking-[2px] text-[#c9b99a]/55">
+                      <tr>
+                        {columns.map((column) => (
+                          <th
+                            key={column}
+                            className={`px-4 py-4 font-semibold sm:px-5 ${
+                              column === "products" || column === "image" ? "text-center" : ""
+                            } ${
+                              column === "status" ||
+                              column === "payment_status" ||
+                              column === "order_status" ||
+                              column === "total" ||
+                              column === "amount" ||
+                              column === "method"
+                                ? "whitespace-nowrap"
+                                : ""
+                            }`}
+                          >
+                            {columnLabel(column)}
+                          </th>
+                        ))}
+                        <th className="px-4 py-4 text-center font-semibold whitespace-nowrap sm:px-5">aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {records.map((record, index) => (
                       <motion.tr
                         key={`${tab}-${record.id}`}
                         initial={{ opacity: 0, y: 8 }}
@@ -567,26 +939,84 @@ export default function AdminPage() {
                         transition={{ delay: Math.min(index * 0.025, 0.4), duration: 0.3 }}
                         className="border-t border-[#c9a84c]/10 transition-colors hover:bg-[#c9a84c]/[0.06]"
                       >
-                        {columns.map((column) => <td key={column} className="max-w-[280px] truncate px-5 py-4 text-[#e6ddc7]">{cellValue(record, column)}</td>)}
-                        <td className="px-5 py-4">
-                          <div className="flex items-center justify-end gap-3">
+                        {columns.map((column) => (
+                          <td
+                            key={column}
+                            className={`px-4 py-4 align-middle text-[#e6ddc7] sm:px-5 ${
+                              column === "image" || column === "products"
+                                ? "w-[1%]"
+                                : tab === "orders" || tab === "payments"
+                                  ? ""
+                                  : "max-w-[280px]"
+                            } ${
+                              column === "image" ||
+                              column === "products" ||
+                              tab === "products" ||
+                              tab === "orders" ||
+                              tab === "payments"
+                                ? ""
+                                : "truncate"
+                            } ${
+                              column === "status" ||
+                              column === "payment_status" ||
+                              column === "order_status" ||
+                              column === "total" ||
+                              column === "amount" ||
+                              column === "method" ||
+                              column === "order_number"
+                                ? "whitespace-nowrap"
+                                : ""
+                            }`}
+                          >
+                            {renderCell(record, column)}
+                          </td>
+                        ))}
+                        <td className="px-4 py-4 align-middle text-center whitespace-nowrap sm:px-5">
+                          <div className="inline-flex items-center justify-center gap-2">
+                            {tab === "payments" && "status" in record && (
+                              <StatusSelect
+                                value={String((record as Payment).status ?? "pending")}
+                                options={["pending", "paid", "failed", "expired", "cancelled"]}
+                                onChange={(status) => void changeStatus(record as Payment, status)}
+                              />
+                            )}
                             {(tab === "orders" || tab === "payments") && (
                               <button
                                 type="button"
                                 onClick={() => void openDetail(record as Order | Payment)}
-                                className="inline-flex items-center gap-1 text-xs font-semibold tracking-[1px] text-[#f8c56c] transition-opacity hover:opacity-75"
+                                aria-label="Detail"
+                                title="Detail"
+                                className="inline-flex h-8 w-8 items-center justify-center text-[#f8c56c] transition-opacity hover:opacity-75"
                               >
-                                <Eye size={14} /> DETAIL
+                                <Eye size={16} />
                               </button>
                             )}
-                            {(tab === "users" || tab === "products") && <button onClick={() => beginEdit(record)} className="text-xs font-semibold tracking-[1px] text-[#f8c56c] transition-opacity hover:opacity-75">EDIT</button>}
-                            {tab === "orders" && <StatusSelect value={(record as Order).status} options={["pending", "processing", "shipping", "completed", "cancelled"]} onChange={(status) => void changeStatus(record as Order, status)} />}
-                            {tab === "payments" && <StatusSelect value={(record as Payment).status} options={["pending", "paid", "failed", "expired", "cancelled"]} onChange={(status) => void changeStatus(record as Payment, status)} />}
-                            {(tab === "users" || tab === "products" || tab === "subscribers") && <button onClick={() => remove(record)} aria-label="Hapus" className="text-red-300 transition-colors hover:text-red-400"><Trash2 size={15} /></button>}
+                            {(tab === "users" || tab === "products" || tab === "orders") && (
+                              <button
+                                type="button"
+                                onClick={() => void beginEdit(record)}
+                                aria-label="Edit"
+                                title="Edit"
+                                className="inline-flex h-8 w-8 items-center justify-center text-[#f8c56c] transition-opacity hover:opacity-75"
+                              >
+                                <Pencil size={15} />
+                              </button>
+                            )}
+                            {(tab === "users" || tab === "products" || tab === "subscribers" || tab === "orders" || tab === "payments") && (
+                              <button
+                                onClick={() => remove(record)}
+                                aria-label="Hapus"
+                                title="Hapus"
+                                className="inline-flex h-8 w-8 items-center justify-center text-red-300 transition-colors hover:text-red-400"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </motion.tr>
-                    ))}</tbody>
+                    ))}
+                    </tbody>
                   </table>
                 )}
               </div>
@@ -621,17 +1051,146 @@ export default function AdminPage() {
               transition={{ type: "spring", stiffness: 300, damping: 28 }}
               onClick={(event) => event.stopPropagation()}
               onSubmit={(event) => { event.preventDefault(); void saveRecord(); }}
-              className={`relative max-h-[calc(100svh-32px)] w-full max-w-xl space-y-4 overflow-y-auto border border-[#c9a84c]/25 bg-[#012f2b] p-6 shadow-[0_28px_90px_-30px_rgba(0,0,0,0.85)] ${hideScrollbar}`}
+              className={`relative max-h-[calc(100svh-32px)] w-full space-y-4 overflow-y-auto border border-[#c9a84c]/25 bg-[#012f2b] p-6 shadow-[0_28px_90px_-30px_rgba(0,0,0,0.85)] ${
+                tab === "orders" ? "max-w-2xl" : "max-w-xl"
+              } ${hideScrollbar}`}
             >
               <div className="absolute inset-x-0 top-0 h-px" style={{ background: "linear-gradient(90deg,transparent,rgba(201,168,76,0.7),transparent)" }} />
-              <h2 className="font-gilland text-2xl text-[#f8c56c]">{editing === "new" ? "Tambah" : "Edit"} {tab === "users" ? "Pengguna" : "Produk"}</h2>
-              {(tab === "users" ? ["name", "email", "password", "password_confirmation"] : ["sku", "slug", "name", "top_title", "description", "size", "price", "stock", "bg_color", "badge"]).map((field) => (
-                <label key={field} className="block text-xs uppercase tracking-[2px] text-[#c9b99a]/55">{field.replaceAll("_", " ")}<input type={field.includes("password") ? "password" : field === "price" || field === "stock" ? "number" : "text"} value={String(form[field] ?? "")} onChange={(event) => setForm((current) => ({ ...current, [field]: field === "stock" ? Number(event.target.value) : event.target.value }))} required={["name", "email", "sku", "price", "stock"].includes(field) || (editing === "new" && field === "password")} className="mt-2 w-full border border-[#c9a84c]/20 bg-[#012724] px-4 py-3 text-sm normal-case tracking-normal text-[#f5edd6] outline-none focus:border-[#f8c56c]" /></label>
-              ))}
-              {tab === "users" && <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={Boolean(form.is_admin)} onChange={(event) => setForm((current) => ({ ...current, is_admin: event.target.checked }))} /> Administrator</label>}
-              {tab === "products" && <><label className="block text-xs">GAMBAR<input type="file" accept="image/*" onChange={(event) => setForm((current) => ({ ...current, image_file: event.target.files?.[0] }))} className="mt-2 block w-full" /></label><label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={Boolean(form.is_active)} onChange={(event) => setForm((current) => ({ ...current, is_active: event.target.checked }))} /> Produk aktif</label></>}
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[9px] tracking-[3px] text-[#c9a84c]/60">
+                    {editing === "new" ? "TAMBAH" : "EDIT"}
+                  </p>
+                  <h2 className="mt-1 font-gilland text-2xl text-[#f8c56c]">
+                    {tab === "users" ? "Pengguna" : tab === "orders" ? "Pesanan" : "Produk"}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEditing(null)}
+                  className="border border-[#c9a84c]/20 px-3 py-2 text-xs transition-colors hover:border-[#c9a84c]/50"
+                >
+                  TUTUP
+                </button>
+              </div>
+
+              {tab === "orders" && editing !== "new" ? (
+                <OrderEditBody
+                  order={editing as Order}
+                  status={(form.status as OrderStatus) ?? (editing as Order).status}
+                  onStatusChange={(status) => setForm((current) => ({ ...current, status }))}
+                />
+              ) : (
+                <>
+                  {(tab === "users"
+                    ? ["name", "email", "password", "password_confirmation"]
+                    : ["sku", "slug", "name", "top_title", "description", "size", "price", "stock", "bg_color", "badge"]
+                  ).map((field) => (
+                    <label key={field} className="block text-xs uppercase tracking-[2px] text-[#c9b99a]/55">
+                      {field.replaceAll("_", " ")}
+                      <input
+                        type={
+                          field.includes("password")
+                            ? "password"
+                            : field === "price" || field === "stock"
+                              ? "number"
+                              : "text"
+                        }
+                        value={String(form[field] ?? "")}
+                        onChange={(event) =>
+                          setForm((current) => ({
+                            ...current,
+                            [field]: field === "stock" ? Number(event.target.value) : event.target.value,
+                          }))
+                        }
+                        required={
+                          ["name", "email", "sku", "price", "stock"].includes(field) ||
+                          (editing === "new" && field === "password")
+                        }
+                        className="mt-2 w-full border border-[#c9a84c]/20 bg-[#012724] px-4 py-3 text-sm normal-case tracking-normal text-[#f5edd6] outline-none focus:border-[#f8c56c]"
+                      />
+                    </label>
+                  ))}
+                  {tab === "users" && (
+                    <label className="flex items-center gap-3 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={Boolean(form.is_admin)}
+                        onChange={(event) =>
+                          setForm((current) => ({ ...current, is_admin: event.target.checked }))
+                        }
+                      />{" "}
+                      Administrator
+                    </label>
+                  )}
+                  {tab === "products" && (
+                    <>
+                      <div className="space-y-2">
+                        <p className="text-xs uppercase tracking-[2px] text-[#c9b99a]/55">Gambar produk</p>
+                        <div className="flex items-start gap-4">
+                          <div className="relative h-24 w-24 shrink-0 overflow-hidden border border-[#c9a84c]/20 bg-black/30">
+                            {productImagePreview ? (
+                              <ProductImage
+                                src={productImagePreview}
+                                alt={String(form.name ?? "Preview produk")}
+                                fill
+                                className="object-cover"
+                                sizes="96px"
+                              />
+                            ) : (
+                              <div className="flex h-full items-center justify-center text-[9px] uppercase tracking-[1px] text-[#c9b99a]/35">
+                                N/A
+                              </div>
+                            )}
+                          </div>
+                          <label className="block min-w-0 flex-1 text-xs text-[#c9b99a]/55">
+                            Unggah gambar
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(event) =>
+                                setForm((current) => ({
+                                  ...current,
+                                  image_file: event.target.files?.[0],
+                                }))
+                              }
+                              className="mt-2 block w-full text-sm normal-case tracking-normal text-[#e6ddc7] file:mr-3 file:border-0 file:bg-[#f8c56c] file:px-3 file:py-1.5 file:text-xs file:font-bold file:text-[#012421]"
+                            />
+                          </label>
+                        </div>
+                      </div>
+                      <label className="flex items-center gap-3 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(form.is_active)}
+                          onChange={(event) =>
+                            setForm((current) => ({ ...current, is_active: event.target.checked }))
+                          }
+                        />{" "}
+                        Produk aktif
+                      </label>
+                    </>
+                  )}
+                </>
+              )}
+
               <FormMessage message={error} errors={formErrors} />
-              <div className="flex gap-3"><button disabled={isSaving} className="flex flex-1 items-center justify-center gap-2 bg-[#f8c56c] py-3 text-xs font-bold text-[#012421] transition-opacity hover:opacity-90 disabled:opacity-60">{isSaving && <LoaderCircle size={14} className="animate-spin" />}{isSaving ? "MENYIMPAN..." : "SIMPAN"}</button><button type="button" onClick={() => setEditing(null)} className="flex-1 border border-[#c9a84c]/20 py-3 text-xs transition-colors hover:border-[#c9a84c]/50">BATAL</button></div>
+              <div className="flex gap-3">
+                <button
+                  disabled={isSaving}
+                  className="flex flex-1 items-center justify-center gap-2 bg-[#f8c56c] py-3 text-xs font-bold text-[#012421] transition-opacity hover:opacity-90 disabled:opacity-60"
+                >
+                  {isSaving && <LoaderCircle size={14} className="animate-spin" />}
+                  {isSaving ? "MENYIMPAN..." : "SIMPAN"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditing(null)}
+                  className="flex-1 border border-[#c9a84c]/20 py-3 text-xs transition-colors hover:border-[#c9a84c]/50"
+                >
+                  BATAL
+                </button>
+              </div>
             </motion.form>
           </motion.div>
         )}
@@ -670,13 +1229,27 @@ export default function AdminPage() {
                     {detail.type === "order" ? "Pesanan & Produk" : "Pembayaran & Produk"}
                   </h2>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setDetail(null)}
-                  className="border border-[#c9a84c]/20 px-3 py-2 text-xs transition-colors hover:border-[#c9a84c]/50"
-                >
-                  TUTUP
-                </button>
+                <div className="flex items-center gap-2">
+                  {detail.type === "order" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDetail(null);
+                        void beginEdit(detail.record);
+                      }}
+                      className="border border-[#f8c56c]/40 bg-[#f8c56c]/10 px-3 py-2 text-xs font-semibold tracking-[1px] text-[#f8c56c] transition-colors hover:bg-[#f8c56c]/20"
+                    >
+                      EDIT
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setDetail(null)}
+                    className="border border-[#c9a84c]/20 px-3 py-2 text-xs transition-colors hover:border-[#c9a84c]/50"
+                  >
+                    TUTUP
+                  </button>
+                </div>
               </div>
               {detail.type === "order" ? (
                 <OrderDetailBody order={detail.record} />

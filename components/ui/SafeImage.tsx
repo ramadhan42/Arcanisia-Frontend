@@ -34,10 +34,10 @@ export default function SafeImage({
   quality = 100,
   ...rest
 }: SafeImageProps) {
-  const isDataUrl = src.startsWith("data:");
+  const isInlineUrl = src.startsWith("data:") || src.startsWith("blob:");
   const isLocalAsset = isLocalPublicAsset(src);
 
-  if (isDataUrl) {
+  if (isInlineUrl) {
     if (fill) {
       return (
         // eslint-disable-next-line @next/next/no-img-element

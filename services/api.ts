@@ -9,6 +9,9 @@ import type {
   Order,
   PaginatedResponse,
   Payment,
+  PaymentSettingsAdmin,
+  PaymentSettingsPublic,
+  PaymentSettingsUpdatePayload,
   Product,
   SiteContent,
   SiteContentKey,
@@ -103,9 +106,27 @@ export const cartService = {
 export const orderService = {
   list: async (
     token: string,
-    parameters: { page?: number; per_page?: number; status?: string } = {},
+    parameters: {
+      page?: number;
+      per_page?: number;
+      status?: string;
+      sync_payments?: boolean;
+    } = {},
   ) => {
-    const response = await apiRequest<PaginatedResponse<Order>>(`orders${query(parameters)}`, { token });
+    const response = await apiRequest<PaginatedResponse<Order>>(
+      `orders${query({
+        page: parameters.page,
+        per_page: parameters.per_page,
+        status: parameters.status,
+        sync_payments:
+          parameters.sync_payments === undefined
+            ? undefined
+            : parameters.sync_payments
+              ? 1
+              : 0,
+      })}`,
+      { token },
+    );
     return { ...response, data: response.data.map(normalizeOrder) };
   },
   show: async (token: string, id: number) => {
@@ -133,6 +154,30 @@ export const orderService = {
       body: JSON.stringify(payload),
     });
     return { ...response, data: normalizeOrder(response.data) };
+  },
+  syncMidtransStatus: async (orderNumber: string) => {
+    const response = await apiRequest<ApiEnvelope<Order>>("midtrans/sync-status", {
+      method: "POST",
+      body: JSON.stringify({ order_number: orderNumber }),
+    });
+    return { ...response, data: normalizeOrder(response.data) };
+  },
+  syncXenditStatus: async (orderNumber: string) => {
+    const response = await apiRequest<ApiEnvelope<Order>>("xendit/sync-status", {
+      method: "POST",
+      body: JSON.stringify({ order_number: orderNumber }),
+    });
+    return { ...response, data: normalizeOrder(response.data) };
+  },
+  syncGatewayStatus: async (
+    orderNumber: string,
+    gateway: "midtrans" | "xendit",
+  ) => {
+    if (gateway === "xendit") {
+      return orderService.syncXenditStatus(orderNumber);
+    }
+
+    return orderService.syncMidtransStatus(orderNumber);
   },
 };
 
@@ -183,6 +228,10 @@ export const siteContentService = {
     >(`site-content${query({ locale })}`);
     return normalizeSiteContent(response.data);
   },
+};
+
+export const paymentSettingsService = {
+  get: () => apiRequest<ApiEnvelope<PaymentSettingsPublic>>("payment-settings"),
 };
 
 export const adminService = {
@@ -304,6 +353,14 @@ export const adminService = {
         body: JSON.stringify({ payload, is_active: true }),
       },
     ),
+  getPaymentSettings: (token: string) =>
+    apiRequest<ApiEnvelope<PaymentSettingsAdmin>>("admin/payment-settings", { token }),
+  updatePaymentSettings: (token: string, payload: PaymentSettingsUpdatePayload) =>
+    apiRequest<ApiEnvelope<PaymentSettingsAdmin>>("admin/payment-settings", {
+      method: "PATCH",
+      token,
+      body: JSON.stringify(payload),
+    }),
   exportSubscribers: async (token: string) => {
     const response = await fetch(
       `${API_URL}/admin/newsletter-subscribers/export`,
